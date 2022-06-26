@@ -55,7 +55,10 @@ func NewSet(c *core.Core, char *character.CharWrapper, count int, param map[stri
 		vvfunc := func(ele attributes.Element, key string) func(args ...interface{}) bool {
 			return func(args ...interface{}) bool {
 				atk := args[1].(*combat.AttackEvent)
-				t := args[0].(core.Enemy)
+				t, ok := args[0].(*enemy.Enemy)
+				if !ok {
+					return false
+				}
 				if atk.Info.ActorIndex != char.Index {
 					return false
 				}
@@ -85,7 +88,6 @@ func NewSet(c *core.Core, char *character.CharWrapper, count int, param map[stri
 			if !ok {
 				return false
 			}
-
 			if atk.Info.ActorIndex != char.Index {
 				return false
 			}
