@@ -151,7 +151,7 @@ func (c *Core) AddChar(p character.CharacterProfile) (int, error) {
 	// initialize weapon
 	wf, ok := weaponMap[p.Weapon.Key]
 	if !ok {
-		return -1, fmt.Errorf("unrecognized weapon %v for character %v", p.Weapon.Key, p.Base.Key.String())
+		return -1, fmt.Errorf("unrecognized weapon %v for character %v", p.Weapon.Name, p.Base.Key.String())
 	}
 	weap, err := wf(c, char, p.Weapon)
 	if err != nil {
