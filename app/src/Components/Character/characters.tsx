@@ -1,7 +1,7 @@
 import { MenuItem } from '@blueprintjs/core';
 import { ItemPredicate, ItemRenderer } from '@blueprintjs/select';
 import i18n from 'i18next';
-import { Character } from '~src/Types/sim';
+import { Character } from '~src/Types/types.d';
 
 export interface ICharacter {
   key: string;

@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { AppThunk } from '~src/store';
+import { AppThunk } from '~src/Store';
 import { UserInfo } from '~src/Types/user';
 import { AuthProvider, DiscordProvider, MockProvider } from './Provider';
 

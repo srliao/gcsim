@@ -6,12 +6,12 @@ import {
   Dialog,
   Position,
   Toaster,
-} from "@blueprintjs/core";
-import React from "react";
-import { useTranslation } from "react-i18next";
-import { useAppDispatch } from "~src/store";
-import { userDataActions } from "../../Pages/Sim/userDataSlice";
-import { IGOODImport, parseFromGOOD } from "./parseFromGOOD";
+} from '@blueprintjs/core';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { useAppDispatch } from '~src/Store';
+import { userDataActions } from '../../Pages/Sim/userDataSlice';
+import { IGOODImport, parseFromGOOD } from './parseFromGOOD';
 
 type Props = {
   isOpen: boolean;
@@ -22,7 +22,7 @@ const AppToaster = Toaster.create({
   position: Position.BOTTOM_RIGHT,
 });
 
-const lsKey = "GOOD-import";
+const lsKey = 'GOOD-import';
 
 export function ImportFromGOODDialog(props: Props) {
   const [data, setData] = React.useState<IGOODImport>();
@@ -34,8 +34,8 @@ export function ImportFromGOODDialog(props: Props) {
       dispatch(userDataActions.loadFromGOOD({ data: data.characters }));
       props.onClose();
       AppToaster.show({
-        message: t("importer.import_success"),
-        intent: "success",
+        message: t('importer.import_success'),
+        intent: 'success',
       });
     }
   };
@@ -52,13 +52,13 @@ export function ImportFromGOODDialog(props: Props) {
       canOutsideClickClose
       icon="import"
       title="Import from Genshin Optimizer/GOOD"
-      style={{ width: "85%" }}
+      style={{ width: '85%' }}
     >
       <div className={Classes.DIALOG_BODY}>
         <p>
           Paste import data in GOOD format in the textbox below. (If you are
           coming from Genshin Optimizer, you can export your database in GOOD
-          format{" "}
+          format{' '}
           <a
             href="https://frzyc.github.io/genshin-optimizer/#/database"
             target="_blank"
@@ -71,7 +71,7 @@ export function ImportFromGOODDialog(props: Props) {
           action cannot be reversed.
         </Callout>
         <textarea
-          value={localStorage.getItem(lsKey) ?? ""}
+          value={localStorage.getItem(lsKey) ?? ''}
           onChange={handleChange}
           className="w-full p-2 bg-gray-600 rounded-md mt-2"
           rows={7}
@@ -82,7 +82,7 @@ export function ImportFromGOODDialog(props: Props) {
           name.
         </p>
         {data ? (
-          data.err === "" ? (
+          data.err === '' ? (
             <Callout intent="success" className="mt-2 p-2">
               Data parsed successfully
             </Callout>
@@ -98,7 +98,7 @@ export function ImportFromGOODDialog(props: Props) {
           <ButtonGroup>
             <Button
               onClick={handleLoad}
-              disabled={!data || data.err !== ""}
+              disabled={!data || data.err !== ''}
               intent="primary"
             >
               Load

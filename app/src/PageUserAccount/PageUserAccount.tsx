@@ -2,8 +2,8 @@ import { Button } from '@blueprintjs/core';
 import axios from 'axios';
 import React from 'react';
 import { Viewport } from '~src/Components';
-import { useAppDispatch, useAppSelector } from '~src/store';
-import { statusType } from '~src/Types/types';
+import { useAppDispatch, useAppSelector } from '~src/Store';
+import { statusType } from '~src/Types/types.d';
 import { logout } from '~src/UserData/userSlice';
 import { Login } from './Login';
 

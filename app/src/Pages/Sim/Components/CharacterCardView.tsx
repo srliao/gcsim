@@ -1,6 +1,6 @@
 import { CharacterCard, ConsolidateCharStats } from '~src/Components/Character';
 import { Trans, useTranslation } from 'react-i18next';
-import { Character } from '~src/Types/sim';
+import { Character } from '~src/Types/types.d';
 
 type Props = {
   chars: Character[];

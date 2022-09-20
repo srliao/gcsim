@@ -6,11 +6,9 @@ import { Dash } from '/src/Pages/Dash';
 import { Simple } from '/src/Pages/Sim';
 import { SimWrapper } from './Pages/Sim/SimWrapper';
 import { ViewerDash } from './Pages/ViewerDashboard';
-import { DB } from './Pages/DB';
 import './i18n';
 import { Trans, useTranslation } from 'react-i18next';
 import { DiscordCallback } from './PageUserAccount/DiscordCallback';
-import { CharacterView, Database, TeamsList } from '~src/PageDatabase';
 import { PageUserAccount } from './PageUserAccount';
 
 export default function App() {
@@ -53,19 +51,6 @@ export default function App() {
         <Route path="/viewer">
           <ViewerDash path="/" />
         </Route>
-        {/* <Route path="/db">
-          <Database />
-        </Route>
-        <Route path="/db/:avatar">
-          {(params) => <CharacterView char={params.avatar} />}
-        </Route>
-        <Route path="/db/:avatar/:team">
-          {(params) => <TeamsList char={params.avatar} team={params.team} />}
-        </Route> */}
-        <Route path="/db">
-          <DB />
-        </Route>
-        {/* <Route path="/db/:char">{({ char }) => <DbChar char={char} />}</Route> */}
         <Route path="/account">
           <PageUserAccount />
         </Route>

@@ -6,7 +6,7 @@ import {
   parseAndValidate,
   Uint8ArrayFromBase64,
 } from './parse';
-import { useAppDispatch } from '~src/store';
+import { useAppDispatch } from '~src/Store';
 import { viewerActions } from './viewerSlice';
 import { useTranslation } from 'react-i18next';
 import { ResultsSummary } from '~src/Types/stats';

@@ -17,7 +17,7 @@ import { bytesToBase64 } from './base64';
 import { SimResults } from './DataType';
 import { Trans, useTranslation } from 'react-i18next';
 import { Metadata } from '~src/Types/stats';
-import { useAppSelector } from '~src/store';
+import { useAppSelector } from '~src/Store';
 
 export interface ShareProps {
   // isOpen: boolean;

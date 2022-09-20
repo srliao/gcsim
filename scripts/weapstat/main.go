@@ -211,6 +211,7 @@ const (
 	{{- range $key, $value := . }}
 	{{$value.TitleCase}}
 	{{- end }}
+	EndWeaponKeys
 )
 `
 

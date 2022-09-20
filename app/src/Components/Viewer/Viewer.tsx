@@ -7,21 +7,21 @@ import {
   Dialog,
   Tab,
   Tabs,
-} from "@blueprintjs/core";
-import React from "react";
-import { Config } from "./Config";
-import { SimResults } from "./DataType";
-import { Debugger } from "./DebugView";
-import { Details } from "./Details";
-import { Options, OptionsProp } from "./Options";
-import { DebugRow, parseLog } from "./parse";
-import Summary from "./Summary";
-import Share, { AppToaster } from "./Share";
-import { parseLogV2 } from "./parsev2";
-import { Trans, useTranslation } from "react-i18next";
-import { useLocation } from "wouter";
-import { updateCfg } from "~src/Pages/Sim";
-import { useAppDispatch } from "~src/store";
+} from '@blueprintjs/core';
+import React from 'react';
+import { Config } from './Config';
+import { SimResults } from './DataType';
+import { Debugger } from './DebugView';
+import { Details } from './Details';
+import { Options, OptionsProp } from './Options';
+import { DebugRow, parseLog } from './parse';
+import Summary from './Summary';
+import Share, { AppToaster } from './Share';
+import { parseLogV2 } from './parsev2';
+import { Trans, useTranslation } from 'react-i18next';
+import { useLocation } from 'wouter';
+import { updateCfg } from '~src/Pages/Sim';
+import { useAppDispatch } from '~src/Store';
 import {
   AdvancedPreset,
   AllDebugOptions,
@@ -29,7 +29,7 @@ import {
   DefaultDebugOptions,
   SimplePreset,
   VerbosePreset,
-} from "./debugOptions";
+} from './debugOptions';
 
 type ViewProps = {
   classes?: string;
@@ -57,12 +57,12 @@ const extractMsgData = (data: DebugRow[]) => {
   console.log(msgs);
 };
 
-const LOCALSTORAGE_KEY = "gcsim-viewer-cpy-cfg-settings";
+const LOCALSTORAGE_KEY = 'gcsim-viewer-cpy-cfg-settings';
 
 function ViewOnly(props: ViewProps) {
   let { t } = useTranslation();
   const [open, setOpen] = React.useState<boolean>(false);
-  const [tabID, setTabID] = React.useState<string>("result");
+  const [tabID, setTabID] = React.useState<string>('result');
   const [optOpen, setOptOpen] = React.useState<boolean>(false);
 
   extractMsgData(props.parsed);
@@ -92,18 +92,18 @@ function ViewOnly(props: ViewProps) {
     handleResetDefault: () => {
       props.handleSetSelected(DefaultDebugOptions);
     },
-    handleSetPresets: (opt: "simple" | "advanced" | "verbose" | "debug") => {
+    handleSetPresets: (opt: 'simple' | 'advanced' | 'verbose' | 'debug') => {
       switch (opt) {
-        case "simple":
+        case 'simple':
           props.handleSetSelected(SimplePreset);
           return;
-        case "advanced":
+        case 'advanced':
           props.handleSetSelected(AdvancedPreset);
           return;
-        case "verbose":
+        case 'verbose':
           props.handleSetSelected(VerbosePreset);
           return;
-        case "debug":
+        case 'debug':
           props.handleSetSelected(DebugPreset);
           return;
       }
@@ -115,8 +115,8 @@ function ViewOnly(props: ViewProps) {
   function copyToClipboard() {
     navigator.clipboard.writeText(props.data.config_file).then(() => {
       AppToaster.show({
-        message: t("viewer.copied_to_clipboard"),
-        intent: "success",
+        message: t('viewer.copied_to_clipboard'),
+        intent: 'success',
       });
     });
     // TODO: Need to add a blueprintjs Toaster for ephemeral confirmation box
@@ -124,7 +124,7 @@ function ViewOnly(props: ViewProps) {
 
   return (
     <div
-      className={props.classes + " p-4 rounded-lg bg-gray-800 flex flex-col"}
+      className={props.classes + ' p-4 rounded-lg bg-gray-800 flex flex-col'}
     >
       <div className="flex flex-row  bg-gray-800 ">
         <Tabs
@@ -134,27 +134,27 @@ function ViewOnly(props: ViewProps) {
         >
           <Tab
             id="result"
-            title={t("viewer.summary")}
+            title={t('viewer.summary')}
             className="focus:outline-none"
           />
           <Tab
             id="details"
-            title={t("viewer.details")}
+            title={t('viewer.details')}
             className="focus:outline-none"
           />
           <Tab
             id="config"
-            title={t("viewer.config")}
+            title={t('viewer.config')}
             className="focus:outline-none"
           />
           <Tab
             id="debug"
-            title={t("viewer.debug")}
+            title={t('viewer.debug')}
             className="focus:outline-none"
           />
           <Tab
             id="share"
-            title={t("viewer.share")}
+            title={t('viewer.share')}
             className="focus:outline-none"
           />
           <Tabs.Expander />
@@ -195,7 +195,7 @@ function ViewOnly(props: ViewProps) {
           }[tabID]
         }
       </div>
-      {tabID === "debug" ? (
+      {tabID === 'debug' ? (
         <div className="w-full pl-2 pr-2">
           <ButtonGroup fill>
             <Button
@@ -231,7 +231,7 @@ function SendToSim({ config, isOpen, onClose }: SendToSimProps) {
   const [keepExistingTeam, setKeepExistingTeam] = React.useState<boolean>(
     () => {
       const saved = localStorage.getItem(LOCALSTORAGE_KEY);
-      if (saved === "true") {
+      if (saved === 'true') {
         return true;
       }
       return false;
@@ -241,11 +241,11 @@ function SendToSim({ config, isOpen, onClose }: SendToSimProps) {
   const openInSim = () => {
     onClose();
     dispatch(updateCfg(config, keepExistingTeam));
-    setLocation("/simulator");
+    setLocation('/simulator');
   };
 
   const handleToggleSelected = () => {
-    localStorage.setItem(LOCALSTORAGE_KEY, keepExistingTeam ? "false" : "true");
+    localStorage.setItem(LOCALSTORAGE_KEY, keepExistingTeam ? 'false' : 'true');
     setKeepExistingTeam(!keepExistingTeam);
   };
 
@@ -284,7 +284,7 @@ type ViewerProps = {
   handleClose: () => void;
 };
 
-const SAVED_DEBUG_KEY = "gcsim-debug-settings";
+const SAVED_DEBUG_KEY = 'gcsim-debug-settings';
 
 export function Viewer(props: ViewerProps) {
   const [selected, setSelected] = React.useState<string[]>(() => {
@@ -301,7 +301,7 @@ export function Viewer(props: ViewerProps) {
 
   let parsed: DebugRow[];
   if (props.data.v2) {
-    console.log("parsing as v2: " + props.data.debug);
+    console.log('parsing as v2: ' + props.data.debug);
     parsed = parseLogV2(
       props.data.active_char,
       props.data.char_names,
@@ -309,7 +309,7 @@ export function Viewer(props: ViewerProps) {
       selected
     );
   } else {
-    console.log("parsing as v1: " + props.data.debug);
+    console.log('parsing as v1: ' + props.data.debug);
     parsed = parseLog(
       props.data.active_char,
       props.data.char_names,

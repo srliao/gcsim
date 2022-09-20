@@ -1,4 +1,4 @@
-import { Character, Talent, Weapon, Set } from './Types/sim';
+import { Character, Talent, Weapon, Set } from './Types/types.d';
 
 export const defaultStats = [
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,

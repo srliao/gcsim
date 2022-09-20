@@ -10,7 +10,7 @@ import {
 import ArtifactMainStatsData from '~src/Components/Artifacts/artifact_main_gen.json';
 import { characterKeyToICharacter } from '~src/Components/Character';
 import { ascLvlMax, StatToIndexMap } from '~src/util';
-import { Character, Weapon } from '~src/Types/sim';
+import { Character, Weapon } from '~src/Types/types.d';
 type rarityValue = '1' | '2' | '3' | '4' | '5';
 const convertRarity: rarityValue[] = ['1', '2', '3', '4', '5'];
 

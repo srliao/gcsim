@@ -1,8 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { defaultStats, maxStatLength, ParsedResult } from '~/src/types';
 import { CharMap } from '~src/Data';
-import { AppThunk } from '~src/store';
-import { Character, Talent, Weapon } from '~src/Types/sim';
+import { AppThunk } from '~src/Store';
+import { Character, Talent, team, Weapon } from '~src/Types/types.d';
 import { ascLvlMin, maxLvlToAsc } from '~src/util';
 import { WorkerPool } from '~src/WorkerPool';
 import { charToCfg } from './helper';
@@ -17,7 +17,7 @@ export type RunStats = {
 };
 
 export interface Sim {
-  team: Character[];
+  team: team;
   edit_index: number;
   ready: number;
   workers: number;

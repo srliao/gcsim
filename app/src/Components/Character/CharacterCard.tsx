@@ -20,7 +20,7 @@ import {
 import { WeaponCard } from '~src/Components/Weapon';
 import { CharStatBlock } from '/src/Components/Character';
 import { Trans, useTranslation } from 'react-i18next';
-import { Character } from '~src/Types/sim';
+import { Character } from '~src/Types/types.d';
 import { TransformTravelerKeyToName } from '~src/Data';
 
 type Props = {

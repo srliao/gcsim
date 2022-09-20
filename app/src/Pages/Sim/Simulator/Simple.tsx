@@ -3,7 +3,7 @@ import React from 'react';
 
 import { SectionDivider } from '~src/Components/SectionDivider';
 import { Viewport } from '~src/Components/Viewport';
-import { RootState, useAppDispatch, useAppSelector } from '~src/store';
+import { RootState, useAppDispatch, useAppSelector } from '~src/Store';
 import { simActions } from '..';
 import { ActionList, SimProgress } from '../Components';
 import { Team } from './Team';

@@ -119,4 +119,5 @@ const (
 	VermillionHereafter
 	ViridescentVenerer
 	WanderersTroupe
+	EndSetKeys
 )

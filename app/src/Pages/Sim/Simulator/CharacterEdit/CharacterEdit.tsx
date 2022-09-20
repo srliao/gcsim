@@ -1,9 +1,9 @@
-import { SectionDivider } from "~src/Components/SectionDivider";
-import { CharacterEditDetails } from "./CharacterEditDetails";
-import { CharacterEditWeaponAndArtifacts } from "./CharacterEditWeaponAndArtifacts";
-import { CharacterEditStats } from "./CharacterEditStats";
-import { Trans, useTranslation } from "react-i18next";
-import { useAppSelector, RootState } from "~src/store";
+import { SectionDivider } from '~src/Components/SectionDivider';
+import { CharacterEditDetails } from './CharacterEditDetails';
+import { CharacterEditWeaponAndArtifacts } from './CharacterEditWeaponAndArtifacts';
+import { CharacterEditStats } from './CharacterEditStats';
+import { Trans, useTranslation } from 'react-i18next';
+import { useAppSelector, RootState } from '~src/Store';
 
 export function CharacterEdit() {
   useTranslation();

@@ -1,9 +1,9 @@
-import { Callout, Intent, Button } from "@blueprintjs/core";
-import React from "react";
-import { Trans } from "react-i18next";
-import { useAppSelector, RootState, useAppDispatch } from "~src/store";
-import { VideoPlayer } from "../Components";
-import { simActions } from "../simSlice";
+import { Callout, Intent, Button } from '@blueprintjs/core';
+import React from 'react';
+import { Trans } from 'react-i18next';
+import { useAppSelector, RootState, useAppDispatch } from '~src/Store';
+import { VideoPlayer } from '../Components';
+import { simActions } from '../simSlice';
 
 export const ActionListTooltip = () => {
   const { showTips } = useAppSelector((state: RootState) => {
@@ -33,10 +33,7 @@ export const ActionListTooltip = () => {
         </p>
         <p>
           <Trans>simple.documentation_pre</Trans>
-          <a
-            href="https://docs.gcsim.app/guides"
-            target="_blank"
-          >
+          <a href="https://docs.gcsim.app/guides" target="_blank">
             <Trans>simple.documentation</Trans>
           </a>
           <Trans>simple.documentation_post</Trans>

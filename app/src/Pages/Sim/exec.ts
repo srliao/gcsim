@@ -1,4 +1,4 @@
-import { AppThunk } from '~src/store';
+import { AppThunk } from '~src/Store';
 import { pool, simActions } from '.';
 import { Result } from '~src/types';
 import { viewerActions } from '../ViewerDashboard/viewerSlice';

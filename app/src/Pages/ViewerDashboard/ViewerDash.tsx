@@ -1,11 +1,11 @@
-import { useLocation } from "wouter";
-import { Viewer } from "~src/Components/Viewer";
-import { Viewport } from "~src/Components/Viewport";
-import { RootState, useAppDispatch, useAppSelector } from "~src/store";
-import Dropzone from "./Dropzone";
-import Shared from "./Shared";
-import { viewerActions } from "./viewerSlice";
-import { Trans, useTranslation } from "react-i18next";
+import { useLocation } from 'wouter';
+import { Viewer } from '~src/Components/Viewer';
+import { Viewport } from '~src/Components/Viewport';
+import { RootState, useAppDispatch, useAppSelector } from '~src/Store';
+import Dropzone from './Dropzone';
+import Shared from './Shared';
+import { viewerActions } from './viewerSlice';
+import { Trans, useTranslation } from 'react-i18next';
 
 type Props = {
   path: string;
@@ -25,28 +25,28 @@ export function ViewerDash({ path, next = false }: Props) {
   const dispatch = useAppDispatch();
 
   //if path is not "/" then load the shared view
-  if (path !== "/") {
+  if (path !== '/') {
     //need a check here to make sure this doesn't already exists
     return (
       <Shared
         next={next}
         path={path}
         handleClose={() => {
-          dispatch(viewerActions.setSelected(""));
-          setLocation("/viewer");
+          dispatch(viewerActions.setSelected(''));
+          setLocation('/viewer');
         }}
       />
     );
   }
   //show viewer if selected != -1
-  if (selected !== "") {
+  if (selected !== '') {
     return (
       <div className="flex-grow">
         <Viewer
           data={data[selected]}
           className="h-full"
           handleClose={() => {
-            dispatch(viewerActions.setSelected(""));
+            dispatch(viewerActions.setSelected(''));
           }}
         />
       </div>

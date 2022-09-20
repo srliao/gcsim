@@ -1,6 +1,6 @@
 import { Button } from '@blueprintjs/core';
 import { simActions } from '~src/Pages/Sim';
-import { RootState, useAppDispatch, useAppSelector } from '~src/store';
+import { RootState, useAppDispatch, useAppSelector } from '~src/Store';
 import { ascLvlMax, ascLvlMin, ascToMaxLvl, maxLvlToAsc } from '~src/util';
 import { NumberInput } from '~src/Components/NumberInput';
 import React from 'react';

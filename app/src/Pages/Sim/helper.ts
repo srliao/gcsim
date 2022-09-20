@@ -1,4 +1,4 @@
-import { Character } from '~src/Types/sim';
+import { Character } from '~src/Types/types.d';
 
 const statKeys = [
   'n/a',

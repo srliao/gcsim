@@ -1,12 +1,12 @@
-import { Button } from "@blueprintjs/core";
-import { simActions } from "~src/Pages/Sim";
-import { RootState, useAppDispatch, useAppSelector } from "~src/store";
-import { ascLvlMax, ascLvlMin, ascToMaxLvl, maxLvlToAsc } from "~src/util";
-import { NumberInput } from "~src/Components/NumberInput";
-import { CharacterEditArtifactSets } from "./CharacterEditArtifactSets";
-import React from "react";
-import { IWeapon, WeaponSelect } from "~src/Components/Weapon";
-import { Trans, useTranslation } from "react-i18next";
+import { Button } from '@blueprintjs/core';
+import { simActions } from '~src/Pages/Sim';
+import { RootState, useAppDispatch, useAppSelector } from '~src/Store';
+import { ascLvlMax, ascLvlMin, ascToMaxLvl, maxLvlToAsc } from '~src/util';
+import { NumberInput } from '~src/Components/NumberInput';
+import { CharacterEditArtifactSets } from './CharacterEditArtifactSets';
+import React from 'react';
+import { IWeapon, WeaponSelect } from '~src/Components/Weapon';
+import { Trans, useTranslation } from 'react-i18next';
 
 export function CharacterEditWeaponAndArtifacts() {
   let { t } = useTranslation();
@@ -27,7 +27,7 @@ export function CharacterEditWeaponAndArtifacts() {
     dispatch(simActions.setCharacterWeapon({ val: next }));
   };
 
-  const handleChangeWeaponAttr = (key: "refine" | "max_level" | "level") => {
+  const handleChangeWeaponAttr = (key: 'refine' | 'max_level' | 'level') => {
     return (val: number) => {
       let next = { ...char.weapon };
       next[key] = val;
@@ -66,15 +66,15 @@ export function CharacterEditWeaponAndArtifacts() {
       </div>
       <div className="bg-gray-600 rounded-md basis-full flex-grow p-2 hd:basis-0 flex flex-col gap-y-2 ">
         <NumberInput
-          label={t("characteredit.refine")}
-          onChange={handleChangeWeaponAttr("refine")}
+          label={t('characteredit.refine')}
+          onChange={handleChangeWeaponAttr('refine')}
           value={char.weapon.refine}
           min={1}
           max={5}
           integerOnly
         />
         <NumberInput
-          label={t("characteredit.ascension")}
+          label={t('characteredit.ascension')}
           onChange={handleChangeAsc}
           value={asc}
           integerOnly
@@ -82,8 +82,8 @@ export function CharacterEditWeaponAndArtifacts() {
           max={6}
         />
         <NumberInput
-          label={t("characteredit.level")}
-          onChange={handleChangeWeaponAttr("level")}
+          label={t('characteredit.level')}
+          onChange={handleChangeWeaponAttr('level')}
           value={char.weapon.level}
           integerOnly
           min={ascLvlMin(asc)}

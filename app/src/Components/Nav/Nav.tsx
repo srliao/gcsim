@@ -9,10 +9,10 @@ import {
   NavbarDivider,
   NavbarGroup,
   NavbarHeading,
-} from "@blueprintjs/core";
-import { Link, useLocation } from "wouter";
-import { Trans, useTranslation } from "react-i18next";
-import { RootState, useAppSelector } from "~src/store";
+} from '@blueprintjs/core';
+import { Link, useLocation } from 'wouter';
+import { Trans, useTranslation } from 'react-i18next';
+import { RootState, useAppSelector } from '~src/Store';
 
 export default function Nav() {
   let { t, i18n } = useTranslation();
@@ -37,7 +37,7 @@ export default function Nav() {
             <a>gcsim web (beta)</a>
           </NavbarHeading>
         </Link>
-        {location !== "/" ? (
+        {location !== '/' ? (
           <>
             <NavbarDivider />
             <Link href="/simulator">
@@ -47,25 +47,9 @@ export default function Nav() {
                 </span>
               </AnchorButton>
             </Link>
-            <Link href="/viewer">
+            <Link href="/inventory">
               <AnchorButton className={Classes.MINIMAL} icon="chart">
-                <span className="hidden md:block">
-                  <Trans>nav.viewer</Trans>
-                </span>
-              </AnchorButton>
-            </Link>
-            <Link href="/db">
-              <AnchorButton className={Classes.MINIMAL} icon="database">
-                <span className="hidden md:block">
-                  <Trans>nav.teams_db</Trans>
-                </span>
-              </AnchorButton>
-            </Link>
-            <Link href="/about">
-              <AnchorButton className={Classes.MINIMAL} icon="info-sign">
-                <span className="hidden md:block">
-                  <Trans>nav.about</Trans>
-                </span>
+                <span className="hidden md:block">Inventory</span>
               </AnchorButton>
             </Link>
           </>
@@ -86,12 +70,12 @@ export default function Nav() {
               i18n.changeLanguage(e.target.value);
             }}
           >
-            <option value="English">{t("nav.english")}</option>
-            <option value="Chinese">{t("nav.chinese")}</option>
-            <option value="German">{t("nav.german")}</option>
-            <option value="Japanese">{t("nav.japanese")}</option>
-            <option value="Spanish">{t("nav.spanish")}</option>
-            <option value="Russian">{t("nav.russian")}</option>
+            <option value="English">{t('nav.english')}</option>
+            <option value="Chinese">{t('nav.chinese')}</option>
+            <option value="German">{t('nav.german')}</option>
+            <option value="Japanese">{t('nav.japanese')}</option>
+            <option value="Spanish">{t('nav.spanish')}</option>
+            <option value="Russian">{t('nav.russian')}</option>
           </HTMLSelect>
         </div>
       </NavbarGroup>

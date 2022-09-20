@@ -9,7 +9,7 @@ import {
 } from '@blueprintjs/core';
 import React from 'react';
 import { userDataActions } from '~src/Pages/Sim/userDataSlice';
-import { useAppDispatch } from '~src/store';
+import { useAppDispatch } from '~src/Store';
 import { IGOOD } from '../GOOD/GOODTypes';
 import { parseFromGOOD } from '../GOOD/parseFromGOOD';
 import FetchCharsFromEnka from './FetchCharsFromEnka';

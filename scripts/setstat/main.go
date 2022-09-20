@@ -103,6 +103,7 @@ const (
 	{{- range $key, $value := . }}
 	{{$value}}
 	{{- end }}
+	EndSetKeys
 )
 `
 

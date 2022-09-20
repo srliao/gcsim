@@ -1,4 +1,4 @@
-import { Character } from '~src/Types/sim';
+import { Character } from '~src/Types/types.d';
 import { useTranslation } from 'react-i18next';
 
 type CharacterTooltipProps = {

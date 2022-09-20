@@ -1,9 +1,9 @@
-import { Button, ButtonGroup, Card, Classes, Dialog } from "@blueprintjs/core";
-import React from "react";
-import { NumberInput } from "~src/Components/NumberInput";
-import { RootState, useAppDispatch, useAppSelector } from "~src/store";
-import { setTotalWorkers } from "..";
-import { Trans, useTranslation } from "react-i18next";
+import { Button, ButtonGroup, Card, Classes, Dialog } from '@blueprintjs/core';
+import React from 'react';
+import { NumberInput } from '~src/Components/NumberInput';
+import { RootState, useAppDispatch, useAppSelector } from '~src/Store';
+import { setTotalWorkers } from '..';
+import { Trans, useTranslation } from 'react-i18next';
 
 type Props = {
   isOpen: boolean;
@@ -30,7 +30,7 @@ export function SimWorkerOptions(props: Props) {
     <Dialog isOpen={props.isOpen} onClose={props.onClose}>
       <div className="w-full flex flex-col p-4">
         <NumberInput
-          label={`${t("components.currently_loaded_workers")}${workers}`}
+          label={`${t('components.currently_loaded_workers')}${workers}`}
           onChange={(v) => setNext(v)}
           value={next}
           min={1}

@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Weapon } from '~src/Types/sim';
+import { Weapon } from '~src/Types/types.d';
 
 export function WeaponCard({ weapon }: { weapon: Weapon }) {
   let { t } = useTranslation();

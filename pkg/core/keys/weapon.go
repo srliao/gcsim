@@ -309,4 +309,5 @@ const (
 	WindblumeOde
 	WineAndSong
 	WolfsGravestone
+	EndWeaponKeys
 )

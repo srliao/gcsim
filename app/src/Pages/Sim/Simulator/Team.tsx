@@ -1,6 +1,6 @@
 import { Button, Card, Dialog } from '@blueprintjs/core';
 import React from 'react';
-import { RootState, useAppDispatch, useAppSelector } from '~src/store';
+import { RootState, useAppDispatch, useAppSelector } from '~src/Store';
 import { simActions } from '~src/Pages/Sim/simSlice';
 import { CharacterEdit } from './CharacterEdit';
 import { Trans, useTranslation } from 'react-i18next';
@@ -10,7 +10,7 @@ import {
   Item,
   GenerateDefaultCharacters,
 } from '~src/Components/Select';
-import { Character } from '~src/Types/sim';
+import { Character } from '~src/Types/types.d';
 import { CharMap, TransformTravelerKeyToName, TravelerCheck } from '~src/Data';
 
 function newCharFromKey(k: string): Character {
