@@ -16,12 +16,19 @@ import (
 var (
 	avatarId  = flag.Int("avatar", 0, "extract using avatar id")
 	depotId   = flag.Int("depot", 0, "extract using depot id (for traveler use)")
-	excelPath = flag.String("excels", "./pipeline/data", "folder to look for excel data dump")
+	excelPath = flag.String("excels", "", "folder to look for excel data dump")
 	level     = flag.Int("level", 1, "talent level to extract from")
 )
 
 func main() {
 	flag.Parse()
+
+	if *excelPath == "" {
+		*excelPath = os.Getenv("GENSHIN_DATA_REPO")
+	}
+	if *excelPath == "" {
+		*excelPath = "./pipeline/data"
+	}
 
 	err := excel.LoadResources(func(name string, v any) error {
 		d, err := os.ReadFile(filepath.Join(*excelPath, name))
