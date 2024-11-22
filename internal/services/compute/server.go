@@ -13,3 +13,7 @@ type Server struct {
 
 	dbURL *url.URL
 }
+
+func New() (*Server, error) {
+	return nil, nil
+}
