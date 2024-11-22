@@ -1,6 +1,7 @@
 package main
 
 import (
+	_ "embed"
 	"encoding/hex"
 	"encoding/json"
 	"io"
@@ -19,6 +20,9 @@ import (
 
 var (
 	sha1ver string
+
+	//go:embed computekey.txt
+	computeKey []byte
 )
 
 func main() {
@@ -47,6 +51,7 @@ func main() {
 			JWTKey:       os.Getenv("JWT_KEY"),
 		},
 		AESDecryptionKeys: keys,
+		ComputeSecret:     computeKey,
 		MQTTConfig: api.MQTTConfig{
 			MQTTUser: os.Getenv("MQTT_USERNAME"),
 			MQTTPass: os.Getenv("MQTT_PASSWORD"),
