@@ -43,6 +43,7 @@ type Config struct {
 	PreviewStore      PreviewStore
 	RoleCheck         RoleChecker
 	AESDecryptionKeys map[string][]byte
+	ComputeSecret     []byte
 	// mqtt for notification purposes
 	MQTTConfig MQTTConfig
 }
@@ -165,6 +166,13 @@ func (s *Server) routes() {
 		r.Route("/db", func(r chi.Router) {
 			r.Get("/", s.getDB())
 			r.Get("/id/{id}", s.getByID())
+
+			r.Route("/work", func(r chi.Router) {
+				r.Use(s.computeKeyCheck)
+				r.Get("/", s.getWork())
+				r.Post("/", s.postResults())
+				r.Post("/reject", s.rejectResult())
+			})
 		})
 	})
 }
