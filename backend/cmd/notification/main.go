@@ -8,12 +8,22 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/caarlos0/env/v10"
 	"github.com/containrrr/shoutrrr"
 	"github.com/genshinsim/gcsim/backend/pkg/notify"
 	"github.com/genshinsim/gcsim/backend/pkg/services/db"
 	"github.com/genshinsim/gcsim/pkg/model"
 	"google.golang.org/protobuf/encoding/protojson"
 )
+
+type config struct {
+	NotifyInfoToken     string `env:"NOTIFY_INFO_TOKEN"`
+	NotifyInfoID        string `env:"NOTIFY_INFO_ID"`
+	NotifyCriticalToken string `env:"NOTIFY_CRITICAL_TOKEN"`
+	NotifyCriticalID    string `env:"NOTIFY_CRITICAL_ID"`
+}
+
+var cfg config
 
 type service struct {
 	c           *notify.Client
@@ -22,6 +32,10 @@ type service struct {
 }
 
 func main() {
+	if err := env.Parse(&cfg); err != nil {
+		log.Fatalf("%+v\n", err)
+	}
+
 	err := run()
 	if err != nil {
 		log.Fatal(err)
@@ -50,8 +64,8 @@ func run() error {
 	if err != nil {
 		return err
 	}
-	s.infoURL = fmt.Sprintf("discord://%v@%v", os.Getenv("NOTIFY_INFO_TOKEN"), os.Getenv("NOTIFY_INFO_ID"))
-	s.criticalURL = fmt.Sprintf("discord://%v@%v", os.Getenv("NOTIFY_CRITICAL_TOKEN"), os.Getenv("NOTIFY_CRITICAL_ID"))
+	s.infoURL = fmt.Sprintf("discord://%v@%v", cfg.NotifyInfoToken, cfg.NotifyInfoID)
+	s.criticalURL = fmt.Sprintf("discord://%v@%v", cfg.NotifyCriticalToken, cfg.NotifyCriticalID)
 	err = s.sub()
 	if err != nil {
 		return err

@@ -3,12 +3,14 @@ package main
 import (
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
 	"os"
 	"runtime/debug"
 
+	"github.com/caarlos0/env/v10"
 	"github.com/genshinsim/gcsim/backend/pkg/api"
 	"github.com/genshinsim/gcsim/backend/pkg/services/preview"
 	"github.com/genshinsim/gcsim/backend/pkg/services/share"
@@ -19,8 +21,29 @@ import (
 
 var sha1ver string
 
+type config struct {
+	DBAddr          string `env:"DB_STORE_URL"`
+	ShareStoreURL   string `env:"SHARE_STORE_URL"`
+	UserDataPath    string `env:"USER_DATA_PATH"`
+	PreviewStoreURL string `env:"PREVIEW_STORE_URL"`
+	ShareKeyFile    string `env:"SHARE_KEY_FILE"`
+	RedirectURL     string `env:"REDIRECT_URL"`
+	DiscordID       string `env:"DISCORD_ID"`
+	DiscordSecret   string `env:"DISCORD_SECRET"`
+	JWTKey          string `env:"JWT_KEY"`
+	MQTTUsername    string `env:"MQTT_USERNAME"`
+	MQTTPassword    string `env:"MQTT_PASSWORD"`
+	MQTTURL         string `env:"MQTT_URL"`
+}
+
+var cfg config
+
 func main() {
 	setHash()
+
+	if err := env.Parse(&cfg); err != nil {
+		fmt.Printf("%+v\n", err)
+	}
 
 	config := zap.NewDevelopmentConfig()
 	config.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
@@ -36,19 +59,19 @@ func main() {
 	s, err := api.New(api.Config{
 		ShareStore:   makeShareStore(),
 		UserStore:    makeUserStore(sugar),
-		DBAddr:       os.Getenv("DB_STORE_URL"),
+		DBAddr:       cfg.DBAddr,
 		PreviewStore: makePreviewStore(),
 		Discord: api.DiscordConfig{
-			RedirectURL:  os.Getenv("REDIRECT_URL"),
-			ClientID:     os.Getenv("DISCORD_ID"),
-			ClientSecret: os.Getenv("DISCORD_SECRET"),
-			JWTKey:       os.Getenv("JWT_KEY"),
+			RedirectURL:  cfg.RedirectURL,
+			ClientID:     cfg.DiscordID,
+			ClientSecret: cfg.DiscordSecret,
+			JWTKey:       cfg.JWTKey,
 		},
 		AESDecryptionKeys: keys,
 		MQTTConfig: api.MQTTConfig{
-			MQTTUser: os.Getenv("MQTT_USERNAME"),
-			MQTTPass: os.Getenv("MQTT_PASSWORD"),
-			MQTTHost: os.Getenv("MQTT_URL"),
+			MQTTUser: cfg.MQTTUsername,
+			MQTTPass: cfg.MQTTPassword,
+			MQTTHost: cfg.MQTTURL,
 		},
 	}, func(s *api.Server) error {
 		s.Log = sugar
@@ -73,7 +96,7 @@ func setHash() {
 
 func makeShareStore() api.ShareStore {
 	shareStore, err := share.NewClient(share.ClientCfg{
-		Addr: os.Getenv("SHARE_STORE_URL"),
+		Addr: cfg.ShareStoreURL,
 	})
 	if err != nil {
 		panic(err)
@@ -83,7 +106,7 @@ func makeShareStore() api.ShareStore {
 
 func makeUserStore(sugar *zap.SugaredLogger) api.UserStore {
 	store, err := user.New(user.Config{
-		DBPath: os.Getenv("USER_DATA_PATH"),
+		DBPath: cfg.UserDataPath,
 	}, func(s *user.Store) error {
 		s.Log = sugar
 		return nil
@@ -97,7 +120,7 @@ func makeUserStore(sugar *zap.SugaredLogger) api.UserStore {
 
 func makePreviewStore() api.PreviewStore {
 	store, err := preview.NewClient(preview.ClientCfg{
-		Addr: os.Getenv("PREVIEW_STORE_URL"),
+		Addr: cfg.PreviewStoreURL,
 	})
 	if err != nil {
 		panic(err)
@@ -108,7 +131,7 @@ func makePreviewStore() api.PreviewStore {
 func getKeys() map[string][]byte {
 	// read from key file
 	var hexKeys map[string]string
-	f, err := os.Open(os.Getenv("SHARE_KEY_FILE"))
+	f, err := os.Open(cfg.ShareKeyFile)
 	if err != nil {
 		panic(err)
 	}

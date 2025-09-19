@@ -5,8 +5,8 @@ import (
 	"log"
 	"net"
 	"net/http"
-	"os"
 
+	"github.com/caarlos0/env/v10"
 	"github.com/genshinsim/gcsim/backend/pkg/services/preview"
 	"google.golang.org/grpc"
 )
@@ -14,10 +14,20 @@ import (
 //go:embed dist/*
 var content embed.FS
 
+type config struct {
+	AssetsDataPath string `env:"ASSETS_DATA_PATH"`
+}
+
+var cfg config
+
 func main() {
+	if err := env.Parse(&cfg); err != nil {
+		log.Fatalf("%+v\n", err)
+	}
+
 	server, err := preview.New(preview.Config{
 		Files:        content,
-		AssetsFolder: os.Getenv(("ASSETS_DATA_PATH")),
+		AssetsFolder: cfg.AssetsDataPath,
 	})
 	if err != nil {
 		panic(err)

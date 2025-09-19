@@ -3,22 +3,36 @@ package main
 import (
 	"log"
 	"net"
-	"os"
 
+	"github.com/caarlos0/env/v10"
 	"github.com/genshinsim/gcsim/backend/pkg/services/share"
 	"github.com/genshinsim/gcsim/backend/pkg/services/share/mongo"
 	"google.golang.org/grpc"
 )
 
+type config struct {
+	MongoDBURL        string `env:"MONGODB_URL"`
+	MongoDBDatabase   string `env:"MONGODB_DATABASE"`
+	MongoDBCollection string `env:"MONGODB_COLLECTION"`
+	MongoDBUsername   string `env:"MONGODB_USERNAME"`
+	MongoDBPassword   string `env:"MONOGDB_PASSWORD"`
+}
+
+var cfg config
+
 func main() {
-	mongoCfg := mongo.Config{
-		URL:        os.Getenv("MONGODB_URL"),
-		Database:   os.Getenv("MONGODB_DATABASE"),
-		Collection: os.Getenv("MONGODB_COLLECTION"),
-		Username:   os.Getenv("MONGODB_USERNAME"),
-		Password:   os.Getenv("MONOGDB_PASSWORD"),
+	if err := env.Parse(&cfg); err != nil {
+		log.Fatalf("%+v\n", err)
 	}
-	log.Println(os.Getenv("MONGODB_URL"))
+
+	mongoCfg := mongo.Config{
+		URL:        cfg.MongoDBURL,
+		Database:   cfg.MongoDBDatabase,
+		Collection: cfg.MongoDBCollection,
+		Username:   cfg.MongoDBUsername,
+		Password:   cfg.MongoDBPassword,
+	}
+	log.Println(cfg.MongoDBURL)
 	log.Printf("Cfg: %v\n", mongoCfg)
 	shareStore, err := mongo.NewServer(mongoCfg)
 	if err != nil {

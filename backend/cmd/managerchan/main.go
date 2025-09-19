@@ -8,6 +8,7 @@ import (
 	"regexp"
 	"strconv"
 
+	"github.com/caarlos0/env/v10"
 	"github.com/genshinsim/gcsim/backend/pkg/api"
 	"github.com/genshinsim/gcsim/backend/pkg/discord"
 	"github.com/genshinsim/gcsim/backend/pkg/discord/backend"
@@ -16,6 +17,16 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
+
+type config struct {
+	DB_Addr                 string `env:"DB_STORE_URL"`
+	ShareStoreURL           string `env:"SHARE_STORE_URL"`
+	DiscordChanToTagMapping string `env:"DISCORD_CHAN_TO_TAG_MAPPING_FILE"`
+	DiscordAnnounceChan     string `env:"DISCORD_ANNOUNCE_CHAN"`
+	DiscordBotToken         string `env:"DISCORD_BOT_TOKEN"`
+}
+
+var cfg config
 
 func main() {
 	config := zap.NewDevelopmentConfig()
@@ -26,10 +37,14 @@ func main() {
 	}
 	sugar := logger.Sugar()
 
+	if err := env.Parse(&cfg); err != nil {
+		log.Fatalf("%+v\n", err)
+	}
+
 	store, err := backend.New(backend.Config{
 		LinkValidationRegex: regexp.MustCompile(`https://\S+.app/\S+/(\S+)$`),
 		ShareStore:          makeShareStore(),
-		DBgRPCAddr:          os.Getenv("DB_STORE_URL"),
+		DBgRPCAddr:          cfg.DB_Addr,
 	}, func(s *backend.Store) error {
 		s.Log = sugar
 		return nil
@@ -39,7 +54,7 @@ func main() {
 	}
 
 	// parse tag mapping from json file
-	f, err := os.Open(os.Getenv("DISCORD_CHAN_TO_TAG_MAPPING_FILE"))
+	f, err := os.Open(cfg.DiscordChanToTagMapping)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -52,7 +67,7 @@ func main() {
 	}
 	log.Printf("starting discord bot with mapping: %v", mapping)
 
-	announceChanStr := os.Getenv("DISCORD_ANNOUNCE_CHAN")
+	announceChanStr := cfg.DiscordAnnounceChan
 	if announceChanStr == "" {
 		announceChanStr = "930897876672970842" // submit-to-db-here channel by default
 	}
@@ -62,7 +77,7 @@ func main() {
 	}
 
 	b, err := discord.New(discord.Config{
-		Token:   os.Getenv("DISCORD_BOT_TOKEN"),
+		Token:   cfg.DiscordBotToken,
 		Backend: store,
 		// TODO: consider moving this mapping to models maybe?
 		TagMapping:   mapping,
@@ -83,7 +98,7 @@ func main() {
 
 func makeShareStore() api.ShareStore {
 	shareStore, err := share.NewClient(share.ClientCfg{
-		Addr: os.Getenv("SHARE_STORE_URL"),
+		Addr: cfg.ShareStoreURL,
 	})
 	if err != nil {
 		panic(err)
