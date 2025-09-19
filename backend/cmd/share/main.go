@@ -16,6 +16,8 @@ type config struct {
 	MongoDBCollection string `env:"MONGODB_COLLECTION"`
 	MongoDBUsername   string `env:"MONGODB_USERNAME"`
 	MongoDBPassword   string `env:"MONOGDB_PASSWORD"`
+	Host              string `env:"HOST"`
+	Port              string `env:"PORT" envDefault:"3000"`
 }
 
 var cfg config
@@ -46,9 +48,9 @@ func main() {
 		panic(err)
 	}
 
-	lis, err := net.Listen("tcp", ":3000")
+	lis, err := net.Listen("tcp", cfg.Host+":"+cfg.Port)
 	if err != nil {
-		log.Fatalf("failed to listen on port 3000: %v", err)
+		log.Fatalf("failed to listen on %s:%s: %v", cfg.Host, cfg.Port, err)
 	}
 
 	s := grpc.NewServer()

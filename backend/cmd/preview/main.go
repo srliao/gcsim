@@ -16,6 +16,8 @@ var content embed.FS
 
 type config struct {
 	AssetsDataPath string `env:"ASSETS_DATA_PATH"`
+	Host           string `env:"HOST"`
+	Port           string `env:"PORT" envDefault:"3000"`
 }
 
 var cfg config
@@ -38,9 +40,9 @@ func main() {
 		log.Fatal(http.ListenAndServe("localhost:3001", server.Router))
 	}()
 
-	lis, err := net.Listen("tcp", ":3000")
+	lis, err := net.Listen("tcp", cfg.Host+":"+cfg.Port)
 	if err != nil {
-		log.Fatalf("failed to listen on port 3000: %v", err)
+		log.Fatalf("failed to listen on %s:%s: %v", cfg.Host, cfg.Port, err)
 	}
 
 	s := grpc.NewServer()

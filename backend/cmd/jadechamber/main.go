@@ -34,6 +34,8 @@ type config struct {
 	MQTTUsername    string `env:"MQTT_USERNAME"`
 	MQTTPassword    string `env:"MQTT_PASSWORD"`
 	MQTTURL         string `env:"MQTT_URL"`
+	Host            string `env:"HOST"`
+	Port            string `env:"PORT" envDefault:"3000"`
 }
 
 var cfg config
@@ -81,8 +83,8 @@ func main() {
 		panic(err)
 	}
 
-	log.Println("API gateway starting to listen at port 3000")
-	log.Fatal(http.ListenAndServe(":3000", s.Router))
+	log.Printf("API gateway starting to listen at %s:%s", cfg.Host, cfg.Port)
+	log.Fatal(http.ListenAndServe(cfg.Host+":"+cfg.Port, s.Router))
 }
 
 func setHash() {
