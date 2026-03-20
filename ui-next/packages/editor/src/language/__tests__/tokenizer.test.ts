@@ -3,7 +3,7 @@ import { EditorState } from "@codemirror/state";
 import { syntaxTree } from "@codemirror/language";
 import { LRLanguage } from "@codemirror/language";
 // Import from generated parser (not the .grammar source)
-import { parser } from "../gcsim.grammar.ts";
+import { parser } from "../parser";
 
 // Minimal language for testing (no autocomplete/theme needed)
 const testLanguage = LRLanguage.define({ name: "gcsim", parser });

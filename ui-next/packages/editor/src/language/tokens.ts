@@ -10,7 +10,7 @@ import {
   ActionName,
   StatName,
   ElementName,
-} from "./gcsim.grammar.terms";
+} from "./parser.terms";
 
 // Source: pkg/gcs/ast/keys.go -> actionKeys
 const ACTIONS = new Set([

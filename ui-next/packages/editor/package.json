@@ -12,7 +12,7 @@
     }
   },
   "scripts": {
-    "build:grammar": "lezer-generator src/language/gcsim.grammar -o src/language/gcsim.grammar.ts --typeScript",
+    "build:grammar": "lezer-generator src/language/gcsim.grammar -o src/language/parser.ts --typeScript",
     "prebuild": "pnpm run build:grammar",
     "build": "tsc --build",
     "test": "vitest run",

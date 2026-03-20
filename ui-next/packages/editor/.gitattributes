@@ -1,2 +1,2 @@
-src/language/gcsim.grammar.ts linguist-generated=true
-src/language/gcsim.grammar.terms.ts linguist-generated=true
+src/language/parser.ts linguist-generated=true
+src/language/parser.terms.ts linguist-generated=true

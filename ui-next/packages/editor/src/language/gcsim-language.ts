@@ -1,6 +1,6 @@
 import { LRLanguage, LanguageSupport } from "@codemirror/language";
 import { styleTags, tags as t } from "@lezer/highlight";
-import { parser } from "./gcsim.grammar.ts";
+import { parser } from "./parser";
 import { gcsimCompletionSource } from "./autocomplete";
 
 const gcsimLanguage = LRLanguage.define({
