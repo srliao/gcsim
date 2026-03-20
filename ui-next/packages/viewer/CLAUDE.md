@@ -27,6 +27,9 @@ All exports go through `src/index.ts`:
 - **RollupCard** -- generic stat rollup (mean, min, max, SD) for any `FloatStat`/`SummaryStat`
 - **DPSCard** -- per-character DPS with proportional bar
 - **TargetInfoCard** -- enemy info display (name, level, resistances)
+- **DamageTimeline** -- Recharts `ComposedChart` showing DPS over time with min/max/mean/SD band lines; accepts `Sim.BucketStats`; exports `transformBuckets` for data conversion
+- **DistributionChart** -- histogram `BarChart` for `SummaryStat` with mean reference line; exports `transformHistogram` for data conversion
+- **Charts/util:** `ChartCard`, `HorizontalBarStack`, `StatTooltip`, `formatDamage`, `formatPercent`, `formatDuration`, `formatStat`, color utilities
 
 Usage:
 ```typescript
@@ -38,6 +41,7 @@ import { DPSCard, RollupCard, TeamHeader, Iterations, Mode, Commit, Warnings } f
 - `@gcsim/primitives` -- Card, Badge, cn() utility
 - `@gcsim/types` -- `Sim.*` interfaces for all props
 - `@gcsim/i18n` -- internationalization (for future use)
+- `recharts` -- charting library; use `TooltipContentProps<ValueType, NameType>` from `recharts` and `recharts/types/component/DefaultTooltipContent` for custom tooltip components; pass tooltip render function by reference (not JSX element) to `content` prop
 
 ## Don'ts
 

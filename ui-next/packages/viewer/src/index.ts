@@ -1,4 +1,13 @@
 // @gcsim/viewer public API
+export type { DistributionChartProps } from "./charts/distribution-chart/index.js";
+export type { DamageTimelineProps, BucketDataPoint } from "./charts/damage-timeline/index.js";
+export type { ElementDpsChartProps } from "./charts/element-dps-chart/index.js";
+export type { FieldTimeChartProps, FieldTimeDataPoint } from "./charts/field-time-chart/index.js";
+// Charts
+export { DistributionChart, transformHistogram } from "./charts/distribution-chart/index.js";
+export { DamageTimeline, transformBuckets } from "./charts/damage-timeline/index.js";
+export { ElementDpsChart } from "./charts/element-dps-chart/index.js";
+export { FieldTimeChart, transformFieldTime } from "./charts/field-time-chart/index.js";
 
 export type {
   CommitProps,
