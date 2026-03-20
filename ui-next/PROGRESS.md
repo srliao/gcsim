@@ -288,7 +288,7 @@ Post-review fixes applied:
 | 3.2 | DONE | `@gcsim/editor` |
 | 3.3 | DONE | `@gcsim/viewer` metadata + result cards |
 | 3.3-sb | DONE | Storybook stories for avatar + viewer |
-| 3.4 | IN PROGRESS | `@gcsim/viewer` charts |
+| 3.4 | DONE | `@gcsim/viewer` charts |
 | 3.5 | TODO | `@gcsim/viewer` sample viewer |
 | 3.6 | TODO | `@gcsim/preview` |
 
@@ -367,60 +367,34 @@ Post-review fixes applied:
 - Generated files (`parser.ts`, `parser.terms.ts`) excluded from biome linting via overrides in root `biome.json`
 - Total tests: 146 (Phase 1+2+3.1+3.3) + 33 (editor) = 179 tests
 
-### Step 3.4 — `@gcsim/viewer` Charts (IN PROGRESS)
+### Step 3.4 — `@gcsim/viewer` Charts (DONE)
 
 Full design spec: `docs/superpowers/specs/2026-03-20-viewer-charts-design.md`
 
-13 chart components total, using Recharts 3.8.0 (replacing legacy Visx).
-
-**Completed:**
-
-- **Recharts dependency** added to `@gcsim/viewer` (v3.8.0)
-- **Shared utilities** (`src/charts/util/`):
-  - `colors.ts` — characterColor, elementColor, actionColor, reactionColor
-  - `format.ts` — formatDamage, formatPercent, formatDuration, formatStat
-  - `chart-card.tsx` — Card wrapper with ResponsiveContainer + empty state
-  - `stat-tooltip.tsx` — custom Recharts tooltip for FloatStat
-  - `horizontal-bar-stack.tsx` — generic horizontal stacked bar (used by 8 charts)
-  - `index.ts` barrel export
-  - All utilities have tests
-- **Test fixture extensions** — mockSimResult extended with: damage_buckets, cumu_damage, dps_by_element, source_dps, character_actions, source_reactions, total_source_energy, target_aura_uptime, end_stats, rps, eps, hps, shp
-- **4 canonical pattern charts** (each establishes a Recharts pattern):
-  1. `damage-timeline` — ComposedChart with Line + Area for SD band (LineChart pattern)
-  2. `distribution-chart` — BarChart histogram with ReferenceLine at mean (histogram pattern)
-  3. `element-dps-chart` — HorizontalBarStack wrapper (stacked bar pattern)
-  4. `field-time-chart` — PieChart with custom labels (pie pattern)
-- 109 tests passing, typecheck clean
-
-**Recharts v3 notes for remaining work:**
-- Custom tooltip: must be passed as function reference (`content={MyTooltip}`), NOT JSX element
-- `ValueType`/`NameType` types imported from `recharts/types/component/DefaultTooltipContent`
-- SD band: uses ComposedChart with two Areas (upper with gradient, lower with white fill to mask)
-
-**Remaining (9 charts):**
-
-All follow established patterns above. Can be parallelized.
-
-| Chart | Pattern | Status |
-|-------|---------|--------|
-| `cumulative-damage` | AreaChart (5 quartile bands) | TODO |
-| `character-dps-pie` | PieChart (like field-time) | TODO |
-| `element-dps-pie` | PieChart (element colors) | TODO |
-| `source-dps-chart` | HorizontalBarStack | TODO |
-| `character-actions-chart` | HorizontalBarStack (action colors) | TODO |
-| `reactions-chart` | HorizontalBarStack (reaction colors) | TODO |
-| `energy-chart` | HorizontalBarStack | TODO |
-| `ending-energy-chart` | BarChart vertical (single bars, not stacked) | TODO |
-| `target-aura-uptime-chart` | HorizontalBarStack (element colors) | TODO |
-
-**After all charts:**
-- Update `src/charts/index.ts` barrel with all 13 charts
-- Update `src/index.ts` to re-export charts barrel
-- Update `packages/viewer/CLAUDE.md` with chart canonical example
-- Create Storybook stories for all 13 charts in `apps/storybook/src/stories/`
+- 13 chart components using Recharts 3.8.0 (replacing legacy Visx)
+- **Shared utilities** (`src/charts/util/`): colors, format, chart-card, stat-tooltip, horizontal-bar-stack
+- **Test fixture extensions** — mockSimResult extended with all chart data fields
+- **Chart components:**
+  - `damage-timeline` — ComposedChart with Line + Area for SD band
+  - `cumulative-damage` — AreaChart with 5 quartile bands
+  - `distribution-chart` — BarChart histogram with mean ReferenceLine
+  - `element-dps-chart` — HorizontalBarStack per-character element breakdown
+  - `character-dps-pie` — PieChart character DPS proportions
+  - `element-dps-pie` — PieChart element DPS proportions
+  - `source-dps-chart` — HorizontalBarStack by damage source
+  - `character-actions-chart` — HorizontalBarStack by action type
+  - `reactions-chart` — HorizontalBarStack by reaction type
+  - `energy-chart` — HorizontalBarStack by energy source
+  - `ending-energy-chart` — BarChart single horizontal bars per character
+  - `field-time-chart` — PieChart field time proportions
+  - `target-aura-uptime-chart` — BarChart with element-colored bars
+- **Barrel exports**: `src/charts/index.ts` re-exports all charts; `src/index.ts` re-exports via `export *`
+- **CLAUDE.md** updated with chart patterns, canonical examples, Recharts v3 notes
+- **13 Storybook stories** with Default + NoData variants each
+- 221 tests passing (23 suites), typecheck clean, build clean, storybook builds
+- Recharts v3 key learnings: custom tooltips as function refs, ValueType/NameType from recharts/types, SD band via dual Areas
 
 ### Remaining Phase 3 Work
 
-- 3.4: `@gcsim/viewer` charts — 9 remaining chart components (see table above), barrel exports, CLAUDE.md, storybook stories
 - 3.5: `@gcsim/viewer` sample — seed selector, event log, sample viewer composition
 - 3.6: `@gcsim/preview` — preview card for Discord embeds and DB entries (depends on 3.1 avatar)
