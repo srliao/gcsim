@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Presentational components for displaying gcsim simulation results. Renders metadata, team composition, and statistical rollups from `Sim.SimResults` data. Components are pure (no data fetching) and composable -- apps wire them together with real data in Phase 4.
+Presentational components for displaying gcsim simulation results. Renders metadata, team composition, statistical rollups, and charts from `Sim.SimResults` data. Components are pure (no data fetching) and composable -- apps wire them together with real data in Phase 4.
 
 ## How to add a new component
 
@@ -10,38 +10,67 @@ Presentational components for displaying gcsim simulation results. Renders metad
 2. Add `my-component.tsx` with the component, typed with `Sim.*` props from `@gcsim/types`
 3. Add `my-component.test.tsx` with `@testing-library/react` tests
 4. Add `index.ts` barrel export
-5. Re-export from `src/index.ts`
+5. Re-export from `src/charts/index.ts` (for charts) or `src/index.ts` (for other components)
 6. Run `npx biome check --write packages/viewer/`
 7. Run `turbo run typecheck test --filter=@gcsim/viewer`
 
-## Canonical example
+## How to add a new chart
 
-`src/result-cards/dps-card.tsx` -- per-character DPS card with proportional bar. Shows the pattern: typed props from `@gcsim/types`, primitives from `@gcsim/primitives`, data-testid attributes for testing, number formatting helper.
+Follow `src/charts/damage-timeline/` as the canonical chart example. Key patterns:
+
+1. **Create directory** `src/charts/<chart-name>/` with 3 files
+2. **Props interface** typed with `Sim.*` from `@gcsim/types`, allow `undefined` for optional data
+3. **Export a transform function** (e.g. `transformBuckets`) that converts `Sim.*` types to flat Recharts-friendly arrays -- test this separately
+4. **Wrap in `ChartCard`** from `../util/chart-card.js` -- handles title, empty state, height
+5. **Empty state**: pass `null` as ChartCard children when data is missing
+6. **Use shared utils**: `characterColor`, `elementColor`, `actionColor` for colors; `formatDamage` for axis ticks
+7. **`data-testid`** on the outer wrapper div
+8. **Re-export** from `src/charts/index.ts`
+
+Chart type patterns:
+- **HorizontalBarStack** (8 charts use this): `element-dps-chart` is the canonical example
+- **PieChart**: `field-time-chart` is the canonical example
+- **LineChart/ComposedChart**: `damage-timeline` is the canonical example
+- **Histogram BarChart**: `distribution-chart` is the canonical example
+- **Single horizontal bars**: `ending-energy-chart` (uses BarChart + Cell, not HorizontalBarStack)
+
+## Canonical examples
+
+- `src/result-cards/dps-card.tsx` -- non-chart component pattern (Card + typed props + data-testid)
+- `src/charts/damage-timeline/` -- chart component pattern (ChartCard + transform function + Recharts)
 
 ## Public API
 
-All exports go through `src/index.ts`:
+All exports go through `src/index.ts` → `src/charts/index.ts`:
 
-- **Metadata:** `Iterations`, `Mode`, `Commit`, `Warnings` -- small sub-components for sim metadata
-- **TeamHeader** -- row of character cards showing name, level, constellation, weapon
-- **RollupCard** -- generic stat rollup (mean, min, max, SD) for any `FloatStat`/`SummaryStat`
+**Non-chart components:**
+- **Metadata:** `Iterations`, `Mode`, `Commit`, `Warnings`
+- **TeamHeader** -- character card row
+- **RollupCard** -- stat rollup (mean/min/max/SD)
 - **DPSCard** -- per-character DPS with proportional bar
-- **TargetInfoCard** -- enemy info display (name, level, resistances)
-- **DamageTimeline** -- Recharts `ComposedChart` showing DPS over time with min/max/mean/SD band lines; accepts `Sim.BucketStats`; exports `transformBuckets` for data conversion
-- **DistributionChart** -- histogram `BarChart` for `SummaryStat` with mean reference line; exports `transformHistogram` for data conversion
-- **Charts/util:** `ChartCard`, `HorizontalBarStack`, `StatTooltip`, `formatDamage`, `formatPercent`, `formatDuration`, `formatStat`, color utilities
+- **TargetInfoCard** -- enemy info display
 
-Usage:
-```typescript
-import { DPSCard, RollupCard, TeamHeader, Iterations, Mode, Commit, Warnings } from "@gcsim/viewer";
-```
+**Chart components (13 total):**
+- `DamageTimeline`, `CumulativeDamage`, `DistributionChart` -- time series / histogram
+- `ElementDpsChart`, `CharacterDpsPie`, `ElementDpsPie`, `SourceDpsChart` -- DPS breakdowns
+- `CharacterActionsChart`, `ReactionsChart` -- activity charts
+- `EnergyChart`, `EndingEnergyChart`, `FieldTimeChart` -- energy / field time
+- `TargetAuraUptimeChart` -- aura uptime
+
+**Chart utilities:** `ChartCard`, `HorizontalBarStack`, `StatTooltip`, color functions, format functions
 
 ## Dependencies
 
 - `@gcsim/primitives` -- Card, Badge, cn() utility
 - `@gcsim/types` -- `Sim.*` interfaces for all props
 - `@gcsim/i18n` -- internationalization (for future use)
-- `recharts` -- charting library; use `TooltipContentProps<ValueType, NameType>` from `recharts` and `recharts/types/component/DefaultTooltipContent` for custom tooltip components; pass tooltip render function by reference (not JSX element) to `content` prop
+- `recharts` -- charting library (v3.8.0)
+
+### Recharts v3 notes
+
+- Custom tooltips: pass as function reference (`content={MyTooltip}`), NOT JSX element
+- Tooltip types: `TooltipContentProps<ValueType, NameType>` from `recharts`, with `ValueType`/`NameType` from `recharts/types/component/DefaultTooltipContent`
+- Recharts doesn't render SVG in jsdom -- test transform functions separately, test component renders without crashing
 
 ## Don'ts
 
