@@ -3,6 +3,8 @@
 @import "shadcn/tailwind.css";
 
 @source "../../../packages/primitives/src";
+@source "../../../packages/avatar/src";
+@source "../../../packages/viewer/src";
 @source "../stories";
 
 @custom-variant dark (&:is(.dark *));

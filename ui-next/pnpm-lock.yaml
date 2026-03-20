@@ -26,9 +26,18 @@ importers:
 
   apps/storybook:
     dependencies:
+      '@gcsim/avatar':
+        specifier: workspace:*
+        version: link:../../packages/avatar
       '@gcsim/primitives':
         specifier: workspace:*
         version: link:../../packages/primitives
+      '@gcsim/types':
+        specifier: workspace:*
+        version: link:../../packages/types
+      '@gcsim/viewer':
+        specifier: workspace:*
+        version: link:../../packages/viewer
     devDependencies:
       '@storybook/react':
         specifier: 10.3.1

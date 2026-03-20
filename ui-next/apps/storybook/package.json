@@ -9,7 +9,10 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@gcsim/primitives": "workspace:*"
+    "@gcsim/avatar": "workspace:*",
+    "@gcsim/primitives": "workspace:*",
+    "@gcsim/types": "workspace:*",
+    "@gcsim/viewer": "workspace:*"
   },
   "devDependencies": {
     "@storybook/react": "10.3.1",
