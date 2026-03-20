@@ -285,7 +285,7 @@ Post-review fixes applied:
 | Step | Status | Description |
 |------|--------|-------------|
 | 3.1 | DONE | `@gcsim/avatar` |
-| 3.2 | TODO | `@gcsim/editor` |
+| 3.2 | DONE | `@gcsim/editor` |
 | 3.3 | DONE | `@gcsim/viewer` metadata + result cards |
 | 3.3-sb | DONE | Storybook stories for avatar + viewer |
 | 3.4 | TODO | `@gcsim/viewer` charts |
@@ -344,9 +344,31 @@ Post-review fixes applied:
 - **Small commits + PR workflow**: agents commit after each self-contained unit, each commit must typecheck/test independently, features are PR'd into `web-rewrite` before considered done
 - **Storybook mandatory**: every new React component must have a Storybook story for visual review
 
+### Step 3.2 — `@gcsim/editor` (DONE)
+
+- Created `packages/editor/` with CodeMirror 6 editor and custom gcsim language support
+- **Lezer grammar** (3.2a): minimal token-level grammar (`@top Program { expression* }`)
+  - Tokenizes numbers, strings, comments (line `//`, hash `#`, block `/* */`), identifiers, operators, punctuation
+  - External specializer (`tokens.ts`) classifies identifiers as CharacterName, ActionName, StatName, ElementName via Set lookups
+  - Hand-crafted from `pkg/gcs/ast/keys.go` and `pkg/shortcut/characters.go` (TODO: codegen)
+  - Generated parser output renamed to `parser.ts`/`parser.terms.ts` to avoid Vite resolving `.grammar` source file
+- **Language support** (3.2a): `LRLanguage` with `styleTags` mapping tokens to highlight tags
+- **Autocomplete** (3.2b): context-aware `CompletionSource`
+  - After `add char`/`active` → character names; after `.` → actions; after `stats` → stat names; default → all
+- **Fold service**: brace-matching `foldService` (independent of parser)
+- **Diagnostics**: `applyDiagnostics(view, errors)` / `clearDiagnostics(view)` for WASM validation errors
+- **Dark theme**: Catppuccin Mocha-inspired `EditorView.theme` + `HighlightStyle`
+  - Characters=yellow, Actions=blue, Stats=teal, Elements=pink, Keywords=purple
+- **React wrapper** (3.2c): controlled `Editor` component with value/onChange, readOnly (via Compartment), errors, className
+- 33 tests passing (4 test files), typecheck clean, build succeeds
+- Storybook stories: Default, Empty, ReadOnly, WithErrors, Controlled
+- Dependencies: `@codemirror/{view,state,language,autocomplete,lint,search,commands}`, `@lezer/{lr,common,highlight}`
+- DevDependencies: `@lezer/generator` for grammar compilation
+- Generated files (`parser.ts`, `parser.terms.ts`) excluded from biome linting via overrides in root `biome.json`
+- Total tests: 146 (Phase 1+2+3.1+3.3) + 33 (editor) = 179 tests
+
 ### Remaining Phase 3 Work
 
-- 3.2: `@gcsim/editor` — CodeMirror 6 wrapper + gcsim language mode
 - 3.4: `@gcsim/viewer` charts — 7 Recharts-based chart components (damage timeline, cumulative, distribution, element DPS, energy, field time, reactions)
 - 3.5: `@gcsim/viewer` sample — seed selector, event log, sample viewer composition
 - 3.6: `@gcsim/preview` — preview card for Discord embeds and DB entries (depends on 3.1 avatar)
