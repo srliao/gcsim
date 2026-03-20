@@ -47,7 +47,7 @@ A discriminated union of typed events. Each variant extracts relevant fields fro
 interface BaseEvent {
   type: string;
   frame: number;
-  characterIndex: number; // -1 for non-character events
+  characterIndex: number; // raw value from backend: -1 for global/sim events, 0-3 for characters
   message: string;        // human-readable summary built by transformer
   raw: LogDetails;        // original data for "show raw JSON" feature
 }
@@ -63,31 +63,36 @@ interface DamageEvent extends BaseEvent {
 
 interface EnergyEvent extends BaseEvent {
   type: "energy";
+  energyType: "particle" | "flat" | "other"; // discriminates message formatting
   source: string;
-  amount: number;
-  postRecovery: number;
-  maxEnergy: number;
+  amount: number;       // maps to log.logs["rec'd"] for flat energy, or derived for particles
+  postRecovery: number; // maps to log.logs["post_recovery"]
+  maxEnergy: number;    // maps to log.logs["max_energy"]
 }
 
 interface StatusEvent extends BaseEvent {
   type: "status";
   key: string;
-  addedFrame: number;
-  endedFrame: number;
+  addedFrame?: number;  // optional — not all status events have duration info
+  endedFrame?: number;  // optional — resolved by resolveStatusDurations post-processor
 }
 
 interface ElementEvent extends BaseEvent {
   type: "element";
-  appliedElement: string;
-  existing: string[];
-  after: string[];
+  elementSubtype: "application" | "expired" | "refreshed" | "other";
+  appliedElement?: string;   // present for "application" subtype
+  oldElement?: string;       // present for "expired" subtype
+  refreshedElement?: string; // present for "refreshed" subtype
+  existing?: string[];       // present for "application" subtype — aura state before
+  after?: string[];          // present for "application" subtype — aura state after
   target: string;
 }
 
 interface ActionEvent extends BaseEvent {
   type: "action";
-  action: string;
-  target: string;
+  action: string;   // "swap", "attack", "skill", "burst", "dash", etc.
+  target: string;   // swap target character name (empty for non-swap actions)
+  // Note: transformer strips "executed " prefix from message and appends " to {target}" for swaps
 }
 
 interface CalcEvent extends BaseEvent {
@@ -204,6 +209,10 @@ type SimEvent =
 
 The types listed above for simpler events (heal, hurt, shield, etc.) start with just `BaseEvent` fields. As we discover they need specific typed fields, we add them — no speculative fields.
 
+**Deprecated event types:** The old UI handled `queue`, `hook`, `snapshot_mods`, `procs`, `task`, and `reaction` event strings. These are legacy/deprecated in the backend. They intentionally fall through to `GenericEvent` — no typed variants are needed. If any still appear in real simulation data, they will render with the generic fallback display (gray, circle icon). This is acceptable; if a deprecated type proves common enough to warrant formatting, a typed variant can be added later.
+
+**Note on `characterIndex`:** The value is the raw `char_index` from the backend (-1 for global/sim events, 0 through N-1 for characters). The `groupByFrame` post-processor handles the +1 offset to map into slots (slot 0 = global, slots 1..N = characters). Consumers should not apply their own offset.
+
 ### Layer 2: Transformer
 
 File: `src/events/transformer.ts`
@@ -233,6 +242,7 @@ export function transformEvents(logs: LogDetails[]): SimEvent[] {
 
 Each per-type function:
 - Extracts typed fields from `log.logs` (the untyped bag)
+- Sorts `log.logs` entries by `log.ordering` if present (preserves field order for raw JSON display)
 - Builds a clean `message` string (the formatted display text)
 - Returns the fully typed event
 
@@ -375,11 +385,22 @@ type SimEventType = SimEvent["type"];
 
 const presets: Record<string, SimEventType[]> = {
   simple:   ["action", "damage", "energy", "warning", "user"],
-  advanced: ["action", "damage", "energy", "warning", "user", "status", "cooldown", "element", "shield", "construct", "player"],
-  verbose:  [/* all except debug and sim */],
-  debug:    [/* all types */],
+  advanced: ["action", "damage", "energy", "warning", "user",
+             "status", "cooldown", "element", "shield", "construct"],
+  verbose:  ["action", "damage", "energy", "warning", "user",
+             "status", "cooldown", "element", "shield", "construct",
+             "heal", "hurt", "pre_damage_mods", "icd", "calc",
+             "snapshot", "character", "weapon", "enemy", "artifact",
+             "hitlag", "player"],
+  debug:    ["action", "damage", "energy", "warning", "user",
+             "status", "cooldown", "element", "shield", "construct",
+             "heal", "hurt", "pre_damage_mods", "icd", "calc",
+             "snapshot", "character", "weapon", "enemy", "artifact",
+             "hitlag", "player", "debug", "sim"],
 };
 ```
+
+**Note:** The old UI's `VerbosePreset` had a typo: `"pre_damage_mod"` (singular) instead of `"pre_damage_mods"` (plural). The correct type string from the backend is `"pre_damage_mods"`. This is fixed here.
 
 ### File Structure
 
@@ -396,8 +417,10 @@ packages/viewer/src/events/
 ### Composition in UI Components
 
 ```typescript
-import { transformEvents, resolveStatusDurations, trackActiveCharacter, groupByFrame } from "./events";
-import { getEventDisplay } from "./events/display-config";
+import {
+  transformEvents, resolveStatusDurations, trackActiveCharacter,
+  groupByFrame, getEventDisplay
+} from "./events";
 
 // Pipeline
 const events = transformEvents(sample.logs);
