@@ -288,10 +288,9 @@ Post-review fixes applied:
 | 3.2 | DONE | `@gcsim/editor` |
 | 3.3 | DONE | `@gcsim/viewer` metadata + result cards |
 | 3.3-sb | DONE | Storybook stories for avatar + viewer |
-| 3.4 | TODO | `@gcsim/viewer` chart utilities (visx shared wrappers) |
-| 3.5 | TODO | `@gcsim/viewer` charts (14 visx-based chart components) |
-| 3.6 | TODO | `@gcsim/viewer` sample viewer |
-| 3.7 | TODO | `@gcsim/preview` |
+| 3.4 | TODO | `@gcsim/viewer` charts |
+| 3.5 | TODO | `@gcsim/viewer` sample viewer |
+| 3.6 | TODO | `@gcsim/preview` |
 
 ### Step 3.3 — `@gcsim/viewer` Metadata + Result Cards (DONE)
 
@@ -370,7 +369,6 @@ Post-review fixes applied:
 
 ### Remaining Phase 3 Work
 
-- 3.4: `@gcsim/viewer` chart utilities — shared visx wrappers (data colors, axes, grids, outer-label pie, no-data placeholder) ported from `ui/packages/ui/src/Pages/Viewer/Components/Util/`
-- 3.5: `@gcsim/viewer` charts — 14 visx-based chart components (damage timeline, cumulative damage, distribution, character DPS bar, element DPS, source DPS bar, target DPS, energy, ending energy, field time, reactions, character actions, aura uptime, target position graph)
-- 3.6: `@gcsim/viewer` sample — seed selector, event log, sample viewer composition
-- 3.7: `@gcsim/preview` — preview card for Discord embeds and DB entries (depends on 3.1 avatar)
+- 3.4: `@gcsim/viewer` charts — 7 Recharts-based chart components (damage timeline, cumulative, distribution, element DPS, energy, field time, reactions)
+- 3.5: `@gcsim/viewer` sample — seed selector, event log, sample viewer composition
+- 3.6: `@gcsim/preview` — preview card for Discord embeds and DB entries (depends on 3.1 avatar)

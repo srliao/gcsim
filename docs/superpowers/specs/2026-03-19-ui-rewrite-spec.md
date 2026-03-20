@@ -18,7 +18,7 @@ Complete rewrite of the gcsim web UI as a pnpm + Turborepo monorepo. Multiple in
 | CSS | **Tailwind CSS v5** | Uses CSS-first `@theme` configuration, NOT JS config files |
 | Primitives | shadcn/ui (Radix + CVA + Tailwind, copied into repo) | Verify shadcn compatibility with Tailwind v5 |
 | Icons | Lucide React | |
-| Charts | visx | Low-level SVG chart toolkit (axis, scale, shape, tooltip, etc.) — matches existing UI's charting approach |
+| Charts | Recharts | For charts that need finer control than Recharts allows, fall back to raw SVG |
 | Code Editor | CodeMirror 6 | Spike the gcsim language mode early (see Phase 3 notes) |
 | Server State | TanStack Query | |
 | Client State | Zustand (with localStorage middleware) | |
@@ -307,7 +307,7 @@ Moderator tool. Fetch entry → find similar → copy approve/reject/replace com
 shadcn/ui components + Tailwind design token preset. Button, Card, Dialog, DropdownMenu, Input, ScrollArea, Select, Tabs, Tooltip, and others as needed.
 
 ### 7.2 `packages/viewer`
-Result cards, visx-based charts (damage timeline, cumulative damage, DPS breakdowns, energy, distribution, field time, reactions, actions, aura uptime, position graph), team header, metadata display, sample viewer (seed selector, event log).
+Result cards, Recharts-based charts (damage timeline, cumulative damage, DPS breakdowns, energy, distribution), team header, metadata display, sample viewer (seed selector, event log).
 
 ### 7.3 `packages/editor`
 CodeMirror 6 wrapper. Custom gcsim language mode with syntax highlighting, autocomplete, error markers.
@@ -382,7 +382,7 @@ All steps are designed to be small, with explicit parallelism where possible. Ea
 
 **Step 0.0 — Dependency version verification**
 - Before any installation, verify latest stable versions of ALL dependencies via context7 and npm:
-  - Tailwind CSS (v5), React, Vite, Turborepo, shadcn/ui, Radix UI, visx, CodeMirror 6, TanStack Query/Router, Zustand, i18next, Vitest, Playwright, Storybook, Biome, buf/protobuf-es, pako, Lucide React, dependency-cruiser
+  - Tailwind CSS (v5), React, Vite, Turborepo, shadcn/ui, Radix UI, Recharts, CodeMirror 6, TanStack Query/Router, Zustand, i18next, Vitest, Playwright, Storybook, Biome, buf/protobuf-es, pako, Lucide React, dependency-cruiser
 - Document pinned versions in a `DEPENDENCIES.md` for agents to reference
 - Verify shadcn/ui compatibility with Tailwind v5 (CSS-first `@theme` approach)
 
@@ -532,7 +532,7 @@ All steps are designed to be small, with explicit parallelism where possible. Ea
 - **Maximum scope:** one component with up to 3 sub-components and their tests. Larger work should be split into multiple dispatches.
 - **This subagent's instructions are refined iteratively:**
   - After Phase 2 Step 2.2 (Button): refine with primitive-building workflow
-  - After Phase 3 Steps 3.3d/3.5a (DPS card, damage timeline): refine with feature component workflow
+  - After Phase 3 Steps 3.3d/3.4a (DPS card, damage timeline): refine with feature component workflow
 
 **Step 0.5d — `cross-package-integrator` subagent**
 - Wires completed packages into a consuming app
@@ -727,7 +727,7 @@ All use `/new-component primitives <name>` to scaffold.
 
 Each uses `/new-package` then `/new-component` for scaffolding. Each depends on `primitives` + `types` (from Phases 1-2).
 
-**Parallelism note:** Steps 3.1 (avatar), 3.2 (editor), and 3.3 (viewer setup) run in parallel. Step 3.4 (chart utilities) runs AFTER 3.3 completes. Step 3.5 (charts) runs AFTER 3.4 completes (charts depend on shared utilities). Step 3.6 (sample viewer) can run in parallel with 3.5 AFTER 3.3 completes. Step 3.7 (preview) can run anytime after 3.1.
+**Parallelism note:** Steps 3.1 (avatar), 3.2 (editor), and 3.3 (viewer setup) run in parallel. Steps 3.4 and 3.5 (viewer charts and sample) run in parallel AFTER 3.3 completes (3.3 establishes the viewer package structure and barrel file). Step 3.6 (preview) can run anytime after 3.1.
 
 **Step 3.1 — `packages/avatar`** *(Agent A)*
 - Run `/new-package avatar` with deps: `@gcsim/primitives`, `@gcsim/types`, `@gcsim/data`
@@ -758,9 +758,9 @@ Each uses `/new-package` then `/new-component` for scaffolding. Each depends on 
 - Write CLAUDE.md: canonical example `codemirror/editor.tsx`, how to add syntax rules, how to add completions
 - Run `turbo run test --filter=@gcsim/editor`
 
-**Step 3.3 — `packages/viewer` (metadata + result cards)** *(Agent C — must complete before 3.4/3.5/3.6)*
+**Step 3.3 — `packages/viewer` (metadata + result cards)** *(Agent C — must complete before 3.4/3.5)*
 - Run `/new-package viewer --with-tailwind` with deps: `@gcsim/primitives`, `@gcsim/types`, `@gcsim/avatar`, `@gcsim/i18n`
-- **This step establishes the viewer package structure, barrel file, and CLAUDE.md. Steps 3.4, 3.5, and 3.6 build on this.**
+- **This step establishes the viewer package structure, barrel file, and CLAUDE.md. Steps 3.4 and 3.5 build on this.**
 - **Step 3.3a** — Run `/new-component viewer metadata`
   - Sub-components: Iterations, Mode, Commit, Warnings. Each takes relevant slice of SimResult.
   - Tests (TDD): each renders correct values, Warnings renders nothing when no warnings, handles missing optional fields
@@ -780,100 +780,49 @@ Each uses `/new-package` then `/new-component` for scaffolding. Each depends on 
 - Write CLAUDE.md: canonical example `result-cards/dps-card/`, how to add a new result card
 - Run `turbo run test --filter=@gcsim/viewer`
 
-**Step 3.4 — `packages/viewer` (chart utilities)** *(Agent D, after 3.3 completes)*
-- Same package as 3.3. Depends on: `@visx/axis`, `@visx/scale`, `@visx/shape`, `@visx/group`, `@visx/grid`, `@visx/curve`, `@visx/tooltip`, `@visx/legend`, `@visx/responsive`, `@visx/threshold`, `@visx/stats`, `@visx/annotation`, `@visx/text`, `@visx/event`. Uses test fixtures from `tooling/test-fixtures/`.
-- **These utilities are ported from `ui/packages/ui/src/Pages/Viewer/Components/Util/` and must be fully tested before any chart components are built.**
-- **Step 3.4a** — `src/charts/util/data-colors.ts`
-  - Qualitative color palettes (5 tiers of 10 colors each) replacing Blueprint.js `Colors` with hardcoded hex values
-  - `DataColorsConst` — static gray + qualitative palette accessors
-  - `useDataColors()` hook — returns ordinal scales for actions, elements, reactable modifiers, characters, targets (using `@visx/scale` scaleOrdinal)
-  - Tests (TDD): palette accessors wrap correctly, ordinal scales return expected colors for known keys
-- **Step 3.4b** — `src/charts/util/axes.tsx`
-  - `GraphAxisLeft`, `GraphAxisBottom`, `GraphAxisRight` — pre-styled visx axis components with consistent tick styling and dark-theme colors
-  - Generic over scale type (`AxisScale`)
-  - Tests (TDD): renders SVG axis elements, accepts custom tickFormat
-- **Step 3.4c** — `src/charts/util/grids.tsx`
-  - `GraphGrid`, `GraphGridRows`, `GraphGridColumns` — pre-styled visx grid components with consistent opacity/color
-  - Tests (TDD): renders grid lines with expected stroke/opacity
-- **Step 3.4d** — `src/charts/util/outer-label-pie.tsx`
-  - Pie chart with labels rendered outside the arcs (ported from `Util/OuterLabelPie/`)
-  - Uses `@visx/shape` Pie + `@visx/text` for outer label positioning
-  - Tests (TDD): renders arcs, labels positioned outside, handles empty data
-- **Step 3.4e** — `src/charts/util/no-data.tsx`
-  - `NoData` component — placeholder shown when chart data is missing/empty
-  - Tests (TDD): renders message, applies expected styling
-- **Step 3.4f** — `src/charts/util/index.ts` barrel + integration
-  - Wire all utilities into barrel export
-  - Integration test: all exports are defined, color palette + axes + grids compose in an SVG
-- Write CLAUDE.md: document chart utilities, how to use `useDataColors()`, axis/grid components
-- Run `turbo run test --filter=@gcsim/viewer`
-
-**Step 3.5 — `packages/viewer` (charts)** *(Agent D, after 3.4 completes)*
-- Same package as 3.3/3.4. All charts use the shared chart utilities from Step 3.4. Uses test fixtures from `tooling/test-fixtures/`.
-- **Reference the existing implementations in `ui/packages/ui/src/Pages/Viewer/Components/` for behavior, layout, and data flow.**
-- **Step 3.5a** — Run `/new-component viewer damage-timeline`
-  - visx LinePath + Threshold: damage over frame/time, per-character series with confidence bands, custom tooltips
-  - Includes DamageOverTime (line chart) and CumulativeContribution (stacked area) sub-views
-  - Tests (TDD): renders with sample data, correct number of LinePath elements, tooltip content
+**Step 3.4 — `packages/viewer` (charts)** *(Agent D, after 3.3 completes)*
+- Same package as 3.3. Depends on: `recharts`. Uses test fixtures from `tooling/test-fixtures/`.
+- **Recharts fallback:** If any chart cannot be cleanly implemented in Recharts (e.g., aura uptime, complex action timelines), fall back to raw SVG. Document the fallback pattern in CLAUDE.md.
+- **Step 3.4a** — Run `/new-component viewer damage-timeline`
+  - Recharts LineChart: damage over frame/time, per-character series, tooltips
+  - Tests (TDD): renders with sample data, correct number of Line components, tooltip content
   - **This becomes the canonical example for charts**
-- **Step 3.5b** — Run `/new-component viewer cumulative-damage`
-  - visx Area/LinePath: cumulative total DPS over time with tooltip
+- **Step 3.4b** — Run `/new-component viewer cumulative-damage`
+  - Recharts AreaChart: cumulative total DPS
   - Tests (TDD): renders, values accumulate correctly
-- **Step 3.5c** — Run `/new-component viewer distribution-chart`
-  - Histogram with visx Bar + vertical marker lines (mean, median, p25/p75)
-  - Tests (TDD): renders bars, correct bucket count from data, marker lines at expected positions
-- **Step 3.5d** — Run `/new-component viewer character-dps-bar`
-  - Horizontal stacked bar chart with 3 grouping modes: by character, by element, by target
-  - Uses `@visx/shape` BarStack + `useDataColors()` element/character palettes
-  - Tests (TDD): renders bars, mode switching changes grouping, colors match element type
-- **Step 3.5e** — Run `/new-component viewer element-dps-chart`
-  - Stacked bar chart by element type
+- **Step 3.4c** — Run `/new-component viewer distribution-chart`
+  - Histogram of damage distribution
+  - Tests (TDD): renders bars, correct bucket count from data
+- **Step 3.4d** — Run `/new-component viewer element-dps-chart`
+  - Stacked BarChart by element
   - Tests (TDD): renders elements with correct colors per element type
-- **Step 3.5f** — Run `/new-component viewer source-dps-bar`
-  - Bar chart of DPS breakdown by damage source
-  - Tests (TDD): renders bars, values match data
-- **Step 3.5g** — Run `/new-component viewer target-dps-chart`
-  - DPS breakdown by target
-  - Tests (TDD): renders per-target bars, handles single/multi target
-- **Step 3.5h** — Run `/new-component viewer energy-chart`
-  - Total source energy per character, bar chart
-  - Tests (TDD): renders one bar per character
-- **Step 3.5i** — Run `/new-component viewer ending-energy-bar`
-  - Ending energy levels per character, bar chart
-  - Tests (TDD): renders bars, values in expected range
-- **Step 3.5j** — Run `/new-component viewer field-time-chart`
-  - OuterLabelPie chart of active character field time
-  - Tests (TDD): proportions sum to 100%, labels correct, uses OuterLabelPie utility
-- **Step 3.5k** — Run `/new-component viewer reactions-chart`
-  - Elemental reaction counts by source, bar chart
+- **Step 3.4e** — Run `/new-component viewer energy-chart`
+  - Energy generation over time per character
+  - Tests (TDD): renders one series per character
+- **Step 3.4f** — Run `/new-component viewer field-time-chart`
+  - Pie or bar chart of active character field time
+  - Tests (TDD): proportions sum to 100%, labels correct
+- **Step 3.4g** — Run `/new-component viewer reactions-chart`
+  - Elemental reaction counts
   - Tests (TDD): renders reaction types, counts match data
-- **Step 3.5l** — Run `/new-component viewer character-actions-bar`
-  - Action usage breakdown per character, stacked bar chart
-  - Tests (TDD): renders action types with action colors, totals match
-- **Step 3.5m** — Run `/new-component viewer aura-uptime-bar`
-  - Target aura uptime as horizontal stacked bars per element
-  - Tests (TDD): renders element aura bars, handles zero uptime
-- **Step 3.5n** — Run `/new-component viewer target-position-graph`
-  - Scatter/position visualization of enemy movement over time
-  - Tests (TDD): renders position points, handles single/multi target
 - Write CLAUDE.md: canonical example `charts/damage-timeline/`, how to add a new chart
 - Run `turbo run test --filter=@gcsim/viewer`
 
-**Step 3.6 — `packages/viewer` (sample viewer)** *(Agent E, after 3.3 completes, parallel with 3.5)*
+**Step 3.5 — `packages/viewer` (sample viewer)** *(Agent E, after 3.3 completes)*
 - Same package as 3.3. Uses test fixtures from `tooling/test-fixtures/`.
-- **Step 3.6a** — Run `/new-component viewer seed-selector`
+- **Step 3.5a** — Run `/new-component viewer seed-selector`
   - Dropdown: sample, min, max, p25, p50, p75, custom input
   - Tests (TDD): renders all options, selection emits value, custom input validates
-- **Step 3.6b** — Run `/new-component viewer event-log`
+- **Step 3.5b** — Run `/new-component viewer event-log`
   - Scrollable log of per-action events, filterable by action type, text search
   - Tests (TDD): renders events, filter by type reduces list, search matches text, empty state
-- **Step 3.6c** — Run `/new-component viewer sample-viewer`
+- **Step 3.5c** — Run `/new-component viewer sample-viewer`
   - Composition: seed selector + event log, handles async sample loading
   - Tests (TDD): loading spinner while fetching, error message on failure, renders log when loaded
 - Write CLAUDE.md
 - Run `turbo run test --filter=@gcsim/viewer`
 
-**Step 3.7 — `packages/preview`** *(Agent F)*
+**Step 3.6 — `packages/preview`** *(Agent F)*
 - Run `/new-package preview` with deps: `@gcsim/primitives`, `@gcsim/types`, `@gcsim/avatar`
 - Run `/new-component preview preview-card`
   - Compact card: team portraits, DPS summary, metadata. Used for Discord embeds and DB entry cards.
