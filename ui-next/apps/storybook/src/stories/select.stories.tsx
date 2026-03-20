@@ -1,4 +1,3 @@
-import type { Meta, StoryObj } from "@storybook/react";
 import {
   Select,
   SelectContent,
@@ -8,6 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@gcsim/primitives";
+import type { Meta, StoryObj } from "@storybook/react";
 
 const meta = {
   title: "Primitives/Select",

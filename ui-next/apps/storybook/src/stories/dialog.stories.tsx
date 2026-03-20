@@ -1,4 +1,3 @@
-import type { Meta, StoryObj } from "@storybook/react";
 import {
   Button,
   Dialog,
@@ -10,6 +9,7 @@ import {
   DialogTrigger,
   Input,
 } from "@gcsim/primitives";
+import type { Meta, StoryObj } from "@storybook/react";
 
 const meta = {
   title: "Primitives/Dialog",
