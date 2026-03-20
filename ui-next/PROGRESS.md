@@ -284,9 +284,13 @@ Post-review fixes applied:
 
 | Step | Status | Description |
 |------|--------|-------------|
-| 3.3a-e | DONE | `@gcsim/viewer` metadata + result cards |
+| 3.1 | DONE | `@gcsim/avatar` |
+| 3.2 | TODO | `@gcsim/editor` |
+| 3.3 | DONE | `@gcsim/viewer` metadata + result cards |
+| 3.3-sb | DONE | Storybook stories for avatar + viewer |
 | 3.4 | TODO | `@gcsim/viewer` charts |
 | 3.5 | TODO | `@gcsim/viewer` sample viewer |
+| 3.6 | TODO | `@gcsim/preview` |
 
 ### Step 3.3 — `@gcsim/viewer` Metadata + Result Cards (DONE)
 
@@ -308,3 +312,41 @@ Post-review fixes applied:
 - All components use `data-testid` attributes for testing
 - Uses relative imports (no `@/` aliases in library source)
 - Total tests: 91 (Phase 1+2) + 32 (viewer) = 123 tests
+
+### Step 3.1 — `@gcsim/avatar` (DONE)
+
+- Created `packages/avatar/` with character display components
+- **Portrait** (3.1a): circular avatar with character initial + element color badge
+  - 3 sizes (sm/md/lg), element border/text colors from theme tokens
+  - Handles missing/unknown character gracefully ("?" placeholder)
+- **AvatarCard** (3.1b): full character card using primitives Card
+  - Shows name, element, level/max_level, constellation, weapon (name + refine), talents
+  - Uses Portrait internally
+- **TeamDisplay** (3.1c): horizontal row of 1-4 Portrait components
+  - Handles empty array with "No characters" message
+- 23 tests passing (3 test files), typecheck clean, build succeeds
+- Dependencies: `@gcsim/primitives`, `@gcsim/types`, `@gcsim/data`
+- `tsconfig.json` excludes test files to avoid rootDir issues with cross-package fixture imports
+- Total tests: 123 (Phase 1+2+viewer) + 23 (avatar) = 146 tests
+
+### Storybook Stories for Phase 3 (DONE)
+
+- Added 8 story files to `apps/storybook/src/stories/`:
+  - **Avatar**: portrait (all 7 elements, 3 sizes), avatar-card (Hutao, Xingqiu, side-by-side), team-display (1-4 chars, empty)
+  - **Viewer**: metadata (iterations, mode, commit, warnings), team-header, rollup-card, dps-card (proportional bars), target-info-card (single + multi-target)
+- Wired `@gcsim/avatar`, `@gcsim/viewer`, `@gcsim/types` as storybook dependencies
+- Added `@source` directives for Tailwind class scanning
+- Fixed pre-existing tooltip.stories.tsx type inference error
+- Added Storybook requirement to CLAUDE.md: all new components must have stories
+
+### Phase 3 Workflow Change
+
+- **Small commits + PR workflow**: agents commit after each self-contained unit, each commit must typecheck/test independently, features are PR'd into `web-rewrite` before considered done
+- **Storybook mandatory**: every new React component must have a Storybook story for visual review
+
+### Remaining Phase 3 Work
+
+- 3.2: `@gcsim/editor` — CodeMirror 6 wrapper + gcsim language mode
+- 3.4: `@gcsim/viewer` charts — 7 Recharts-based chart components (damage timeline, cumulative, distribution, element DPS, energy, field time, reactions)
+- 3.5: `@gcsim/viewer` sample — seed selector, event log, sample viewer composition
+- 3.6: `@gcsim/preview` — preview card for Discord embeds and DB entries (depends on 3.1 avatar)
