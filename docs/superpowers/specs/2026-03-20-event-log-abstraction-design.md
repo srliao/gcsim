@@ -65,7 +65,7 @@ interface EnergyEvent extends BaseEvent {
   type: "energy";
   energyType: "particle" | "flat" | "other"; // discriminates message formatting
   source: string;
-  amount: number;       // maps to log.logs["rec'd"] for flat energy, or derived for particles
+  amount: number;       // maps to log.logs["amt"] for particles, log.logs["rec'd"] for flat energy
   postRecovery: number; // maps to log.logs["post_recovery"]
   maxEnergy: number;    // maps to log.logs["max_energy"]
 }
@@ -73,8 +73,9 @@ interface EnergyEvent extends BaseEvent {
 interface StatusEvent extends BaseEvent {
   type: "status";
   key: string;
-  addedFrame?: number;  // optional — not all status events have duration info
-  endedFrame?: number;  // optional — resolved by resolveStatusDurations post-processor
+  addedFrame?: number;  // optional — transformer sets from log.ended when log.ended > log.frame
+  endedFrame?: number;  // optional — transformer sets initial value from log.ended;
+                        //   resolveStatusDurations post-processor refines for refresh/extend cases
 }
 
 interface ElementEvent extends BaseEvent {
@@ -87,6 +88,9 @@ interface ElementEvent extends BaseEvent {
   after?: string[];          // present for "application" subtype — aura state after
   target: string;
 }
+// Note: element subtypes "expired" and "refreshed" are inferred from old parsev2 logic
+// and should be validated against current backend output. The "other" fallback handles
+// any unrecognized element message patterns.
 
 interface ActionEvent extends BaseEvent {
   type: "action";
@@ -302,10 +306,10 @@ Composable utility functions operating on `SimEvent[]`:
 #### `resolveStatusDurations(events: SimEvent[]): SimEvent[]`
 
 Matches status "added" and "expired" pairs:
-1. First pass: collect all status events with `endedFrame > frame` that include "added" in message
-2. For refresh/extend events, search backwards for the original "added" event to resolve true start frame
-3. Synthesize expiration events at the `endedFrame`
-4. Returns a new array with resolved durations and synthetic expiration events inserted
+1. First pass: collect all status events with `endedFrame > frame` that include "added" in message. Create synthetic expiration events to be inserted at `endedFrame`.
+2. For refresh/extend events (where `endedFrame === frame`), search for the original "added" event matching the same `characterIndex` and `key` where `frame >= original.frame && frame < original.endedFrame`. Copy the original's timing to resolve true duration.
+3. Insert synthetic expiration events into the output array at the correct frame positions.
+4. Returns a new array with resolved durations and synthetic expiration events inserted.
 
 This isolates the fragile matching logic from the old `parsev2.ts` lines 56-94 and 338-352.
 
