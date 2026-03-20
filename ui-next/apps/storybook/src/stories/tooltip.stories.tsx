@@ -1,4 +1,3 @@
-import type { Meta, StoryObj } from "@storybook/react";
 import {
   Button,
   Tooltip,
@@ -6,8 +5,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@gcsim/primitives";
+import type { Meta, StoryObj } from "@storybook/react";
 
-const meta = {
+const meta: Meta<typeof Tooltip> = {
   title: "Primitives/Tooltip",
   component: Tooltip,
   tags: ["autodocs"],
@@ -18,7 +18,7 @@ const meta = {
       </TooltipProvider>
     ),
   ],
-} satisfies Meta<typeof Tooltip>;
+};
 
 export default meta;
 type Story = StoryObj<typeof meta>;

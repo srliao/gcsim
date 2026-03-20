@@ -9,5 +9,10 @@
     }
   },
   "include": ["src", ".storybook"],
-  "references": [{ "path": "../../packages/primitives" }]
+  "references": [
+    { "path": "../../packages/primitives" },
+    { "path": "../../packages/types" },
+    { "path": "../../packages/avatar" },
+    { "path": "../../packages/viewer" }
+  ]
 }
