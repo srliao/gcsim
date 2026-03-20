@@ -1,0 +1,50 @@
+{
+  "name": "@gcsim/editor",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build:grammar": "lezer-generator src/language/gcsim.grammar -o src/language/gcsim.grammar.ts --typeScript",
+    "prebuild": "pnpm run build:grammar",
+    "build": "tsc --build",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome check"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "dependencies": {
+    "@codemirror/autocomplete": "6.20.1",
+    "@codemirror/commands": "6.10.3",
+    "@codemirror/language": "6.12.2",
+    "@codemirror/lint": "6.9.5",
+    "@codemirror/search": "6.6.0",
+    "@codemirror/state": "6.6.0",
+    "@codemirror/view": "6.40.0",
+    "@lezer/common": "1.5.1",
+    "@lezer/highlight": "1.2.3",
+    "@lezer/lr": "1.4.8"
+  },
+  "devDependencies": {
+    "@lezer/generator": "1.8.0",
+    "@testing-library/jest-dom": "6.6.3",
+    "@testing-library/react": "16.3.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "jsdom": "29.0.0",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "typescript": "5.9.3",
+    "vitest": "4.1.0"
+  }
+}
