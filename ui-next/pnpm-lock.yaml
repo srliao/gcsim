@@ -29,6 +29,9 @@ importers:
       '@gcsim/avatar':
         specifier: workspace:*
         version: link:../../packages/avatar
+      '@gcsim/editor':
+        specifier: workspace:*
+        version: link:../../packages/editor
       '@gcsim/primitives':
         specifier: workspace:*
         version: link:../../packages/primitives

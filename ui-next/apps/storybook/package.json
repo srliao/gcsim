@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@gcsim/avatar": "workspace:*",
+    "@gcsim/editor": "workspace:*",
     "@gcsim/primitives": "workspace:*",
     "@gcsim/types": "workspace:*",
     "@gcsim/viewer": "workspace:*"
