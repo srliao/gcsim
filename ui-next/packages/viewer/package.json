@@ -18,9 +18,10 @@
     "lint": "biome check"
   },
   "dependencies": {
+    "@gcsim/i18n": "workspace:*",
     "@gcsim/primitives": "workspace:*",
     "@gcsim/types": "workspace:*",
-    "@gcsim/i18n": "workspace:*"
+    "recharts": "3.8.0"
   },
   "peerDependencies": {
     "react": "^19.0.0",
