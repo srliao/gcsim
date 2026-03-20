@@ -4,6 +4,7 @@ import baseConfig from "../../tooling/vitest/base.ts";
 export default mergeConfig(
   baseConfig,
   defineConfig({
+    assetsInclude: ["**/*.grammar"],
     test: {
       setupFiles: ["./src/test-setup.ts"],
     },

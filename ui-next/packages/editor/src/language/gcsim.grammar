@@ -1,0 +1,60 @@
+@top Program { expression* }
+
+// We do NOT define statement/expression rules — the Go WASM parser is the source of truth.
+// This grammar only tokenizes for syntax highlighting purposes.
+
+expression {
+  Number |
+  StringLiteral |
+  LineComment |
+  HashComment |
+  BlockComment |
+  CharacterName |
+  ActionName |
+  StatName |
+  ElementName |
+  Identifier |
+  Operator |
+  Punctuation
+}
+
+@skip { whitespace }
+
+@tokens {
+  whitespace { @whitespace+ }
+
+  LineComment { "//" ![\n]* }
+  HashComment { "#" ![\n]* }
+  BlockComment { "/*" blockCommentRest }
+  blockCommentRest { ![*] blockCommentRest | "*" blockCommentAfterStar }
+  blockCommentAfterStar { "/" | ![/*] blockCommentRest | "*" blockCommentAfterStar }
+
+  // Identifier includes -, _, and % to match the Go lexer's isAlphaNumeric:
+  //   r == '_' || r == '-' || unicode.IsLetter(r) || unicode.IsDigit(r) || r == '%'
+  // This means stat names like "hp%", "atk%" are regular identifiers.
+  Identifier { $[a-zA-Z_] $[a-zA-Z0-9_\-%]* }
+
+  Number {
+    @digit+ ("." @digit*)?
+  }
+
+  StringLiteral { "\"" (![\\\"\n] | "\\" _)* "\"" | "`" ![`]* "`" }
+
+  Operator { "==" | "!=" | "<=" | ">=" | "&&" | "||" | "+" | "-" | "*" | "/" | "%" | "<" | ">" | "!" | "=" }
+  Punctuation { "(" | ")" | "{" | "}" | "[" | "]" | "," | ";" | ":" | "." }
+
+  @precedence { Number, Identifier }
+  @precedence { LineComment, Operator }
+  @precedence { BlockComment, Operator }
+  @precedence { Operator, Punctuation }
+}
+
+// External specializer: called at runtime on every Identifier token.
+// Returns a specialized term ID if the text matches a known domain token, or -1.
+// The actual keyword sets live in tokens.ts (hand-crafted now, codegen later).
+@external specialize {Identifier} specializeIdentifier from "./tokens" {
+  CharacterName,
+  ActionName,
+  StatName,
+  ElementName
+}
