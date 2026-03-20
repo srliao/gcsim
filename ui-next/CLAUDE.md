@@ -87,6 +87,19 @@ Every implementation step follows: write failing test → implement → pass tes
 | Feature packages | Component behavior with mocked data | Internal implementation |
 | Apps (unit) | Store logic, data transforms, hooks | Component rendering |
 
+## Storybook
+
+Every new React component (primitives or feature packages) **must** have a Storybook story in `apps/storybook/src/stories/`. This is how components are visually reviewed.
+
+When adding a story:
+1. Create `apps/storybook/src/stories/<component>.stories.tsx`
+2. If the component's package isn't already a storybook dependency, add it to `apps/storybook/package.json` and add a `@source` directive in `apps/storybook/src/storybook.css` for Tailwind class scanning
+3. Include stories for all key variants/states (default, edge cases, compositions)
+4. Use realistic mock data (reference `tooling/test-fixtures/` or inline)
+5. Verify: `turbo run build --filter=@gcsim/storybook` succeeds
+
+Dev server: `pnpm --filter @gcsim/storybook dev` (port 6006)
+
 ## Environment Variables
 
 Apps use `import.meta.env.VITE_*`. See `.env.example` for available variables:
