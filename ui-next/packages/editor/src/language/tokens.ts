@@ -5,12 +5,7 @@
 // TODO: Auto-generate this file from Go source via a codegen tool.
 // See docs/superpowers/specs/phase-3.2-codemirror-implementation.md
 
-import {
-  CharacterName,
-  ActionName,
-  StatName,
-  ElementName,
-} from "./parser.terms";
+import { ActionName, CharacterName, ElementName, StatName } from "./parser.terms";
 
 // Source: pkg/gcs/ast/keys.go -> actionKeys
 const ACTIONS = new Set([

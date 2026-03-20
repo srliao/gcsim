@@ -1,5 +1,5 @@
-import { EditorView } from "@codemirror/view";
 import { HighlightStyle } from "@codemirror/language";
+import { EditorView } from "@codemirror/view";
 import { tags as t } from "@lezer/highlight";
 
 export const gcsimDarkTheme = EditorView.theme(

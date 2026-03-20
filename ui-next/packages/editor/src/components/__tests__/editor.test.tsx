@@ -1,5 +1,5 @@
+import { render } from "@testing-library/react";
 import { describe, expect, test, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
 import { Editor } from "../editor";
 
 describe("Editor component", () => {
@@ -11,35 +11,27 @@ describe("Editor component", () => {
   });
 
   test("displays the initial value", () => {
-    const { container } = render(
-      <Editor value="bennett char lvl=90/90;" />,
-    );
+    const { container } = render(<Editor value="bennett char lvl=90/90;" />);
     const content = container.querySelector(".cm-content");
     expect(content).toBeInTheDocument();
     expect(content?.textContent).toContain("bennett");
   });
 
   test("applies className to container div", () => {
-    const { container } = render(
-      <Editor value="test" className="my-editor" />,
-    );
+    const { container } = render(<Editor value="test" className="my-editor" />);
     const wrapper = container.firstElementChild;
     expect(wrapper).toHaveClass("my-editor");
   });
 
   test("renders in readOnly mode without crashing", () => {
-    const { container } = render(
-      <Editor value="read only content" readOnly />,
-    );
+    const { container } = render(<Editor value="read only content" readOnly />);
     const cmEditor = container.querySelector(".cm-editor");
     expect(cmEditor).toBeInTheDocument();
   });
 
   test("renders with errors without crashing", () => {
     const errors = [{ line: 1, message: "test error" }];
-    const { container } = render(
-      <Editor value="some code" errors={errors} />,
-    );
+    const { container } = render(<Editor value="some code" errors={errors} />);
     const cmEditor = container.querySelector(".cm-editor");
     expect(cmEditor).toBeInTheDocument();
   });

@@ -1,6 +1,10 @@
-import { useRef, useEffect, type FC } from "react";
-import { EditorState, Compartment } from "@codemirror/state";
-import { EditorView, keymap, lineNumbers } from "@codemirror/view";
+import {
+  autocompletion,
+  closeBrackets,
+  closeBracketsKeymap,
+  completionKeymap,
+} from "@codemirror/autocomplete";
+import { defaultKeymap, history, historyKeymap, indentWithTab } from "@codemirror/commands";
 import {
   bracketMatching,
   foldGutter,
@@ -8,25 +12,16 @@ import {
   indentOnInput,
   syntaxHighlighting,
 } from "@codemirror/language";
-import { searchKeymap, highlightSelectionMatches } from "@codemirror/search";
-import {
-  defaultKeymap,
-  indentWithTab,
-  history,
-  historyKeymap,
-} from "@codemirror/commands";
-import {
-  autocompletion,
-  completionKeymap,
-  closeBrackets,
-  closeBracketsKeymap,
-} from "@codemirror/autocomplete";
 import { lintGutter } from "@codemirror/lint";
-import { gcsim } from "../language/gcsim-language";
-import { gcsimDarkTheme, gcsimHighlightStyle } from "../theme/dark-theme";
-import { gcsimFoldService } from "../language/fold";
+import { highlightSelectionMatches, searchKeymap } from "@codemirror/search";
+import { Compartment, EditorState } from "@codemirror/state";
+import { EditorView, keymap, lineNumbers } from "@codemirror/view";
+import { type FC, useEffect, useRef } from "react";
 import type { GcsimError } from "../diagnostics/diagnostics";
 import { applyDiagnostics, clearDiagnostics } from "../diagnostics/diagnostics";
+import { gcsimFoldService } from "../language/fold";
+import { gcsim } from "../language/gcsim-language";
+import { gcsimDarkTheme, gcsimHighlightStyle } from "../theme/dark-theme";
 
 export interface EditorProps {
   /** Current config text (controlled) */
@@ -121,7 +116,7 @@ export const Editor: FC<EditorProps> = ({
       view.destroy();
       viewRef.current = null;
     };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [readOnly, value]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Sync external value changes (controlled component pattern)
   useEffect(() => {
@@ -140,9 +135,7 @@ export const Editor: FC<EditorProps> = ({
     const view = viewRef.current;
     if (!view) return;
     view.dispatch({
-      effects: readOnlyCompartment.current.reconfigure(
-        EditorState.readOnly.of(readOnly),
-      ),
+      effects: readOnlyCompartment.current.reconfigure(EditorState.readOnly.of(readOnly)),
     });
   }, [readOnly]);
 

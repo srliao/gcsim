@@ -1,6 +1,6 @@
-import { describe, expect, test } from "vitest";
-import { EditorState } from "@codemirror/state";
 import { CompletionContext } from "@codemirror/autocomplete";
+import { EditorState } from "@codemirror/state";
+import { describe, expect, test } from "vitest";
 import { gcsimCompletionSource } from "../autocomplete";
 import { gcsim } from "../gcsim-language";
 
@@ -17,16 +17,16 @@ describe("gcsim autocomplete", () => {
   test("provides completions for partial keyword", () => {
     const result = getCompletions("whi");
     expect(result).not.toBeNull();
-    const labels = result!.options.map((o) => o.label);
+    const labels = result?.options.map((o) => o.label);
     expect(labels).toContain("while");
   });
 
   test("provides character completions after 'add char '", () => {
     const result = getCompletions("add char ");
     expect(result).not.toBeNull();
-    const types = new Set(result!.options.map((o) => o.type));
+    const types = new Set(result?.options.map((o) => o.type));
     expect(types).toEqual(new Set(["class"]));
-    const labels = result!.options.map((o) => o.label);
+    const labels = result?.options.map((o) => o.label);
     expect(labels).toContain("bennett");
     expect(labels).toContain("hutao");
   });
@@ -34,7 +34,7 @@ describe("gcsim autocomplete", () => {
   test("provides action completions after character.dot", () => {
     const result = getCompletions("bennett.");
     expect(result).not.toBeNull();
-    const labels = result!.options.map((o) => o.label);
+    const labels = result?.options.map((o) => o.label);
     expect(labels).toContain("skill");
     expect(labels).toContain("burst");
     expect(labels).toContain("attack");
@@ -43,7 +43,7 @@ describe("gcsim autocomplete", () => {
   test("provides stat completions after 'stats' keyword", () => {
     const result = getCompletions("stats hp");
     expect(result).not.toBeNull();
-    const labels = result!.options.map((o) => o.label);
+    const labels = result?.options.map((o) => o.label);
     expect(labels).toContain("hp%");
     expect(labels).toContain("hp");
     expect(labels).toContain("atk%");
@@ -52,7 +52,7 @@ describe("gcsim autocomplete", () => {
   test("provides character completions after 'active '", () => {
     const result = getCompletions("active ");
     expect(result).not.toBeNull();
-    const labels = result!.options.map((o) => o.label);
+    const labels = result?.options.map((o) => o.label);
     expect(labels).toContain("bennett");
   });
 
@@ -70,7 +70,7 @@ describe("gcsim autocomplete", () => {
   test("default completions include all categories", () => {
     const result = getCompletions("b");
     expect(result).not.toBeNull();
-    const labels = result!.options.map((o) => o.label);
+    const labels = result?.options.map((o) => o.label);
     // keywords
     expect(labels).toContain("break");
     // characters

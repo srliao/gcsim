@@ -1,8 +1,4 @@
-import type {
-  CompletionContext,
-  CompletionResult,
-  Completion,
-} from "@codemirror/autocomplete";
+import type { Completion, CompletionContext, CompletionResult } from "@codemirror/autocomplete";
 
 // --- Static completion lists ---
 // TODO: Auto-generate from Go source alongside tokens.ts
@@ -182,9 +178,7 @@ const characterCompletions: Completion[] = [
 
 // --- Context-aware completion source ---
 
-export function gcsimCompletionSource(
-  context: CompletionContext,
-): CompletionResult | null {
+export function gcsimCompletionSource(context: CompletionContext): CompletionResult | null {
   // Match identifier-like text before cursor (including hyphens and % for stat names)
   const word = context.matchBefore(/[a-zA-Z_][\w\-%]*/);
   if (!word && !context.explicit) return null;
@@ -195,7 +189,7 @@ export function gcsimCompletionSource(
 
   // After "add char" or "active" -> suggest character names
   if (/\b(add\s+char|active)\s+$/.test(textBefore)) {
-    return { from, options: characterCompletions, validFor: /^[\w\-]*$/ };
+    return { from, options: characterCompletions, validFor: /^[\w-]*$/ };
   }
 
   // After a character name + dot -> suggest actions

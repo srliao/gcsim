@@ -1,7 +1,6 @@
-import { describe, expect, test } from "vitest";
+import { LRLanguage, syntaxTree } from "@codemirror/language";
 import { EditorState } from "@codemirror/state";
-import { syntaxTree } from "@codemirror/language";
-import { LRLanguage } from "@codemirror/language";
+import { describe, expect, test } from "vitest";
 // Import from generated parser (not the .grammar source)
 import { parser } from "../parser";
 
@@ -48,23 +47,17 @@ describe("gcsim grammar tokenizer", () => {
 
   test("tokenizes line comments", () => {
     const tokens = getTokens("// this is a comment");
-    expect(tokens).toEqual([
-      { name: "LineComment", text: "// this is a comment" },
-    ]);
+    expect(tokens).toEqual([{ name: "LineComment", text: "// this is a comment" }]);
   });
 
   test("tokenizes hash comments", () => {
     const tokens = getTokens("# this is a comment");
-    expect(tokens).toEqual([
-      { name: "HashComment", text: "# this is a comment" },
-    ]);
+    expect(tokens).toEqual([{ name: "HashComment", text: "# this is a comment" }]);
   });
 
   test("tokenizes block comments", () => {
     const tokens = getTokens("/* block comment */");
-    expect(tokens).toEqual([
-      { name: "BlockComment", text: "/* block comment */" },
-    ]);
+    expect(tokens).toEqual([{ name: "BlockComment", text: "/* block comment */" }]);
   });
 
   test("tokenizes identifiers", () => {
@@ -119,7 +112,7 @@ describe("gcsim grammar tokenizer", () => {
 
   test("tokenizes a realistic config snippet", () => {
     const tokens = getTokens(
-      'bennett char lvl=90/90 cons=6;\nbennett add weapon="favoniussword" refine=5 lvl=90/90;'
+      'bennett char lvl=90/90 cons=6;\nbennett add weapon="favoniussword" refine=5 lvl=90/90;',
     );
     const names = tokens.map((t) => t.name);
     // "bennett" should be CharacterName

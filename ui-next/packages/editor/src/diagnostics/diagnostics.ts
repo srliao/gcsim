@@ -1,4 +1,4 @@
-import { setDiagnostics, type Diagnostic } from "@codemirror/lint";
+import { type Diagnostic, setDiagnostics } from "@codemirror/lint";
 import type { EditorView } from "@codemirror/view";
 
 export interface GcsimError {
@@ -11,14 +11,9 @@ export interface GcsimError {
  * Convert gcsim validation errors to CM6 diagnostics and apply them.
  * Errors come from executor.validate() (WASM Go parser), not from the Lezer grammar.
  */
-export function applyDiagnostics(
-  view: EditorView,
-  errors: GcsimError[],
-): void {
+export function applyDiagnostics(view: EditorView, errors: GcsimError[]): void {
   const diagnostics: Diagnostic[] = errors.map((err) => {
-    const line = view.state.doc.line(
-      Math.min(err.line, view.state.doc.lines),
-    );
+    const line = view.state.doc.line(Math.min(err.line, view.state.doc.lines));
     const from = line.from + (err.column ? err.column - 1 : 0);
     const to = line.to;
 

@@ -1,7 +1,7 @@
-import { describe, expect, test } from "vitest";
+import { lintGutter } from "@codemirror/lint";
 import { EditorState } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
-import { lintGutter } from "@codemirror/lint";
+import { describe, expect, test } from "vitest";
 import type { GcsimError } from "../diagnostics";
 import { applyDiagnostics, clearDiagnostics } from "../diagnostics";
 
@@ -17,9 +17,7 @@ function createView(doc: string): EditorView {
 describe("diagnostics", () => {
   test("applyDiagnostics sets error diagnostics on the view", () => {
     const view = createView("line one\nline two\nline three");
-    const errors: GcsimError[] = [
-      { line: 2, message: "unexpected token" },
-    ];
+    const errors: GcsimError[] = [{ line: 2, message: "unexpected token" }];
 
     applyDiagnostics(view, errors);
 
@@ -31,9 +29,7 @@ describe("diagnostics", () => {
 
   test("applyDiagnostics with column offset", () => {
     const view = createView("let x = 42;");
-    const errors: GcsimError[] = [
-      { line: 1, column: 5, message: "invalid assignment" },
-    ];
+    const errors: GcsimError[] = [{ line: 1, column: 5, message: "invalid assignment" }];
 
     applyDiagnostics(view, errors);
     expect(view.state).toBeDefined();
@@ -42,9 +38,7 @@ describe("diagnostics", () => {
 
   test("applyDiagnostics clamps line number to doc.lines", () => {
     const view = createView("only one line");
-    const errors: GcsimError[] = [
-      { line: 999, message: "out of bounds" },
-    ];
+    const errors: GcsimError[] = [{ line: 999, message: "out of bounds" }];
 
     // Should not throw — clamps to last line
     applyDiagnostics(view, errors);
