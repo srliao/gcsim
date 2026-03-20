@@ -1,4 +1,6 @@
 // @gcsim/avatar public API
 
+export type { AvatarCardProps } from "./avatar-card/index.js";
+export { AvatarCard } from "./avatar-card/index.js";
 export type { PortraitProps } from "./portrait/index.js";
 export { Portrait } from "./portrait/index.js";
