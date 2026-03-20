@@ -1,5 +1,5 @@
-import type { Meta, StoryObj } from "@storybook/react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@gcsim/primitives";
+import type { Meta, StoryObj } from "@storybook/react";
 
 const meta = {
   title: "Primitives/Tabs",

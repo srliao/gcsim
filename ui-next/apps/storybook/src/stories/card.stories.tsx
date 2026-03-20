@@ -1,4 +1,3 @@
-import type { Meta, StoryObj } from "@storybook/react";
 import {
   Button,
   Card,
@@ -8,6 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@gcsim/primitives";
+import type { Meta, StoryObj } from "@storybook/react";
 
 const meta = {
   title: "Primitives/Card",
