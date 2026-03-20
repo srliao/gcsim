@@ -4,6 +4,8 @@
 
 Port all 13 chart types from the legacy UI (`ui/packages/ui/src/Pages/Viewer/Components/`) into `packages/viewer/src/charts/` using Recharts (replacing legacy Visx). All charts are pure presentational components — no data fetching, typed with `Sim.*` props from `@gcsim/types`.
 
+**Scope note:** The main spec (Step 3.4a-g) lists 7 charts. This design adds 6 more that exist in the legacy UI and are needed for feature parity: character-dps-pie (#5), element-dps-pie (#6), source-dps-chart (#7), character-actions-chart (#8), ending-energy-chart (#11), target-aura-uptime-chart (#13).
+
 ## Key Decision: Visx → Recharts Migration
 
 The legacy UI uses @visx (low-level SVG primitives). The rewrite uses Recharts (declarative React chart components) per the tech stack spec. This is a full reimplementation, not a port. Recharts provides `ResponsiveContainer`, built-in tooltips, legends, and axes out of the box — reducing custom SVG code significantly.
@@ -82,7 +84,8 @@ export interface StatTooltipProps {
 8 of 13 charts are horizontal stacked bars. This generic wrapper avoids repetition.
 
 ```typescript
-export interface HorizontalBarStackProps<Row> {
+// Row must have a string name field + numeric values for each key
+export interface HorizontalBarStackProps<Row extends Record<string, string | number>> {
   data: Row[];
   keys: string[];
   nameKey: string;             // field in Row used for Y-axis labels
@@ -119,15 +122,15 @@ Implementation pattern:
 - **Props:** `buckets: Sim.BucketStats`
 - **Visual:** X-axis = time in seconds (derived from bucket_size). 5 lines: min, max, mean, mean+sd, mean-sd. Shaded band between SD bounds using `Area` with gradient fill.
 - **Tooltip:** Shows all 5 values at hovered time bucket
-- **Data transform:** `buckets.buckets[]` (FloatStat per bucket) → flat array `[{ time, min, max, mean, sdUpper, sdLower }]`
+- **Data transform:** `buckets.buckets[]` (FloatStat per bucket) → flat array `[{ time, min, max, mean, sdUpper, sdLower }]` where `sdUpper = mean + sd` and `sdLower = mean - sd` (computed, not from source data)
 - **Tests:** Renders with sample data, correct number of Line components, tooltip content
 
 #### 2. `cumulative-damage` (Step 3.4b)
 
 - **Recharts type:** `AreaChart` with 5 `Area` series for quartile bands
-- **Props:** `data: Sim.TargetBucketStats`, `characterNames?: string[]`
+- **Props:** `data: Sim.TargetBucketStats`, `targetId?: string` (defaults to first target), `characterNames?: string[]`
 - **Visual:** 5 lines: min, q1, q2 (median), q3, max. Shaded quartile bands (gradient between q1-q3). X-axis = time.
-- **Data transform:** `data.targets[targetId].overall` → flat array `[{ time, min, q1, q2, q3, max }]`
+- **Data transform:** `data.targets[targetId].overall` → flat array `[{ time, min, q1, q2, q3, max }]`. Component selects target via `targetId` prop (defaults to first available key).
 - **Tests:** Renders, values accumulate correctly
 
 #### 3. `distribution-chart` (Step 3.4c)
@@ -139,11 +142,11 @@ Implementation pattern:
 - **No box-plot** — histogram only for now.
 - **Tests:** Renders bars, correct bucket count from data, mean reference line present
 
-#### 4. `element-dps-chart` (Step 3.4d)
+#### 4. `element-dps-chart` (Step 3.4d) — Per-character element breakdown
 
 - **Recharts type:** `HorizontalBarStack` wrapper
 - **Props:** `data: Sim.ElementStats[]`, `characterNames: string[]`
-- **Visual:** Horizontal stacked bars. Rows = characters. Stacked by element, colored by element type.
+- **Visual:** Horizontal stacked bars. Rows = characters. Stacked by element, colored by element type. (Differs from `element-dps-pie` which shows aggregate team-wide element split.)
 - **Data transform:** `ElementStats[]` → `[{ name: "Hu Tao", pyro: 35100, hydro: 0, ... }]`
 - **Tests:** Renders elements with correct colors per element type
 
@@ -155,11 +158,11 @@ Implementation pattern:
 - **Data transform:** `FloatStat[]` → `[{ name, value: mean, pct }]`
 - **Tests:** Renders all characters, percentages sum to ~100%
 
-#### 6. `element-dps-pie`
+#### 6. `element-dps-pie` — Aggregate team-wide element split
 
 - **Recharts type:** `PieChart` with `Pie` + `Cell` per element
 - **Props:** `elementDps: Sim.ElementDPS`
-- **Visual:** Pie colored by element type with labels.
+- **Visual:** Pie colored by element type with labels. (Differs from `element-dps-chart` which shows per-character element breakdown.)
 - **Data transform:** `{ pyro: FloatStat, hydro: FloatStat }` → `[{ name: "Pyro", value: mean, color }]`
 - **Tests:** Renders all elements present in data
 
@@ -203,7 +206,7 @@ Implementation pattern:
 - **Recharts type:** `BarChart` (`layout="vertical"`) — single bars, not stacked
 - **Props:** `endStats: Sim.EndStats[]`, `characterNames: string[]`
 - **Visual:** One horizontal bar per character showing ending energy. Character colors.
-- **Data transform:** `EndStats[]` → `[{ name: "Hu Tao", energy: 40.5 }]`
+- **Data transform:** `EndStats[]` → `[{ name: "Hu Tao", energy: endStats[i].ending_energy.mean }]` (ending_energy is a FloatStat; use .mean for bar value)
 - **Tests:** Renders one bar per character
 
 #### 12. `field-time-chart` (Step 3.4f)
@@ -267,8 +270,8 @@ statistics: {
     { sources: { Pyro: { ... }, Hydro: { ... } } },
   ],
   end_stats: [
-    { ending_energy: 40.5 },
-    { ending_energy: 65.2 },
+    { ending_energy: { min: 38, max: 43, mean: 40.5, sd: 1.2 } },
+    { ending_energy: { min: 60, max: 70, mean: 65.2, sd: 2.1 } },
   ],
   rps: { min: 5, max: 15, mean: 10.2, sd: 1.5, q1: 9, q2: 10, q3: 11, histogram: [5, 20, 50, 100, 200, 150, 80, 40, 20, 5] },
   eps: { min: 100, max: 300, mean: 200, sd: 25, q1: 185, q2: 200, q3: 215, histogram: [5, 15, 40, 100, 250, 200, 100, 50, 25, 10] },
@@ -362,7 +365,7 @@ src/charts/
    - target-aura-uptime-chart
 8. **Barrel exports** — update `src/charts/index.ts` and `src/index.ts`
 9. **Update CLAUDE.md** — canonical example `charts/damage-timeline/`, how to add a new chart
-10. **Storybook stories** — one story per chart with mock data
+10. **Storybook stories** — one story per chart in `apps/storybook/src/stories/<chart-name>.stories.tsx` with mock data from test fixtures
 
 ## Deferred (Not In This Step)
 
@@ -375,6 +378,6 @@ src/charts/
 
 ## Dependencies
 
-- `recharts` — added to `packages/viewer/package.json`
+- `recharts` — added to `packages/viewer/package.json` (version per `DEPENDENCIES.md`)
 - `@gcsim/primitives` — Card, cn() (already a dependency)
 - `@gcsim/types` — Sim.* types (already a dependency)
