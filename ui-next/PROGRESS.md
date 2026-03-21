@@ -289,8 +289,8 @@ Post-review fixes applied:
 | 3.3 | DONE | `@gcsim/viewer` metadata + result cards |
 | 3.3-sb | DONE | Storybook stories for avatar + viewer |
 | 3.4 | DONE | `@gcsim/viewer` charts |
-| 3.5 | TODO | `@gcsim/viewer` sample viewer |
-| 3.6 | TODO | `@gcsim/preview` |
+| 3.5 | DONE | `@gcsim/viewer` sample viewer |
+| 3.6 | DONE | `@gcsim/preview` |
 
 ### Step 3.3 — `@gcsim/viewer` Metadata + Result Cards (DONE)
 
@@ -394,7 +394,42 @@ Full design spec: `docs/superpowers/specs/2026-03-20-viewer-charts-design.md`
 - 221 tests passing (23 suites), typecheck clean, build clean, storybook builds
 - Recharts v3 key learnings: custom tooltips as function refs, ValueType/NameType from recharts/types, SD band via dual Areas
 
-### Remaining Phase 3 Work
+### Step 3.5 — `@gcsim/viewer` Sample Viewer (DONE)
 
-- 3.5: `@gcsim/viewer` sample — seed selector, event log, sample viewer composition
-- 3.6: `@gcsim/preview` — preview card for Discord embeds and DB entries (depends on 3.1 avatar)
+- Built on top of the events abstraction layer (types, transformer, post-processors, display-config, filter-presets)
+- **SeedSelector** (3.5a): dropdown for seed mode (sample/min/max/p25/p50/p75/custom) + generate button
+  - Resolves seed from `SimResults.statistics` or custom input
+  - Disables when no seed available or when loading
+- **EventLog** (3.5b): grid display of events grouped by frame
+  - Header row with "Frame | Sim | char1 | char2 | ..." columns
+  - Filter presets (simple/advanced/verbose/debug) via dropdown
+  - Text search across event messages
+  - Event items with colored type badges
+  - Active character column highlighted
+  - Empty state when no events match
+- **SampleViewer** (3.5c): composition component
+  - Wires SeedSelector + EventLog + sample loading state machine (idle/loading/error/loaded)
+  - Transforms raw logs through the events pipeline (transformEvents → resolveStatusDurations → trackActiveCharacter → groupByFrame)
+  - Loading spinner, error display, and event log rendering
+- 20 new tests (6 seed-selector + 9 event-log + 5 sample-viewer)
+- `tsconfig.json` updated to exclude test files (needed for cross-package fixture imports)
+- Total viewer tests: 282 (30 test files)
+
+### Step 3.6 — `@gcsim/preview` (DONE)
+
+- Created `packages/preview/` with compact preview card component
+- **PreviewCard**: summary card for Discord embeds and DB entries
+  - Team portraits via `@gcsim/avatar` TeamDisplay
+  - Metadata badges: DPS, iterations, mode, modified status, warnings
+  - Per-character DPS breakdown with proportional bars
+  - `#images_loaded` signal for headless capture (Puppeteer)
+  - Handles missing optional data gracefully
+- 11 tests passing (1 test file), typecheck clean, build succeeds
+- Dependencies: `@gcsim/primitives`, `@gcsim/types`, `@gcsim/avatar`
+
+### Phase 3 Gate
+
+- All 6 feature package steps complete (3.1–3.6)
+- Total tests: 282 (viewer) + 23 (avatar) + 33 (editor) + 11 (preview) + 77 (Phase 1) + 14 (primitives) = 440 tests
+- All packages: typecheck clean, build succeeds
+- Storybook: pre-existing typecheck issue with `FloatStat` types in stories (not related to Phase 3 work)
