@@ -1,4 +1,4 @@
-import { lintGutter } from "@codemirror/lint";
+import { diagnosticCount, lintGutter } from "@codemirror/lint";
 import { EditorState } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
 import { describe, expect, test } from "vitest";
@@ -21,9 +21,7 @@ describe("diagnostics", () => {
 
     applyDiagnostics(view, errors);
 
-    // No throw = diagnostics were applied successfully
-    // We can't easily inspect diagnostics state, but the dispatch succeeded
-    expect(view.state).toBeDefined();
+    expect(diagnosticCount(view.state)).toBe(1);
     view.destroy();
   });
 
@@ -32,7 +30,7 @@ describe("diagnostics", () => {
     const errors: GcsimError[] = [{ line: 1, column: 5, message: "invalid assignment" }];
 
     applyDiagnostics(view, errors);
-    expect(view.state).toBeDefined();
+    expect(diagnosticCount(view.state)).toBe(1);
     view.destroy();
   });
 
@@ -42,15 +40,19 @@ describe("diagnostics", () => {
 
     // Should not throw — clamps to last line
     applyDiagnostics(view, errors);
-    expect(view.state).toBeDefined();
+    expect(diagnosticCount(view.state)).toBe(1);
     view.destroy();
   });
 
   test("clearDiagnostics removes all diagnostics", () => {
     const view = createView("some code");
+    const errors: GcsimError[] = [{ line: 1, message: "test error" }];
+
+    applyDiagnostics(view, errors);
+    expect(diagnosticCount(view.state)).toBe(1);
 
     clearDiagnostics(view);
-    expect(view.state).toBeDefined();
+    expect(diagnosticCount(view.state)).toBe(0);
     view.destroy();
   });
 
@@ -62,7 +64,7 @@ describe("diagnostics", () => {
     ];
 
     applyDiagnostics(view, errors);
-    expect(view.state).toBeDefined();
+    expect(diagnosticCount(view.state)).toBe(2);
     view.destroy();
   });
 });

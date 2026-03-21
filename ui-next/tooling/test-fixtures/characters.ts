@@ -1,6 +1,6 @@
-import type { Character } from "../../packages/types/src/sim.js";
+import type { Sim } from "../../packages/types/src/index.js";
 
-export const mockHutao: Character = {
+export const mockHutao: Sim.Character = {
   name: "hutao",
   level: 90,
   element: "pyro",
@@ -48,4 +48,4 @@ export const mockXingqiu: Character = {
   },
 };
 
-export const mockCharacters: Character[] = [mockHutao, mockXingqiu];
+export const mockCharacters: Sim.Character[] = [mockHutao, mockXingqiu];

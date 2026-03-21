@@ -8,7 +8,7 @@ export interface Executor {
   run(
     cfg: string,
     updateResult: (result: Sim.SimResults, hash: string) => void,
-  ): Promise<boolean | void>;
+  ): Promise<boolean | undefined>;
   cancel(): void;
   buildInfo(): { hash: string; date: string };
 }

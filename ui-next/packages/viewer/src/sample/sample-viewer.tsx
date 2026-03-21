@@ -69,7 +69,7 @@ export function SampleViewer({ result, onRequestSample, className }: SampleViewe
 
       {state.status === "error" && (
         <Card data-testid="sample-error">
-          <CardContent className="p-6 text-center text-sm text-red-500">
+          <CardContent className="text-destructive p-6 text-center text-sm">
             Error: {state.error}
           </CardContent>
         </Card>

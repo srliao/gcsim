@@ -27,14 +27,14 @@ describe("transformReactions", () => {
     const { rows } = transformReactions(mockData, mockNames);
     const vaporize = rows.find((r) => r.name === "Vaporize");
     expect(vaporize?.["Hu Tao"]).toBe(50);
-    expect(vaporize?.["Xingqiu"]).toBe(20);
+    expect(vaporize?.Xingqiu).toBe(20);
   });
 
   it("defaults missing character reaction to 0", () => {
     const { rows } = transformReactions(mockData, mockNames);
     const overloaded = rows.find((r) => r.name === "Overloaded");
     expect(overloaded?.["Hu Tao"]).toBe(10);
-    expect(overloaded?.["Xingqiu"]).toBe(0);
+    expect(overloaded?.Xingqiu).toBe(0);
   });
 
   it("returns empty rows and keys for empty data", () => {

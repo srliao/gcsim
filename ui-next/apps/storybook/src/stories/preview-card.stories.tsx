@@ -2,14 +2,61 @@ import { PreviewCard } from "@gcsim/preview";
 import type { Sim } from "@gcsim/types";
 import type { Meta, StoryObj } from "@storybook/react";
 
+const emptyWeapon = { name: "", level: 0, max_level: 0, refine: 0 };
+const emptyTalents = { attack: 0, skill: 0, burst: 0 };
+
 const mockData: Sim.SimResults = {
   mode: 0,
   modified: false,
   character_details: [
-    { name: "hutao", element: "pyro", level: 90, max_level: 90, cons: 1 },
-    { name: "xingqiu", element: "hydro", level: 90, max_level: 90, cons: 6 },
-    { name: "zhongli", element: "geo", level: 90, max_level: 90, cons: 0 },
-    { name: "kazuha", element: "anemo", level: 90, max_level: 90, cons: 0 },
+    {
+      name: "hutao",
+      element: "pyro",
+      level: 90,
+      max_level: 90,
+      cons: 1,
+      weapon: emptyWeapon,
+      talents: emptyTalents,
+      stats: [],
+      snapshot: [],
+      sets: {},
+    },
+    {
+      name: "xingqiu",
+      element: "hydro",
+      level: 90,
+      max_level: 90,
+      cons: 6,
+      weapon: emptyWeapon,
+      talents: emptyTalents,
+      stats: [],
+      snapshot: [],
+      sets: {},
+    },
+    {
+      name: "zhongli",
+      element: "geo",
+      level: 90,
+      max_level: 90,
+      cons: 0,
+      weapon: emptyWeapon,
+      talents: emptyTalents,
+      stats: [],
+      snapshot: [],
+      sets: {},
+    },
+    {
+      name: "kazuha",
+      element: "anemo",
+      level: 90,
+      max_level: 90,
+      cons: 0,
+      weapon: emptyWeapon,
+      talents: emptyTalents,
+      stats: [],
+      snapshot: [],
+      sets: {},
+    },
   ],
   simulator_settings: { iterations: 1000, delays: { swap: 1 } },
   statistics: {
@@ -61,8 +108,8 @@ export const WithWarnings: Story = {
     data: {
       ...mockData,
       statistics: {
-        ...mockData.statistics!,
-        warnings: { ...mockData.statistics!.warnings!, swap_cd: true, insufficient_energy: true },
+        ...mockData.statistics,
+        warnings: { ...mockData.statistics?.warnings, swap_cd: true, insufficient_energy: true },
       },
     },
   },
@@ -72,10 +119,10 @@ export const TwoCharacters: Story = {
   args: {
     data: {
       ...mockData,
-      character_details: mockData.character_details!.slice(0, 2),
+      character_details: mockData.character_details?.slice(0, 2),
       statistics: {
-        ...mockData.statistics!,
-        character_dps: mockData.statistics!.character_dps!.slice(0, 2),
+        ...mockData.statistics,
+        character_dps: mockData.statistics?.character_dps?.slice(0, 2),
       },
     },
   },

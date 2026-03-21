@@ -1,7 +1,7 @@
-import type { SimResults } from "../../packages/types/src/sim.js";
+import type { Sim } from "../../packages/types/src/index.js";
 import { mockCharacters } from "./characters.js";
 
-export const mockSimResult: SimResults = {
+export const mockSimResult: Sim.SimResults = {
   schema_version: { major: "2", minor: "0" },
   sim_version: "2.5.0",
   build_date: "2026-03-19",

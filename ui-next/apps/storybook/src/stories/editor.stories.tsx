@@ -22,7 +22,7 @@ while 1 {
 }
 `;
 
-const meta = {
+const meta: Meta<typeof Editor> = {
   title: "Editor/Editor",
   component: Editor,
   tags: ["autodocs"],
@@ -38,7 +38,7 @@ const meta = {
       </div>
     ),
   ],
-} satisfies Meta<typeof Editor>;
+};
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -74,6 +74,7 @@ export const WithErrors: Story = {
 };
 
 export const Controlled: Story = {
+  args: { value: sampleConfig, className: "h-full" },
   render: () => {
     const [value, setValue] = useState(sampleConfig);
     return (

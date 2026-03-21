@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import {
   Bar,
   BarChart,
@@ -5,6 +6,7 @@ import {
   Legend,
   ResponsiveContainer,
   Tooltip,
+  type TooltipContentProps,
   XAxis,
   YAxis,
 } from "recharts";
@@ -17,7 +19,7 @@ export interface HorizontalBarStackProps<Row extends Record<string, string | num
   colorFn: (key: string) => string;
   height?: number;
   xTickFormatter?: (value: number) => string;
-  tooltipContent?: React.ReactElement;
+  tooltipContent?: (props: TooltipContentProps) => ReactNode;
 }
 
 export function HorizontalBarStack<Row extends Record<string, string | number>>({
@@ -37,7 +39,7 @@ export function HorizontalBarStack<Row extends Record<string, string | number>>(
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis type="number" tickFormatter={xTickFormatter} />
         <YAxis type="category" dataKey={nameKey} width={120} />
-        <Tooltip content={tooltipContent ?? <StatTooltip />} />
+        <Tooltip content={tooltipContent ?? StatTooltip} />
         <Legend />
         {keys.map((key) => (
           <Bar key={key} dataKey={key} stackId="stack" fill={colorFn(key)} />

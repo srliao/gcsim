@@ -1,12 +1,33 @@
-import { describe, it, expect } from "vitest";
-import { getEventDisplay, eventDisplayMap } from "./display-config.js";
+import { describe, expect, it } from "vitest";
+import { eventDisplayMap, getEventDisplay } from "./display-config.js";
 import type { SimEventType } from "./types.js";
 
 const allTypes: SimEventType[] = [
-  "damage", "energy", "status", "element", "action", "calc", "snapshot",
-  "pre_damage_mods", "shield", "heal", "hurt", "construct", "icd",
-  "cooldown", "hitlag", "enemy", "character", "weapon", "artifact",
-  "user", "sim", "player", "warning", "debug", "generic",
+  "damage",
+  "energy",
+  "status",
+  "element",
+  "action",
+  "calc",
+  "snapshot",
+  "pre_damage_mods",
+  "shield",
+  "heal",
+  "hurt",
+  "construct",
+  "icd",
+  "cooldown",
+  "hitlag",
+  "enemy",
+  "character",
+  "weapon",
+  "artifact",
+  "user",
+  "sim",
+  "player",
+  "warning",
+  "debug",
+  "generic",
 ];
 
 describe("eventDisplayMap", () => {

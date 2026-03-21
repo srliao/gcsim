@@ -23,10 +23,16 @@ describe("Editor component", () => {
     expect(wrapper).toHaveClass("my-editor");
   });
 
-  test("renders in readOnly mode without crashing", () => {
+  test("renders in readOnly mode", () => {
     const { container } = render(<Editor value="read only content" readOnly />);
     const cmEditor = container.querySelector(".cm-editor");
     expect(cmEditor).toBeInTheDocument();
+    // CM6 EditorState.readOnly prevents edits at the transaction level
+    // but does not set contenteditable=false (that's EditorView.editable).
+    // Verify the content is rendered correctly in readOnly mode.
+    const cmContent = container.querySelector(".cm-content");
+    expect(cmContent).toBeInTheDocument();
+    expect(cmContent?.textContent).toContain("read only content");
   });
 
   test("renders with errors without crashing", () => {
@@ -43,12 +49,6 @@ describe("Editor component", () => {
     expect(content?.textContent).toContain("updated");
   });
 
-  test("calls onChange when provided", () => {
-    const onChange = vi.fn();
-    render(<Editor value="test" onChange={onChange} />);
-    // We verify onChange is wired up — actual typing requires
-    // simulating CM6 transactions which is complex in jsdom.
-    // The wiring is verified by the component rendering without error.
-    expect(onChange).not.toHaveBeenCalled();
-  });
+  // onChange integration test omitted: verifying CM6 transaction dispatch in jsdom
+  // requires reaching into EditorView internals, which couples tests to CM6 implementation.
 });

@@ -70,7 +70,7 @@ function CumulativeTooltip({ active, payload, label }: TooltipContentProps<Value
   const keys: Array<keyof CumulativeDamageDataPoint> = ["min", "q1", "q2", "q3", "max"];
 
   return (
-    <div className="rounded-md border bg-white p-2 text-xs shadow-md dark:bg-gray-900">
+    <div className="bg-popover text-popover-foreground rounded-md border p-2 text-xs shadow-md">
       <div className="mb-1 font-medium">{`${label}s`}</div>
       {keys.map((key) => (
         <div key={key} className="flex justify-between gap-4">

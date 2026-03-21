@@ -2,12 +2,37 @@ import type { Sim } from "@gcsim/types";
 import { SampleViewer } from "@gcsim/viewer";
 import type { Meta, StoryObj } from "@storybook/react";
 
+const emptyWeapon = { name: "", level: 0, max_level: 0, refine: 0 };
+const emptyTalents = { attack: 0, skill: 0, burst: 0 };
+
 const mockResult: Sim.SimResults = {
   sample_seed: "12345",
   config_file: "hutao char lvl=90/90 cons=1;\nactive hutao;",
   character_details: [
-    { name: "hutao", element: "pyro", level: 90, max_level: 90, cons: 1 },
-    { name: "xingqiu", element: "hydro", level: 90, max_level: 90, cons: 6 },
+    {
+      name: "hutao",
+      element: "pyro",
+      level: 90,
+      max_level: 90,
+      cons: 1,
+      weapon: emptyWeapon,
+      talents: emptyTalents,
+      stats: [],
+      snapshot: [],
+      sets: {},
+    },
+    {
+      name: "xingqiu",
+      element: "hydro",
+      level: 90,
+      max_level: 90,
+      cons: 6,
+      weapon: emptyWeapon,
+      talents: emptyTalents,
+      stats: [],
+      snapshot: [],
+      sets: {},
+    },
   ],
   statistics: {
     min_seed: "111",

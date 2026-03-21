@@ -13,9 +13,30 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   render: () => (
     <ScrollArea className="h-[200px] w-[350px] rounded-md border p-4">
-      {Array.from({ length: 20 }, (_, i) => (
-        <div key={i} className="py-1 text-sm">
-          Item {i + 1}
+      {[
+        "Alpha",
+        "Beta",
+        "Gamma",
+        "Delta",
+        "Epsilon",
+        "Zeta",
+        "Eta",
+        "Theta",
+        "Iota",
+        "Kappa",
+        "Lambda",
+        "Mu",
+        "Nu",
+        "Xi",
+        "Omicron",
+        "Pi",
+        "Rho",
+        "Sigma",
+        "Tau",
+        "Upsilon",
+      ].map((name) => (
+        <div key={name} className="py-1 text-sm">
+          {name}
         </div>
       ))}
     </ScrollArea>

@@ -86,8 +86,8 @@ export function EventLog({ frameGroups, characterNames, className }: EventLogPro
             data-testid="event-log-header"
           >
             <div className="border-r px-2 py-1 text-sm">Frame</div>
-            {slotHeaders.map((name, i) => (
-              <div key={i} className="border-r px-2 py-1 text-sm last:border-r-0">
+            {slotHeaders.map((name) => (
+              <div key={name} className="border-r px-2 py-1 text-sm last:border-r-0">
                 {name}
               </div>
             ))}
@@ -115,21 +115,25 @@ export function EventLog({ frameGroups, characterNames, className }: EventLogPro
                 </div>
 
                 {/* Slots */}
-                {group.slots.map((events, slotIdx) => (
-                  <div
-                    key={slotIdx}
-                    className={cn(
-                      "border-r px-1 py-1 last:border-r-0",
-                      slotIdx === group.activeCharacter + 1 && "bg-accent/20",
-                    )}
-                  >
-                    {events
-                      .filter((e) => isVisible(e, enabledTypes, searchQuery))
-                      .map((event, eventIdx) => (
-                        <EventItem key={eventIdx} event={event} />
+                {group.slots.map((events, slotIdx) => {
+                  const slotName = slotHeaders[slotIdx] ?? `slot-${slotIdx}`;
+                  return (
+                    <div
+                      key={slotName}
+                      className={cn(
+                        "border-r px-1 py-1 last:border-r-0",
+                        slotIdx === group.activeCharacter + 1 && "bg-accent/20",
+                      )}
+                    >
+                      {events.map((event) => (
+                        <EventItem
+                          key={`${event.frame}-${event.type}-${event.message.slice(0, 30)}`}
+                          event={event}
+                        />
                       ))}
-                  </div>
-                ))}
+                    </div>
+                  );
+                })}
               </div>
             ))
           )}

@@ -1,3 +1,4 @@
+import type { Sim } from "@gcsim/types";
 import { EnergyChart } from "@gcsim/viewer";
 import type { Meta, StoryObj } from "@storybook/react";
 
@@ -10,7 +11,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const mockEnergy = [
+const mockEnergy: Sim.SourceStats[] = [
   {
     sources: {
       "Elemental Skill": { mean: 150 },

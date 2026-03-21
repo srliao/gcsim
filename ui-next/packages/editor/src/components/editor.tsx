@@ -52,6 +52,7 @@ export const Editor: FC<EditorProps> = ({
   onChangeRef.current = onChange;
 
   // Create editor on mount
+  // biome-ignore lint/correctness/useExhaustiveDependencies: intentionally mount-only — value/readOnly synced via dedicated effects below
   useEffect(() => {
     if (!containerRef.current) return;
 
@@ -116,7 +117,7 @@ export const Editor: FC<EditorProps> = ({
       view.destroy();
       viewRef.current = null;
     };
-  }, [readOnly, value]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   // Sync external value changes (controlled component pattern)
   useEffect(() => {

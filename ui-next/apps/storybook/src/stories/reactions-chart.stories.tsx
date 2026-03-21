@@ -1,3 +1,4 @@
+import type { Sim } from "@gcsim/types";
 import { ReactionsChart } from "@gcsim/viewer";
 import type { Meta, StoryObj } from "@storybook/react";
 
@@ -10,7 +11,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const mockReactions = [
+const mockReactions: Sim.SourceStats[] = [
   {
     sources: {
       Vaporize: { mean: 50 },

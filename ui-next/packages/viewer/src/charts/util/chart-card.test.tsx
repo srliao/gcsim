@@ -24,7 +24,11 @@ describe("ChartCard", () => {
   });
 
   it("applies custom height", () => {
-    render(<ChartCard title="Test" height={500}>content</ChartCard>);
+    render(
+      <ChartCard title="Test" height={500}>
+        content
+      </ChartCard>,
+    );
     const container = screen.getByTestId("chart-container");
     expect(container).toHaveStyle({ height: "500px" });
   });
