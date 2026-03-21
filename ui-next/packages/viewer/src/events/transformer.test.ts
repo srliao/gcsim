@@ -112,3 +112,177 @@ describe("transformGeneric (unknown event types)", () => {
     expect(result.message).toContain("hook");
   });
 });
+
+describe("transformEnergy", () => {
+  it("handles particle events", () => {
+    const log = makeLog({
+      event: "energy",
+      msg: "particle landed",
+      logs: { source: "skill", amt: 3, post_recovery: 45, max_energy: 70 },
+    });
+    const result = transformEvents([log])[0];
+    expect(result.type).toBe("energy");
+    if (result.type === "energy") {
+      expect(result.energyType).toBe("particle");
+      expect(result.amount).toBe(3);
+      expect(result.source).toBe("skill");
+      expect(result.message).toContain("particle");
+      expect(result.message).toContain("skill");
+      expect(result.message).toContain("45");
+    }
+  });
+
+  it("handles flat energy events", () => {
+    const log = makeLog({
+      event: "energy",
+      msg: "adding energy",
+      logs: { source: "burst", "rec'd": 12.5, post_recovery: 62.5, max_energy: 70 },
+    });
+    const result = transformEvents([log])[0];
+    expect(result.type).toBe("energy");
+    if (result.type === "energy") {
+      expect(result.energyType).toBe("flat");
+      expect(result.amount).toBeCloseTo(12.5);
+      expect(result.message).toContain("12.50");
+    }
+  });
+
+  it("appends (max) when at max energy", () => {
+    const log = makeLog({
+      event: "energy",
+      msg: "adding energy",
+      logs: { source: "burst", "rec'd": 10, post_recovery: 70, max_energy: 70 },
+    });
+    const result = transformEvents([log])[0];
+    if (result.type === "energy") {
+      expect(result.message).toContain("(max)");
+    }
+  });
+});
+
+describe("transformStatus", () => {
+  it("extracts key and duration", () => {
+    const log = makeLog({
+      event: "status",
+      frame: 100,
+      ended: 400,
+      msg: "added",
+      logs: { key: "pyro-res-shred" },
+    });
+    const result = transformEvents([log])[0];
+    expect(result.type).toBe("status");
+    if (result.type === "status") {
+      expect(result.key).toBe("pyro-res-shred");
+      expect(result.addedFrame).toBe(100);
+      expect(result.endedFrame).toBe(400);
+      expect(result.message).toContain("pyro-res-shred");
+      expect(result.message).toContain("400");
+    }
+  });
+
+  it("leaves addedFrame/endedFrame undefined when no duration", () => {
+    const log = makeLog({
+      event: "status",
+      frame: 100,
+      ended: 0,
+      msg: "checked",
+      logs: { key: "some-status" },
+    });
+    const result = transformEvents([log])[0];
+    if (result.type === "status") {
+      expect(result.addedFrame).toBeUndefined();
+      expect(result.endedFrame).toBeUndefined();
+    }
+  });
+});
+
+describe("transformElement", () => {
+  it("handles application with aura state", () => {
+    const log = makeLog({
+      event: "element",
+      msg: "application",
+      logs: {
+        applied_ele: "pyro",
+        existing: ["hydro: 40.0"],
+        after: ["pyro: 20.0"],
+        target: "enemy0",
+      },
+    });
+    const result = transformEvents([log])[0];
+    expect(result.type).toBe("element");
+    if (result.type === "element") {
+      expect(result.elementSubtype).toBe("application");
+      expect(result.appliedElement).toBe("pyro");
+      expect(result.message).toContain("pyro applied");
+      expect(result.message).toContain("hydro (40.0)");
+    }
+  });
+
+  it("handles expired", () => {
+    const log = makeLog({
+      event: "element",
+      msg: "expired",
+      logs: { old_ele: "cryo", target: "enemy0" },
+    });
+    const result = transformEvents([log])[0];
+    if (result.type === "element") {
+      expect(result.elementSubtype).toBe("expired");
+      expect(result.oldElement).toBe("cryo");
+      expect(result.message).toContain("cryo expired");
+    }
+  });
+
+  it("handles refreshed", () => {
+    const log = makeLog({
+      event: "element",
+      msg: "refreshed",
+      logs: { ele: "electro", target: "enemy0" },
+    });
+    const result = transformEvents([log])[0];
+    if (result.type === "element") {
+      expect(result.elementSubtype).toBe("refreshed");
+      expect(result.refreshedElement).toBe("electro");
+    }
+  });
+
+  it("falls back to other for unknown element messages", () => {
+    const log = makeLog({
+      event: "element",
+      msg: "some new thing",
+      logs: { target: "enemy0" },
+    });
+    const result = transformEvents([log])[0];
+    if (result.type === "element") {
+      expect(result.elementSubtype).toBe("other");
+    }
+  });
+});
+
+describe("transformAction", () => {
+  it("formats swap actions with target", () => {
+    const log = makeLog({
+      event: "action",
+      msg: "executed swap",
+      logs: { action: "swap", target: "xingqiu" },
+    });
+    const result = transformEvents([log])[0];
+    if (result.type === "action") {
+      expect(result.action).toBe("swap");
+      expect(result.target).toBe("xingqiu");
+      expect(result.message).toContain("xingqiu");
+      expect(result.message).not.toContain("executed");
+    }
+  });
+
+  it("strips executed prefix for non-swap actions", () => {
+    const log = makeLog({
+      event: "action",
+      msg: "executed attack",
+      logs: { action: "attack" },
+    });
+    const result = transformEvents([log])[0];
+    if (result.type === "action") {
+      expect(result.message).toBe("attack");
+    }
+  });
+});
