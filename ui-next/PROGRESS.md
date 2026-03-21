@@ -442,3 +442,31 @@ Full design spec: `docs/superpowers/specs/2026-03-20-viewer-charts-design.md`
 - Total tests: ~440 (exact count may vary after test additions/removals from review fixes)
 - All packages: biome clean, typecheck clean, tests pass, build succeeds
 - All branches merged into `web-rewrite`
+
+## Phase 4: Application Shell
+
+| Step | Status | Description |
+|------|--------|-------------|
+| 4.1 | DONE | `@gcsim/web` app shell |
+
+### Step 4.1 — `@gcsim/web` App Shell (DONE)
+
+- Created `apps/web/` — main web application shell
+- **Build config**: Vite 8 + React plugin + Tailwind v4 Vite plugin, vitest with jsdom
+- **CSS**: Inlined theme tokens from `@gcsim/primitives/theme.css` (same pattern as storybook)
+  - Added `shadcn`, `tw-animate-css` as devDependencies for CSS imports
+  - `@source` directives for primitives, avatar, viewer, editor, preview
+- **Entry point** (`main.tsx`): React Query provider, TanStack Router provider, i18n init
+- **TanStack Router** (`routes.tsx`): code-based route tree with 7 routes
+  - All pages lazy-loaded via `.lazy()` + `createLazyRoute()` for code splitting
+  - Routes: `/` (Dash), `/simulator`, `/web`, `/local`, `/sh/$id`, `/sample/upload`, `/sample/local`
+  - Root route renders layout with Nav + Outlet + Footer wrapped in ErrorBoundary
+- **Layout components**: Nav (responsive with hamburger menu), Footer, ErrorBoundary (class component)
+- **Zustand stores** (3):
+  - `simulator-store` — persisted (`gcsim-simulator`): config, team, validation, execution mode, workers, server URL
+  - `viewer-store` — not persisted: results, active tab, error, recovery config
+  - `settings-store` — persisted (`gcsim-settings`): language
+- **Page stubs**: 7 minimal stub components (render page name heading only)
+- 18 tests passing (3 store test files), typecheck clean, build succeeds
+- Build produces 7 lazy-loaded chunks + 1 main bundle
+- Dependencies: all `@gcsim/*` workspace packages, `@tanstack/react-query@5.91.2`, `@tanstack/react-router@1.167.5`, `zustand@5.0.12`
