@@ -102,7 +102,7 @@ export class WasmExecutor implements Executor {
   public run(
     cfg: string,
     updateResult: (result: Sim.SimResults, hash: string) => void,
-  ): Promise<boolean | void> {
+  ): Promise<boolean | undefined> {
     this.isRunning = true;
     this.runStarted = performance.now();
 

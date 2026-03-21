@@ -427,9 +427,18 @@ Full design spec: `docs/superpowers/specs/2026-03-20-viewer-charts-design.md`
 - 11 tests passing (1 test file), typecheck clean, build succeeds
 - Dependencies: `@gcsim/primitives`, `@gcsim/types`, `@gcsim/avatar`
 
-### Phase 3 Gate
+### Phase 3 Gate (PASSED)
 
-- All 6 feature package steps complete (3.1–3.6)
-- Total tests: 282 (viewer) + 23 (avatar) + 33 (editor) + 11 (preview) + 77 (Phase 1) + 14 (primitives) = 440 tests
-- All packages: typecheck clean, build succeeds
-- Storybook: pre-existing typecheck issue with `FloatStat` types in stories (not related to Phase 3 work)
+**Pipeline checks:** All pass — biome clean, typecheck (19/19), tests (18/18), build (11/11), dep-cruiser clean.
+
+**Package reviews completed** (4 parallel `package-reviewer` agents):
+- **avatar:** PASS after fixing deep import in `tooling/test-fixtures/characters.ts` (was importing from `@gcsim/types/src/sim.js` instead of package index)
+- **editor:** PASS after fixing mount useEffect dep array (`[readOnly, value]` → `[]`), replacing vacuous onChange test, upgrading diagnostics tests to assert actual diagnostic counts, improving readOnly test
+- **viewer:** PASS after fixing Recharts tooltip pattern (JSX element → function ref), replacing hardcoded colors (`bg-white dark:bg-gray-900` → `bg-popover text-popover-foreground`, `text-red-500` → `text-destructive`), removing redundant double-filter in EventLog
+- **preview:** PASS after strengthening shallow test assertions (team section verifies portrait initials, DPS breakdown verifies character name + formatted value), adding onImageLoaded callback test
+
+**Storybook typecheck fixes** (gate-time): added type annotations to chart story mock data (`SourceStats[]`, `ElementStats[]`), added missing Character fields to preview/sample-viewer stories, fixed editor meta inference issue, replaced array index keys.
+
+- Total tests: ~440 (exact count may vary after test additions/removals from review fixes)
+- All packages: biome clean, typecheck clean, tests pass, build succeeds
+- All branches merged into `web-rewrite`

@@ -79,12 +79,12 @@ export function PreviewCard({ data, onImageLoaded, className }: PreviewCardProps
           <div className="flex flex-col gap-1" data-testid="preview-char-dps">
             {stats.character_dps.map((charDps, idx) => {
               const name = characters[idx]?.name ?? `Character ${idx + 1}`;
-              const maxDps = Math.max(...stats.character_dps!.map((d) => d.mean ?? 0));
+              const maxDps = Math.max(...(stats.character_dps ?? []).map((d) => d.mean ?? 0));
               const barWidth =
                 charDps.mean != null && maxDps > 0 ? (charDps.mean / maxDps) * 100 : 0;
 
               return (
-                <div key={idx} className="flex items-center gap-2 text-xs">
+                <div key={name} className="flex items-center gap-2 text-xs">
                   <span className="w-20 truncate capitalize">{name}</span>
                   <div className="bg-muted h-2 flex-1 overflow-hidden rounded-full">
                     <div

@@ -1,3 +1,4 @@
+import type { Sim } from "@gcsim/types";
 import { ElementDpsChart } from "@gcsim/viewer";
 import type { Meta, StoryObj } from "@storybook/react";
 
@@ -10,7 +11,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const mockElementData = [
+const mockElementData: Sim.ElementStats[] = [
   { elements: { pyro: { mean: 30000 }, physical: { mean: 5100 } } },
   { elements: { hydro: { mean: 14000 }, physical: { mean: 1150 } } },
 ];

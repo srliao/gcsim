@@ -1,5 +1,5 @@
-import { describe, it, expect } from "vitest";
-import { filterPresets, allEventTypes } from "./filter-presets.js";
+import { describe, expect, it } from "vitest";
+import { allEventTypes, filterPresets } from "./filter-presets.js";
 
 describe("filterPresets", () => {
   it("simple is a subset of advanced", () => {
@@ -27,7 +27,7 @@ describe("filterPresets", () => {
 
   it("simple contains the 5 basic types", () => {
     expect(filterPresets.simple).toEqual(
-      expect.arrayContaining(["action", "damage", "energy", "warning", "user"])
+      expect.arrayContaining(["action", "damage", "energy", "warning", "user"]),
     );
     expect(filterPresets.simple).toHaveLength(5);
   });

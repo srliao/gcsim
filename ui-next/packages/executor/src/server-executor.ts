@@ -98,7 +98,7 @@ export class ServerExecutor implements Executor {
   public async run(
     cfg: string,
     updateResult: (result: Sim.SimResults, hash: string) => void,
-  ): Promise<boolean | void> {
+  ): Promise<boolean | undefined> {
     try {
       await fetch(`${this.ipaddr}/run/${this.id}`, {
         method: "POST",
