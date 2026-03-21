@@ -17,3 +17,6 @@ export { TeamHeader } from "./team-header/index.js";
 
 // Events (event log abstraction layer)
 export * from "./events/index.js";
+
+// Sample Viewer
+export * from "./sample/index.js";

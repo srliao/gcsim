@@ -69,6 +69,12 @@ All exports go through `src/index.ts` → `src/charts/index.ts`:
 - `filterPresets` — simple/advanced/verbose/debug filter preset arrays
 - `SimEvent`, `FrameGroup`, and all typed event interfaces — discriminated union types
 
+### Sample Viewer
+
+- `SeedSelector` — dropdown for seed mode (sample/min/max/p25/p50/p75/custom) + generate button
+- `EventLog` — grid display of events grouped by frame with filter presets and text search
+- `SampleViewer` — composition component wiring SeedSelector + EventLog + sample loading state
+
 ## Dependencies
 
 - `@gcsim/primitives` -- Card, Badge, cn() utility
