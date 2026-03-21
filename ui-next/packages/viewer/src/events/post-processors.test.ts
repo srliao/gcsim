@@ -1,7 +1,7 @@
 import type { Sim } from "@gcsim/types";
 import { describe, expect, it } from "vitest";
-import { groupByFrame, trackActiveCharacter } from "./post-processors.js";
-import type { ActionEvent, SimEvent } from "./types.js";
+import { groupByFrame, resolveStatusDurations, trackActiveCharacter } from "./post-processors.js";
+import type { ActionEvent, SimEvent, StatusEvent } from "./types.js";
 
 const dummyRaw: Sim.LogDetails = {
   char_index: 0,
@@ -102,5 +102,79 @@ describe("groupByFrame", () => {
     expect(groups[0].activeCharacter).toBe(1); // frame 10: swap to char 1
     expect(groups[1].activeCharacter).toBe(1); // frame 20: still char 1
     expect(groups[2].activeCharacter).toBe(0); // frame 30: swap to char 0
+  });
+});
+
+function makeStatus(
+  frame: number,
+  charIndex: number,
+  key: string,
+  msg: string,
+  addedFrame?: number,
+  endedFrame?: number,
+): StatusEvent {
+  return {
+    type: "status",
+    frame,
+    characterIndex: charIndex,
+    message: `${key} ${msg}`,
+    raw: dummyRaw,
+    key,
+    addedFrame,
+    endedFrame,
+  };
+}
+
+describe("resolveStatusDurations", () => {
+  it("returns events unchanged when no status events", () => {
+    const events: SimEvent[] = [makeDamage(10, 0)];
+    const result = resolveStatusDurations(events);
+    expect(result).toEqual(events);
+  });
+
+  it("synthesizes expiration events for status with duration", () => {
+    const events: SimEvent[] = [makeStatus(100, 0, "pyro-buff", "added", 100, 400)];
+    const result = resolveStatusDurations(events);
+    const statusEvents = result.filter((e) => e.type === "status") as StatusEvent[];
+    expect(statusEvents.length).toBeGreaterThanOrEqual(2);
+    const expiration = statusEvents.find((e) => e.message.includes("expired"));
+    expect(expiration).toBeDefined();
+    expect(expiration?.frame).toBe(400);
+  });
+
+  it("resolves refresh events to original duration", () => {
+    const events: SimEvent[] = [
+      makeStatus(100, 0, "buff-a", "added", 100, 400),
+      makeStatus(200, 0, "buff-a", "refreshed", undefined, undefined),
+    ];
+    const result = resolveStatusDurations(events);
+    const refreshed = result.find(
+      (e) => e.type === "status" && e.frame === 200 && (e as StatusEvent).key === "buff-a",
+    ) as StatusEvent;
+    expect(refreshed).toBeDefined();
+    expect(refreshed.addedFrame).toBe(100);
+    expect(refreshed.endedFrame).toBe(400);
+  });
+
+  it("matches by characterIndex and key", () => {
+    const events: SimEvent[] = [
+      makeStatus(100, 0, "buff-a", "added", 100, 400),
+      makeStatus(100, 1, "buff-a", "added", 100, 500),
+      makeStatus(200, 1, "buff-a", "refreshed", undefined, undefined),
+    ];
+    const result = resolveStatusDurations(events);
+    const refreshed = result.find((e) => e.type === "status" && e.frame === 200) as StatusEvent;
+    expect(refreshed.endedFrame).toBe(500);
+  });
+
+  it("preserves non-status events in output", () => {
+    const events: SimEvent[] = [
+      makeDamage(10, 0),
+      makeStatus(100, 0, "buff", "added", 100, 400),
+      makeDamage(200, 0),
+    ];
+    const result = resolveStatusDurations(events);
+    const damageEvents = result.filter((e) => e.type === "damage");
+    expect(damageEvents).toHaveLength(2);
   });
 });

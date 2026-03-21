@@ -1,4 +1,4 @@
-import type { FrameGroup, SimEvent } from "./types.js";
+import type { FrameGroup, SimEvent, StatusEvent } from "./types.js";
 
 /**
  * Note on char_index for swap events: In the backend, char_index on a swap event
@@ -63,4 +63,84 @@ export function groupByFrame(
     const group = frameMap.get(f);
     return group || { frame: f, activeCharacter: -1, slots: [] };
   });
+}
+
+export function resolveStatusDurations(events: SimEvent[]): SimEvent[] {
+  // Collect status events with duration that are "added"
+  const expirations: Map<number, StatusEvent[]> = new Map(); // endedFrame → synthetic events
+
+  for (const event of events) {
+    if (event.type !== "status") continue;
+    const status = event as StatusEvent;
+    if (
+      status.addedFrame != null &&
+      status.endedFrame != null &&
+      status.endedFrame > status.frame &&
+      status.message.includes("added")
+    ) {
+      const frame = status.endedFrame;
+      if (!expirations.has(frame)) expirations.set(frame, []);
+      expirations.get(frame)?.push({
+        ...status,
+        frame: status.endedFrame,
+        message: `${status.key} expired [${status.endedFrame} | ${(status.endedFrame / 60).toFixed(2)}s]`,
+        addedFrame: status.addedFrame,
+        endedFrame: status.endedFrame,
+      });
+    }
+  }
+
+  // Resolve refresh/extend events: find original "added" event by char + key
+  const result = events.map((event) => {
+    if (event.type !== "status") return event;
+    const status = event as StatusEvent;
+    if (status.addedFrame != null || status.endedFrame != null) return event;
+    if (!status.message.includes("refreshed") && !status.message.includes("extended")) {
+      return event;
+    }
+
+    // Search for original "added" event matching char + key
+    const original = events.find((e) => {
+      if (e.type !== "status") return false;
+      const s = e as StatusEvent;
+      return (
+        s.key === status.key &&
+        s.characterIndex === status.characterIndex &&
+        s.addedFrame != null &&
+        s.endedFrame != null &&
+        status.frame >= s.addedFrame &&
+        status.frame < s.endedFrame
+      );
+    }) as StatusEvent | undefined;
+
+    if (original) {
+      return { ...status, addedFrame: original.addedFrame, endedFrame: original.endedFrame };
+    }
+    return event;
+  });
+
+  // Merge synthetic expiration events into correct positions by frame
+  const allSynthetics: SimEvent[] = [];
+  for (const synthetics of expirations.values()) {
+    allSynthetics.push(...synthetics);
+  }
+  allSynthetics.sort((a, b) => a.frame - b.frame);
+
+  if (allSynthetics.length === 0) return result;
+
+  // Merge two sorted-by-frame arrays
+  const merged: SimEvent[] = [];
+  let ri = 0;
+  let si = 0;
+  while (ri < result.length && si < allSynthetics.length) {
+    if (result[ri].frame <= allSynthetics[si].frame) {
+      merged.push(result[ri++]);
+    } else {
+      merged.push(allSynthetics[si++]);
+    }
+  }
+  while (ri < result.length) merged.push(result[ri++]);
+  while (si < allSynthetics.length) merged.push(allSynthetics[si++]);
+
+  return merged;
 }
