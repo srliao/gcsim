@@ -41,6 +41,19 @@ vi.mock("@gcsim/primitives", () => ({
   ),
 }));
 
+// Mock child tab components to isolate ViewerShell tests
+vi.mock("./config-tab", () => ({
+  ConfigTab: () => <div data-testid="config-tab">ConfigTab</div>,
+}));
+
+vi.mock("./results-tab", () => ({
+  ResultsTab: () => <div data-testid="results-tab">ResultsTab</div>,
+}));
+
+vi.mock("./sample-tab", () => ({
+  SampleTab: () => <div data-testid="sample-tab">SampleTab</div>,
+}));
+
 const mockResults = { schema_version: "test" } as never;
 
 describe("ViewerShell", () => {

@@ -1,6 +1,9 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@gcsim/primitives";
 import type { Sim } from "@gcsim/types";
 import { useViewerStore } from "../../stores/viewer-store";
+import { ConfigTab } from "./config-tab";
+import { ResultsTab } from "./results-tab";
+import { SampleTab } from "./sample-tab";
 
 interface ViewerShellProps {
   results: Sim.SimResults | null;
@@ -48,13 +51,13 @@ export function ViewerShell({ results, isLoading, error }: ViewerShellProps) {
           <TabsTrigger value="sample">Sample</TabsTrigger>
         </TabsList>
         <TabsContent value="results">
-          <p>Results tab — to be implemented in Step 4.4b</p>
+          <ResultsTab results={results} />
         </TabsContent>
         <TabsContent value="config">
-          <p>Config tab — to be implemented in Step 4.4c</p>
+          <ConfigTab results={results} />
         </TabsContent>
         <TabsContent value="sample">
-          <p>Sample tab — to be implemented in Step 4.4d</p>
+          <SampleTab results={results} />
         </TabsContent>
       </Tabs>
     </div>
