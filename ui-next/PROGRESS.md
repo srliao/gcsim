@@ -443,11 +443,23 @@ Full design spec: `docs/superpowers/specs/2026-03-20-viewer-charts-design.md`
 - All packages: biome clean, typecheck clean, tests pass, build succeeds
 - All branches merged into `web-rewrite`
 
-## Phase 4: Application Shell
+## Phase 4: Web App (gcsim.app)
 
 | Step | Status | Description |
 |------|--------|-------------|
 | 4.1 | DONE | `@gcsim/web` app shell |
+| 4.2 | DONE | Dash (home) page |
+| 4.3a | DONE | Executor wiring |
+| 4.3b | DONE | Config editor panel |
+| 4.3c | DONE | Team builder panel |
+| 4.3d | DONE | Action list editor |
+| 4.3e | DONE | Run controls + simulator composition |
+| 4.4a | DONE | Viewer shell + data loading |
+| 4.4b | DONE | Results tab |
+| 4.4c | DONE | Config tab |
+| 4.4d | DONE | Sample tab |
+| 4.5 | DONE | Sample upload/local pages |
+| 4.6 | DONE | Legacy redirects |
 
 ### Step 4.1 — `@gcsim/web` App Shell (DONE)
 
@@ -470,3 +482,103 @@ Full design spec: `docs/superpowers/specs/2026-03-20-viewer-charts-design.md`
 - 18 tests passing (3 store test files), typecheck clean, build succeeds
 - Build produces 7 lazy-loaded chunks + 1 main bundle
 - Dependencies: all `@gcsim/*` workspace packages, `@tanstack/react-query@5.91.2`, `@tanstack/react-router@1.167.5`, `zustand@5.0.12`
+
+### Step 4.2 — Dash (Home) Page (DONE)
+
+- Landing page with hero section ("gcsim" title + description)
+- 3 quick action cards: Simulator (internal link), Teams DB (external), Documentation (external)
+- Uses primitives Card components, TanStack Router Link for internal navigation
+- 6 tests passing
+
+### Step 4.3a — Executor Wiring (DONE)
+
+- `ExecutorProvider` React context provides `Executor` instance to the app
+- Creates `ServerExecutor` or `WasmExecutor` based on `useSimulatorStore` state
+- `useExecutor()` hook for consuming the executor
+- `ExecutorSettings` UI: mode selector (WASM/Server), worker count slider (1-30), server URL input
+- Wired into `main.tsx` wrapping the router
+- 6 tests passing
+
+### Step 4.3b — Config Editor Panel (DONE)
+
+- `ConfigEditor` component using `@gcsim/editor` Editor
+- Wired to `simulatorStore.config` for read/write
+- Displays validation errors from `simulatorStore.validationResult`
+- 5 tests passing
+
+### Step 4.3c — Team Builder Panel (DONE)
+
+- Character picker using `@gcsim/data` latestChars + `@gcsim/primitives` Select
+- Team display using `@gcsim/avatar` TeamDisplay
+- Add (max 4) and remove character functionality
+- Creates minimal `Sim.Character` objects for new characters
+- 4 tests passing
+
+### Step 4.3d — Action List Editor (DONE)
+
+- `ActionEditor` using `@gcsim/editor` Editor wired to store config
+- Read-only toggle button
+- 6 tests passing
+
+### Step 4.3e — Run Controls + Simulator Composition (DONE)
+
+- `RunControls` component with Run/Cancel buttons, ready indicator, error display
+- On completion: populates `viewerStore.setResults()` and navigates to `/web`
+- `Simulator` page composes: ConfigEditor, ActionEditor, TeamBuilder, ExecutorSettings, RunControls
+- Grid layout: left 2/3 (config + actions), right 1/3 (team + settings + run)
+- 13 tests passing (5 run-controls + 8 simulator)
+
+### Step 4.4a — Viewer Shell + Data Loading (DONE)
+
+- `ViewerShell` shared layout with Results/Config/Sample tabs
+- Loading, error, and empty states
+- `WebViewer` loads from `viewerStore` (local state)
+- `LocalViewer` loads from local dev server via TanStack Query
+- `ShareViewer` loads from `/api/share/:id` via TanStack Query with route param
+- 8 tests passing
+
+### Step 4.4b — Results Tab (DONE)
+
+- Composes all `@gcsim/viewer` components: metadata, team header, rollup cards, DPS cards, target info, 13 charts
+- `ChartErrorBoundary` wraps each chart for resilience
+- Responsive grid layout for charts (2-column on large screens)
+- 6 tests passing
+
+### Step 4.4c — Config Tab (DONE)
+
+- Read-only CodeMirror editor showing `results.config_file`
+- "Edit" toggle switches to editable mode with "Re-run" button
+- 5 tests passing
+
+### Step 4.4d — Sample Tab (DONE)
+
+- Wraps `SampleViewer` from `@gcsim/viewer`
+- Wires `executor.sample()` as `onRequestSample` callback
+- 2 tests passing
+
+### Step 4.5 — Sample Upload/Local Pages (DONE)
+
+- Upload page: file input for JSON upload, parses as Sample, displays EventLog
+- Local page: fetches from local dev server via TanStack Query, displays in SampleViewer
+- 4 tests passing
+
+### Step 4.6 — Legacy Redirects (DONE)
+
+- 8 redirect routes using TanStack Router's `beforeLoad` + `throw redirect()`
+- `/v3/viewer/share/$id`, `/viewer/share/$id`, `/s/$id` → `/sh/$id`
+- `/viewer/web` → `/web`, `/viewer/local` → `/local`
+- `/simple`, `/advanced` → `/simulator`, `/viewer` → `/web`
+- 9 tests passing
+
+### Build Fix — Executor Worker Resolution
+
+- Added Vite resolve alias in `vite.config.ts` to redirect executor worker `.ts` files from `dist/workers/` to `src/workers/`
+- Workers are excluded from tsc build but referenced via `new URL(..., import.meta.url)` pattern
+- Added `worker: { format: "es" }` for ES module worker bundling
+
+### Phase 4 Summary
+
+- Total web app tests: 92 (21 test files)
+- Full monorepo: 22 typecheck tasks pass, 21 test tasks pass
+- Production build succeeds with lazy-loaded code splitting
+- All Phase 4 steps complete
