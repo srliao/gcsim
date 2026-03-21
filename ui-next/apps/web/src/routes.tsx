@@ -1,4 +1,4 @@
-import { createRootRoute, createRoute, Outlet } from "@tanstack/react-router";
+import { createRootRoute, createRoute, Outlet, redirect } from "@tanstack/react-router";
 import { ErrorBoundary } from "./components/error-boundary";
 import { Footer } from "./components/footer";
 import { Nav } from "./components/nav";
@@ -60,6 +60,71 @@ const sampleLocalRoute = createRoute({
   path: "sample/local",
 }).lazy(() => import("./pages/sample/local.lazy").then((d) => d.Route));
 
+// Legacy redirects — keep old URLs working
+const legacyShareV3Route = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "v3/viewer/share/$id",
+  beforeLoad: ({ params }) => {
+    throw redirect({ to: "/sh/$id", params: { id: params.id } });
+  },
+});
+
+const legacyShareRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "viewer/share/$id",
+  beforeLoad: ({ params }) => {
+    throw redirect({ to: "/sh/$id", params: { id: params.id } });
+  },
+});
+
+const legacyShortShareRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "s/$id",
+  beforeLoad: ({ params }) => {
+    throw redirect({ to: "/sh/$id", params: { id: params.id } });
+  },
+});
+
+const legacyViewerWebRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "viewer/web",
+  beforeLoad: () => {
+    throw redirect({ to: "/web" });
+  },
+});
+
+const legacyViewerLocalRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "viewer/local",
+  beforeLoad: () => {
+    throw redirect({ to: "/local" });
+  },
+});
+
+const legacySimpleRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "simple",
+  beforeLoad: () => {
+    throw redirect({ to: "/simulator" });
+  },
+});
+
+const legacyAdvancedRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "advanced",
+  beforeLoad: () => {
+    throw redirect({ to: "/simulator" });
+  },
+});
+
+const legacyViewerRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "viewer",
+  beforeLoad: () => {
+    throw redirect({ to: "/web" });
+  },
+});
+
 export const routeTree = rootRoute.addChildren([
   indexRoute,
   simulatorRoute,
@@ -68,4 +133,12 @@ export const routeTree = rootRoute.addChildren([
   shareRoute,
   sampleUploadRoute,
   sampleLocalRoute,
+  legacyShareV3Route,
+  legacyShareRoute,
+  legacyShortShareRoute,
+  legacyViewerWebRoute,
+  legacyViewerLocalRoute,
+  legacySimpleRoute,
+  legacyAdvancedRoute,
+  legacyViewerRoute,
 ]);
