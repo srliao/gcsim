@@ -59,6 +59,16 @@ All exports go through `src/index.ts` → `src/charts/index.ts`:
 
 **Chart utilities:** `ChartCard`, `HorizontalBarStack`, `StatTooltip`, color functions, format functions
 
+### Events (event log abstraction layer)
+
+- `transformEvents(logs: LogDetails[]): SimEvent[]` — transforms raw logs to typed events
+- `resolveStatusDurations(events): SimEvent[]` — resolves status added/expired pairs
+- `trackActiveCharacter(events): Map<number, number>` — frame→characterIndex swap map
+- `groupByFrame(events, activeMap, teamSize): FrameGroup[]` — groups events for grid display
+- `getEventDisplay(type): EventDisplayConfig` — color/icon/label lookup
+- `filterPresets` — simple/advanced/verbose/debug filter preset arrays
+- `SimEvent`, `FrameGroup`, and all typed event interfaces — discriminated union types
+
 ## Dependencies
 
 - `@gcsim/primitives` -- Card, Badge, cn() utility
