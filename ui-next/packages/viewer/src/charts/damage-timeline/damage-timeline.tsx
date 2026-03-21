@@ -57,7 +57,7 @@ function DamageTooltip({ active, payload, label }: TooltipContentProps<ValueType
   if (!point) return null;
 
   return (
-    <div className="rounded-md border bg-white p-2 text-xs shadow-md dark:bg-gray-900">
+    <div className="bg-popover text-popover-foreground rounded-md border p-2 text-xs shadow-md">
       <div className="mb-1 font-medium">{`${label}s`}</div>
       {keys.map((key) => (
         <div key={key} className="flex justify-between gap-4">

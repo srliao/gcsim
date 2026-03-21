@@ -1,7 +1,7 @@
 import type { Sim } from "@gcsim/types";
 
 export interface StatTooltipProps {
-  label?: string;
+  label?: string | number;
   stats?: Record<string, Sim.FloatStat>;
 }
 
@@ -12,7 +12,7 @@ export function StatTooltip({ label, stats }: StatTooltipProps) {
 
   return (
     <div
-      className="rounded-md border bg-white p-2 text-xs shadow-md dark:bg-gray-900"
+      className="bg-popover text-popover-foreground rounded-md border p-2 text-xs shadow-md"
       data-testid="stat-tooltip"
     >
       {label && <div className="mb-1 font-medium">{label}</div>}
