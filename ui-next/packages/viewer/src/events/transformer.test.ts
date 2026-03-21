@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { transformEvents } from "./transformer.js";
 import type { DamageEvent, GenericEvent } from "./types.js";
 
-function makeLog(overrides: Partial<Sim.LogDetails> & { event: string }): Sim.LogDetails {
+function makeLog(overrides: Partial<Sim.LogDetails>): Sim.LogDetails {
   return {
     char_index: 0,
     ended: 0,

@@ -49,7 +49,15 @@ function transformDamage(log: Sim.LogDetails): DamageEvent {
   if (crit) extras.push("crit");
   if (extras.length > 0) message += ` (${extras.join(" ")})`;
 
-  return { ...base(log, "damage", message), damage, crit, amp, cata, target };
+  return {
+    ...base(log, "damage", message),
+    damage,
+    crit,
+    amp,
+    cata,
+    target,
+    type: "damage" as const,
+  };
 }
 
 function transformEnergy(log: Sim.LogDetails): EnergyEvent {
@@ -77,7 +85,15 @@ function transformEnergy(log: Sim.LogDetails): EnergyEvent {
     message += " (max)";
   }
 
-  return { ...base(log, "energy", message), energyType, source, amount, postRecovery, maxEnergy };
+  return {
+    ...base(log, "energy", message),
+    energyType,
+    source,
+    amount,
+    postRecovery,
+    maxEnergy,
+    type: "energy" as const,
+  };
 }
 
 function transformStatus(log: Sim.LogDetails): StatusEvent {
@@ -92,7 +108,13 @@ function transformStatus(log: Sim.LogDetails): StatusEvent {
     message += ` [${endedFrame} | ${sec}s]`;
   }
 
-  return { ...base(log, "status", message), key, addedFrame, endedFrame };
+  return {
+    ...base(log, "status", message),
+    key,
+    addedFrame,
+    endedFrame,
+    type: "status" as const,
+  };
 }
 
 function transformElement(log: Sim.LogDetails): ElementEvent {
@@ -147,6 +169,7 @@ function transformElement(log: Sim.LogDetails): ElementEvent {
     existing,
     after,
     target,
+    type: "element" as const,
   };
 }
 
@@ -160,12 +183,21 @@ function transformAction(log: Sim.LogDetails): ActionEvent {
   }
   message = message.replace("executed ", "");
 
-  return { ...base(log, "action", message), action, target };
+  return {
+    ...base(log, "action", message),
+    action,
+    target,
+    type: "action" as const,
+  };
 }
 
 function transformCalc(log: Sim.LogDetails): CalcEvent {
   const target = String(log.logs.target ?? "");
-  return { ...base(log, "calc", log.msg), target };
+  return {
+    ...base(log, "calc", log.msg),
+    target,
+    type: "calc" as const,
+  };
 }
 
 function transformSimple(type: string) {
@@ -177,6 +209,7 @@ function transformGeneric(log: Sim.LogDetails): GenericEvent {
     ...base(log, "generic", `${log.event}: ${log.msg}`),
     originalType: log.event,
     logs: { ...log.logs },
+    type: "generic" as const,
   };
 }
 

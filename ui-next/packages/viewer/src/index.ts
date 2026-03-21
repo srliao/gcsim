@@ -14,3 +14,6 @@ export { DPSCard, RollupCard, TargetInfoCard } from "./result-cards/index.js";
 // Team Header
 export type { TeamHeaderProps } from "./team-header/index.js";
 export { TeamHeader } from "./team-header/index.js";
+
+// Events (event log abstraction layer)
+export * from "./events/index.js";
