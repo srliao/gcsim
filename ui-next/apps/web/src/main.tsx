@@ -4,6 +4,7 @@ import { createRouter, RouterProvider } from "@tanstack/react-router";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./app.css";
+import { ExecutorProvider } from "./components/executor-provider";
 import { routeTree } from "./routes";
 
 // Initialize i18n
@@ -31,7 +32,9 @@ if (rootEl) {
   createRoot(rootEl).render(
     <StrictMode>
       <QueryClientProvider client={queryClient}>
-        <RouterProvider router={router} />
+        <ExecutorProvider>
+          <RouterProvider router={router} />
+        </ExecutorProvider>
       </QueryClientProvider>
     </StrictMode>,
   );
