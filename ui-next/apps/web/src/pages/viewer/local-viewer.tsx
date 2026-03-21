@@ -1,7 +1,19 @@
+import { fetchLocalResult } from "@gcsim/api";
+import { useQuery } from "@tanstack/react-query";
+import { ViewerShell } from "./viewer-shell";
+
 export function LocalViewer() {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["local-result"],
+    queryFn: () => fetchLocalResult(),
+    retry: false,
+  });
+
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold">Local Viewer</h1>
-    </div>
+    <ViewerShell
+      results={data ?? null}
+      isLoading={isLoading}
+      error={error ? String(error) : null}
+    />
   );
 }
