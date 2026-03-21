@@ -13,7 +13,8 @@
     "@gcsim/editor": "workspace:*",
     "@gcsim/primitives": "workspace:*",
     "@gcsim/types": "workspace:*",
-    "@gcsim/viewer": "workspace:*"
+    "@gcsim/viewer": "workspace:*",
+    "@gcsim/preview": "workspace:*"
   },
   "devDependencies": {
     "@storybook/react": "10.3.1",

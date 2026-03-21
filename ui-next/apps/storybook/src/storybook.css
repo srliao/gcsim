@@ -5,6 +5,7 @@
 @source "../../../packages/primitives/src";
 @source "../../../packages/avatar/src";
 @source "../../../packages/viewer/src";
+@source "../../../packages/preview/src";
 @source "../stories";
 
 @custom-variant dark (&:is(.dark *));
