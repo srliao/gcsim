@@ -9,9 +9,13 @@ describe("PreviewCard", () => {
     expect(screen.getByTestId("preview-card")).toBeInTheDocument();
   });
 
-  it("renders team display section", () => {
+  it("renders team display section with character portraits", () => {
     render(<PreviewCard data={mockSimResult} />);
-    expect(screen.getByTestId("preview-team")).toBeInTheDocument();
+    const team = screen.getByTestId("preview-team");
+    expect(team).toBeInTheDocument();
+    // TeamDisplay renders Portrait initials (H for hutao, X for xingqiu)
+    expect(team.textContent).toContain("H");
+    expect(team.textContent).toContain("X");
   });
 
   it("renders DPS badge with formatted value", () => {
@@ -41,9 +45,12 @@ describe("PreviewCard", () => {
     expect(screen.getByTestId("preview-modified")).toHaveTextContent("Modified");
   });
 
-  it("renders character DPS breakdown", () => {
+  it("renders character DPS breakdown with names and values", () => {
     render(<PreviewCard data={mockSimResult} />);
-    expect(screen.getByTestId("preview-char-dps")).toBeInTheDocument();
+    const charDps = screen.getByTestId("preview-char-dps");
+    expect(charDps).toBeInTheDocument();
+    expect(charDps.textContent).toContain("hutao");
+    expect(charDps.textContent).toContain("35,100");
   });
 
   it("handles missing optional data gracefully", () => {
@@ -62,12 +69,18 @@ describe("PreviewCard", () => {
     expect(screen.queryByTestId("preview-warnings")).not.toBeInTheDocument();
   });
 
+  it("calls onImageLoaded callback on mount", () => {
+    const onImageLoaded = vi.fn();
+    render(<PreviewCard data={mockSimResult} onImageLoaded={onImageLoaded} />);
+    expect(onImageLoaded).toHaveBeenCalled();
+  });
+
   it("renders warnings badge when warnings exist", () => {
     const dataWithWarnings = {
       ...mockSimResult,
       statistics: {
-        ...mockSimResult.statistics!,
-        warnings: { ...mockSimResult.statistics!.warnings!, swap_cd: true },
+        ...mockSimResult.statistics,
+        warnings: { ...mockSimResult.statistics?.warnings, swap_cd: true },
       },
     };
     render(<PreviewCard data={dataWithWarnings} />);
