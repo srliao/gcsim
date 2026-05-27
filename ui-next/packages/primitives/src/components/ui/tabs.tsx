@@ -95,4 +95,5 @@ function TabsContent({ className, ...props }: React.ComponentProps<typeof TabsPr
   );
 }
 
+export type { TabsListProps };
 export { Tabs, TabsContent, TabsList, TabsTrigger, tabsListVariants };

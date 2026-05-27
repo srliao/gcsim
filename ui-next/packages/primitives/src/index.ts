@@ -63,6 +63,7 @@ export {
 export { Skeleton } from "./components/ui/skeleton.js";
 export type { StatusPillProps, StatusPillStatus } from "./components/ui/status-pill.js";
 export { StatusPill } from "./components/ui/status-pill.js";
+export type { TabsListProps } from "./components/ui/tabs.js";
 export {
   Tabs,
   TabsContent,
