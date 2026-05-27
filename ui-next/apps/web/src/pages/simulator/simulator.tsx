@@ -56,6 +56,21 @@ export function Simulator() {
     };
   }, [executor]);
 
+  // Listen for ⌘K palette inserts. The Editor doesn't yet expose a
+  // cursor-position dispatch API, so we append the token on its own line.
+  // TODO(phase 7 follow-up): real cursor-position insert via CodeMirror dispatch.
+  useEffect(() => {
+    const onInsert = (e: Event) => {
+      const detail = (e as CustomEvent<{ token: string; group: string }>).detail;
+      if (!detail?.token) return;
+      const current = useSimulatorStore.getState().config;
+      const needsNewline = current.length > 0 && !current.endsWith("\n");
+      setConfig(`${current}${needsNewline ? "\n" : ""}${detail.token}\n`);
+    };
+    window.addEventListener("gcsim:insert-at-cursor", onInsert);
+    return () => window.removeEventListener("gcsim:insert-at-cursor", onInsert);
+  }, [setConfig]);
+
   const parseStatus: EditorParseStatus = isLoading
     ? "parsing"
     : errors.length > 0
