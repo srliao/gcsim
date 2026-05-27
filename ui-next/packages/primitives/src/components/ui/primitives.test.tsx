@@ -262,6 +262,43 @@ describe("NumberStepper", () => {
     expect(screen.getByLabelText("Increment")).toBeDisabled();
     expect(screen.getByLabelText("Decrement")).toBeDisabled();
   });
+
+  it("displays clamped value when prop is above max", () => {
+    const { container } = render(<NumberStepper value={15} max={10} onChange={() => {}} />);
+    const valueEl = container.querySelector("[data-slot='number-stepper-value']") as HTMLElement;
+    expect(valueEl.textContent).toBe("10");
+  });
+
+  it("displays clamped value when prop is below min", () => {
+    const { container } = render(<NumberStepper value={-5} min={0} onChange={() => {}} />);
+    const valueEl = container.querySelector("[data-slot='number-stepper-value']") as HTMLElement;
+    expect(valueEl.textContent).toBe("0");
+  });
+
+  it("decrements by step from the clamped value when prop is above max", () => {
+    const onChange = vi.fn();
+    render(<NumberStepper value={15} max={10} step={1} onChange={onChange} />);
+    // Increment is disabled because the displayed value equals max.
+    expect(screen.getByLabelText("Increment")).toBeDisabled();
+    // Decrement should subtract `step` from the clamped value (10), not the
+    // raw prop (15), so the next value is 9 — not 14.
+    fireEvent.click(screen.getByLabelText("Decrement"));
+    expect(onChange).toHaveBeenCalledWith(9);
+  });
+
+  it("increments by step from the clamped value when prop is below min", () => {
+    const onChange = vi.fn();
+    render(<NumberStepper value={-5} min={0} step={1} onChange={onChange} />);
+    expect(screen.getByLabelText("Decrement")).toBeDisabled();
+    fireEvent.click(screen.getByLabelText("Increment"));
+    expect(onChange).toHaveBeenCalledWith(1);
+  });
+
+  it("does not call onChange on mount when value is out of range", () => {
+    const onChange = vi.fn();
+    render(<NumberStepper value={15} max={10} onChange={onChange} />);
+    expect(onChange).not.toHaveBeenCalled();
+  });
 });
 
 describe("Kbd", () => {

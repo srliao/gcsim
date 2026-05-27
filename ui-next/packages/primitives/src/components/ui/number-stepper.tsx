@@ -40,19 +40,25 @@ function NumberStepper({
   disabled,
   "aria-label": ariaLabel,
 }: NumberStepperProps) {
-  const atMin = min !== undefined && value <= min;
-  const atMax = max !== undefined && value >= max;
+  // Clamp the displayed value at render time. If the parent passes an
+  // out-of-range value (e.g. value=15 with max=10), we render the clamped
+  // value (10) and use it as the base for increment/decrement so that
+  // `+`/`−` always moves by exactly `step`. We deliberately do NOT fire
+  // `onChange` on mount; the parent remains the source of truth.
+  const displayValue = clamp(value, min, max);
+  const atMin = min !== undefined && displayValue <= min;
+  const atMax = max !== undefined && displayValue >= max;
 
   const handleDecrement: React.MouseEventHandler<HTMLButtonElement> = (e) => {
     e.preventDefault();
     if (disabled || atMin) return;
-    onChange?.(clamp(value - step, min, max));
+    onChange?.(clamp(displayValue - step, min, max));
   };
 
   const handleIncrement: React.MouseEventHandler<HTMLButtonElement> = (e) => {
     e.preventDefault();
     if (disabled || atMax) return;
-    onChange?.(clamp(value + step, min, max));
+    onChange?.(clamp(displayValue + step, min, max));
   };
 
   return (
@@ -78,7 +84,7 @@ function NumberStepper({
         className="inline-flex min-w-8 items-center justify-center px-1 font-mono text-sm tabular-nums text-foreground"
         aria-live="polite"
       >
-        {value}
+        {displayValue}
         {suffix ? <span className="ml-0.5 text-muted-foreground">{suffix}</span> : null}
       </span>
       <Button
