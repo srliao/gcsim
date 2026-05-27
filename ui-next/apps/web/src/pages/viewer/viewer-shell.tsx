@@ -45,7 +45,7 @@ export function ViewerShell({ results, isLoading, error }: ViewerShellProps) {
         value={activeTab}
         onValueChange={(v) => setActiveTab(v as "results" | "config" | "sample")}
       >
-        <TabsList>
+        <TabsList variant="underline">
           <TabsTrigger value="results">Results</TabsTrigger>
           <TabsTrigger value="config">Config</TabsTrigger>
           <TabsTrigger value="sample">Sample</TabsTrigger>

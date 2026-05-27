@@ -1,4 +1,4 @@
-import { Badge, Button } from "@gcsim/primitives";
+import { Badge, Button, Kbd, StatusPill } from "@gcsim/primitives";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 
@@ -29,10 +29,7 @@ export function Nav() {
             <img src="/assets/gcsim-logo.png" alt="gcsim" className="h-8 w-8" />
             <span className="text-base font-semibold">gcsim</span>
           </Link>
-          {/* TODO(phase 2): switch to <Badge tone="accent" /> */}
-          <Badge variant="outline" className="border-[var(--accent-line)] text-[var(--accent)]">
-            web-rewrite
-          </Badge>
+          <Badge tone="accent">web-rewrite</Badge>
         </div>
 
         {/* Desktop nav links */}
@@ -58,20 +55,11 @@ export function Nav() {
 
         {/* Right cluster: WASM status + ⌘K */}
         <div className="hidden items-center gap-2 md:flex">
-          {/* TODO(phase 2): replace with <StatusPill status="ready">WASM ready</StatusPill>;
-              wire to executor-provider readiness once that signal is exposed. */}
-          <Badge
-            variant="outline"
-            className="gap-1.5 border-[var(--line-2)] text-[var(--fg-1)]"
-            aria-label="WASM ready"
-          >
-            <span
-              aria-hidden="true"
-              className="inline-block size-1.5 rounded-full bg-[var(--ok)]"
-            />
+          {/* TODO: wire to executor-provider readiness once that signal is exposed. */}
+          <StatusPill status="ready" aria-label="WASM ready">
             WASM ready
-          </Badge>
-          {/* TODO(phase 7): wire to command palette; TODO(phase 2): use <Kbd> primitive */}
+          </StatusPill>
+          {/* TODO(phase 7): wire to command palette */}
           <Button
             type="button"
             variant="ghost"
@@ -81,9 +69,7 @@ export function Nav() {
             className="gap-2 text-muted-foreground"
           >
             <span>Search</span>
-            <kbd className="rounded-sm border border-border bg-muted px-1.5 py-0.5 font-mono text-[10px] text-foreground">
-              ⌘K
-            </kbd>
+            <Kbd>⌘K</Kbd>
           </Button>
         </div>
 
