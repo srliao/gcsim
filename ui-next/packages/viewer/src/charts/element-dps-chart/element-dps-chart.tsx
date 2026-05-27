@@ -1,5 +1,5 @@
 import type { Sim } from "@gcsim/types";
-import { ChartCard } from "../util/chart-card.js";
+import { ChartShell } from "../../chart-shell/chart-shell.js";
 import { elementColor } from "../util/colors.js";
 import { formatDamage } from "../util/format.js";
 import { HorizontalBarStack } from "../util/horizontal-bar-stack.js";
@@ -54,7 +54,7 @@ export function ElementDpsChart({ data, characterNames }: ElementDpsChartProps) 
 
   return (
     <div data-testid="element-dps-chart">
-      <ChartCard title="Element DPS">
+      <ChartShell title="Element DPS">
         {hasData ? (
           <HorizontalBarStack
             data={rows}
@@ -64,7 +64,7 @@ export function ElementDpsChart({ data, characterNames }: ElementDpsChartProps) 
             xTickFormatter={formatDamage}
           />
         ) : null}
-      </ChartCard>
+      </ChartShell>
     </div>
   );
 }

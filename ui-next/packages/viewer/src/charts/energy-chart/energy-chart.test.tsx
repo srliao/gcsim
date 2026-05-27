@@ -61,21 +61,21 @@ describe("EnergyChart", () => {
 
   it("renders chart title", () => {
     render(<EnergyChart data={mockData} characterNames={mockNames} />);
-    expect(screen.getByTestId("chart-title")).toHaveTextContent("Energy Sources");
+    expect(screen.getByTestId("chart-shell-title")).toHaveTextContent("Energy Sources");
   });
 
   it("renders chart container when data is provided", () => {
     render(<EnergyChart data={mockData} characterNames={mockNames} />);
-    expect(screen.getByTestId("chart-container")).toBeInTheDocument();
+    expect(screen.getByTestId("chart-shell-body")).toBeInTheDocument();
   });
 
   it("renders empty state when data is empty", () => {
     render(<EnergyChart data={[]} characterNames={[]} />);
-    expect(screen.getByTestId("chart-empty")).toHaveTextContent("No data available");
+    expect(screen.getByTestId("chart-shell-empty")).toHaveTextContent("No data available");
   });
 
   it("renders empty state when data is undefined", () => {
     render(<EnergyChart data={undefined} characterNames={[]} />);
-    expect(screen.getByTestId("chart-empty")).toHaveTextContent("No data available");
+    expect(screen.getByTestId("chart-shell-empty")).toHaveTextContent("No data available");
   });
 });

@@ -9,7 +9,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { ChartCard } from "../util/chart-card.js";
+import { ChartShell } from "../../chart-shell/chart-shell.js";
 import { characterColor } from "../util/colors.js";
 
 export interface EndingEnergyChartProps {
@@ -36,6 +36,12 @@ export function transformEndingEnergy(
   }));
 }
 
+const AXIS_TICK = {
+  fill: "var(--fg-2)",
+  fontFamily: "var(--font-mono)",
+  fontSize: 11,
+} as const;
+
 export function EndingEnergyChart({ endStats, characterNames }: EndingEnergyChartProps) {
   const data = transformEndingEnergy(endStats, characterNames);
   const hasData = data.length > 0;
@@ -43,14 +49,25 @@ export function EndingEnergyChart({ endStats, characterNames }: EndingEnergyChar
 
   return (
     <div data-testid="ending-energy-chart">
-      <ChartCard title="Ending Energy" height={height}>
+      <ChartShell title="Ending Energy" height={height}>
         {hasData ? (
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={data} layout="vertical">
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis type="number" />
-              <YAxis type="category" dataKey="name" width={120} />
-              <Tooltip />
+              <CartesianGrid stroke="var(--line-1)" strokeDasharray="3 3" />
+              <XAxis type="number" tick={AXIS_TICK} />
+              <YAxis type="category" dataKey="name" width={120} tick={AXIS_TICK} />
+              <Tooltip
+                contentStyle={{
+                  background: "var(--bg-2)",
+                  border: "1px solid var(--line-2)",
+                  borderRadius: 6,
+                  color: "var(--fg-1)",
+                  fontSize: 12,
+                }}
+                itemStyle={{ color: "var(--fg-1)" }}
+                labelStyle={{ color: "var(--fg-1)" }}
+                cursor={{ fill: "var(--line-1)" }}
+              />
               <Bar dataKey="energy">
                 {data.map((entry, index) => (
                   <Cell key={`cell-${entry.name}`} fill={characterColor(index)} />
@@ -59,7 +76,7 @@ export function EndingEnergyChart({ endStats, characterNames }: EndingEnergyChar
             </BarChart>
           </ResponsiveContainer>
         ) : null}
-      </ChartCard>
+      </ChartShell>
     </div>
   );
 }

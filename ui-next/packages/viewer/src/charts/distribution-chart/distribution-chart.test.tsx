@@ -54,18 +54,18 @@ describe("transformHistogram", () => {
 describe("DistributionChart", () => {
   it("renders with sample SummaryStat data", () => {
     render(<DistributionChart stat={mockStat} label="DPS Distribution" />);
-    expect(screen.getByTestId("chart-card")).toBeInTheDocument();
-    expect(screen.getByTestId("chart-title")).toHaveTextContent("DPS Distribution");
-    expect(screen.getByTestId("chart-container")).toBeInTheDocument();
+    expect(screen.getByTestId("chart-shell")).toBeInTheDocument();
+    expect(screen.getByTestId("chart-shell-title")).toHaveTextContent("DPS Distribution");
+    expect(screen.getByTestId("chart-shell-body")).toBeInTheDocument();
   });
 
   it("renders empty state when histogram is missing", () => {
     render(<DistributionChart stat={{ min: 0, max: 100, mean: 50 }} label="DPS Distribution" />);
-    expect(screen.getByTestId("chart-empty")).toBeInTheDocument();
+    expect(screen.getByTestId("chart-shell-empty")).toBeInTheDocument();
   });
 
   it("renders empty state when histogram is empty", () => {
     render(<DistributionChart stat={{ ...mockStat, histogram: [] }} label="DPS Distribution" />);
-    expect(screen.getByTestId("chart-empty")).toBeInTheDocument();
+    expect(screen.getByTestId("chart-shell-empty")).toBeInTheDocument();
   });
 });

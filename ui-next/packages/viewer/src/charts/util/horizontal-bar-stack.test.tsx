@@ -14,7 +14,7 @@ describe("HorizontalBarStack", () => {
         data={mockData}
         keys={["pyro", "hydro"]}
         nameKey="name"
-        colorFn={(key) => (key === "pyro" ? "#EF4444" : "#3B82F6")}
+        colorFn={(key) => (key === "pyro" ? "var(--el-pyro)" : "var(--el-hydro)")}
       />,
     );
     // Recharts renders a ResponsiveContainer div even in jsdom
@@ -27,7 +27,7 @@ describe("HorizontalBarStack", () => {
         data={mockData}
         keys={["pyro", "hydro"]}
         nameKey="name"
-        colorFn={() => "#000"}
+        colorFn={() => "var(--accent)"}
         height={200}
       />,
     );
@@ -40,7 +40,7 @@ describe("HorizontalBarStack", () => {
         data={mockData}
         keys={["pyro"]}
         nameKey="name"
-        colorFn={() => "#000"}
+        colorFn={() => "var(--accent)"}
         xTickFormatter={(v) => `${v}K`}
       />,
     );

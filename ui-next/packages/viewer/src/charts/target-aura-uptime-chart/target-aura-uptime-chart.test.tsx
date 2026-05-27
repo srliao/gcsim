@@ -57,21 +57,21 @@ describe("TargetAuraUptimeChart", () => {
 
   it("renders chart title", () => {
     render(<TargetAuraUptimeChart data={mockData} />);
-    expect(screen.getByTestId("chart-title")).toHaveTextContent("Target Aura Uptime");
+    expect(screen.getByTestId("chart-shell-title")).toHaveTextContent("Target Aura Uptime");
   });
 
   it("renders chart container when data is provided", () => {
     render(<TargetAuraUptimeChart data={mockData} />);
-    expect(screen.getByTestId("chart-container")).toBeInTheDocument();
+    expect(screen.getByTestId("chart-shell-body")).toBeInTheDocument();
   });
 
   it("renders empty state when data is empty array", () => {
     render(<TargetAuraUptimeChart data={[]} />);
-    expect(screen.getByTestId("chart-empty")).toHaveTextContent("No data available");
+    expect(screen.getByTestId("chart-shell-empty")).toHaveTextContent("No data available");
   });
 
   it("renders empty state when data is undefined", () => {
     render(<TargetAuraUptimeChart data={undefined} />);
-    expect(screen.getByTestId("chart-empty")).toHaveTextContent("No data available");
+    expect(screen.getByTestId("chart-shell-empty")).toHaveTextContent("No data available");
   });
 });

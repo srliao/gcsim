@@ -86,21 +86,21 @@ describe("DamageTimeline", () => {
 
   it("renders chart title", () => {
     render(<DamageTimeline buckets={mockBuckets} />);
-    expect(screen.getByTestId("chart-title")).toHaveTextContent("DPS Timeline");
+    expect(screen.getByTestId("chart-shell-title")).toHaveTextContent("DPS Timeline");
   });
 
-  it("renders chart container when data is provided", () => {
+  it("renders chart body when data is provided", () => {
     render(<DamageTimeline buckets={mockBuckets} />);
-    expect(screen.getByTestId("chart-container")).toBeInTheDocument();
+    expect(screen.getByTestId("chart-shell-body")).toBeInTheDocument();
   });
 
   it("renders empty state when buckets is undefined", () => {
     render(<DamageTimeline buckets={undefined} />);
-    expect(screen.getByTestId("chart-empty")).toHaveTextContent("No data available");
+    expect(screen.getByTestId("chart-shell-empty")).toHaveTextContent("No data available");
   });
 
   it("renders empty state when buckets array is empty", () => {
     render(<DamageTimeline buckets={{ bucket_size: 60, buckets: [] }} />);
-    expect(screen.getByTestId("chart-empty")).toHaveTextContent("No data available");
+    expect(screen.getByTestId("chart-shell-empty")).toHaveTextContent("No data available");
   });
 });

@@ -1,5 +1,5 @@
 import type { Sim } from "@gcsim/types";
-import { ChartCard } from "../util/chart-card.js";
+import { ChartShell } from "../../chart-shell/chart-shell.js";
 import { actionColor } from "../util/colors.js";
 import { HorizontalBarStack } from "../util/horizontal-bar-stack.js";
 
@@ -53,11 +53,11 @@ export function CharacterActionsChart({ data, characterNames }: CharacterActions
 
   return (
     <div data-testid="character-actions-chart">
-      <ChartCard title="Character Actions">
+      <ChartShell title="Character Actions">
         {hasData ? (
           <HorizontalBarStack data={rows} keys={keys} nameKey="name" colorFn={actionColor} />
         ) : null}
-      </ChartCard>
+      </ChartShell>
     </div>
   );
 }

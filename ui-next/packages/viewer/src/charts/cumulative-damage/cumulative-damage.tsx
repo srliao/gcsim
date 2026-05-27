@@ -10,7 +10,8 @@ import {
   YAxis,
 } from "recharts";
 import type { NameType, ValueType } from "recharts/types/component/DefaultTooltipContent";
-import { ChartCard } from "../util/chart-card.js";
+import { ChartShell } from "../../chart-shell/chart-shell.js";
+import { ChartTooltipShell } from "../util/chart-tooltip-shell.js";
 import { formatDamage } from "../util/format.js";
 
 export interface CumulativeDamageProps {
@@ -61,6 +62,12 @@ export function transformCumulativeDamage(
   }));
 }
 
+const AXIS_TICK = {
+  fill: "var(--fg-2)",
+  fontFamily: "var(--font-mono)",
+  fontSize: 11,
+} as const;
+
 function CumulativeTooltip({ active, payload, label }: TooltipContentProps<ValueType, NameType>) {
   if (!active || !payload?.length) return null;
 
@@ -70,15 +77,16 @@ function CumulativeTooltip({ active, payload, label }: TooltipContentProps<Value
   const keys: Array<keyof CumulativeDamageDataPoint> = ["min", "q1", "q2", "q3", "max"];
 
   return (
-    <div className="bg-popover text-popover-foreground rounded-md border p-2 text-xs shadow-md">
-      <div className="mb-1 font-medium">{`${label}s`}</div>
+    <ChartTooltipShell title={`${label}s`}>
       {keys.map((key) => (
         <div key={key} className="flex justify-between gap-4">
-          <span className="capitalize">{key}</span>
-          <span className="tabular-nums">{formatDamage(point[key])}</span>
+          <span className="capitalize text-[var(--fg-2)]">{key}</span>
+          <span className="font-mono tabular-nums text-[var(--fg-1)]">
+            {formatDamage(point[key])}
+          </span>
         </div>
       ))}
-    </div>
+    </ChartTooltipShell>
   );
 }
 
@@ -88,27 +96,33 @@ export function CumulativeDamage({ data, targetId }: CumulativeDamageProps) {
 
   return (
     <div data-testid="cumulative-damage">
-      <ChartCard title="Cumulative Damage">
+      <ChartShell title="Cumulative Damage">
         {hasData ? (
-          <ResponsiveContainer width="100%" height={300}>
+          <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={chartData}>
               <defs>
                 <linearGradient id="q1q3Gradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.05} />
+                  <stop offset="5%" stopColor="var(--accent)" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="var(--accent)" stopOpacity={0.05} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" />
+              <CartesianGrid stroke="var(--line-1)" strokeDasharray="3 3" />
               <XAxis
                 dataKey="time"
-                label={{ value: "Time (s)", position: "insideBottom", offset: -5 }}
+                tick={AXIS_TICK}
+                label={{
+                  value: "Time (s)",
+                  position: "insideBottom",
+                  offset: -5,
+                  fill: "var(--fg-2)",
+                }}
               />
-              <YAxis tickFormatter={formatDamage} />
-              <Tooltip content={CumulativeTooltip} />
+              <YAxis tickFormatter={formatDamage} tick={AXIS_TICK} />
+              <Tooltip content={CumulativeTooltip} cursor={{ stroke: "var(--line-2)" }} />
               <Area
                 type="monotone"
                 dataKey="max"
-                stroke="#f97316"
+                stroke="var(--el-pyro)"
                 fill="none"
                 strokeWidth={1}
                 dot={false}
@@ -116,7 +130,7 @@ export function CumulativeDamage({ data, targetId }: CumulativeDamageProps) {
               <Area
                 type="monotone"
                 dataKey="q3"
-                stroke="#8884d8"
+                stroke="var(--accent)"
                 fill="url(#q1q3Gradient)"
                 strokeWidth={1}
                 dot={false}
@@ -125,7 +139,7 @@ export function CumulativeDamage({ data, targetId }: CumulativeDamageProps) {
               <Area
                 type="monotone"
                 dataKey="q2"
-                stroke="#3b82f6"
+                stroke="var(--accent)"
                 fill="none"
                 strokeWidth={2}
                 dot={false}
@@ -133,8 +147,8 @@ export function CumulativeDamage({ data, targetId }: CumulativeDamageProps) {
               <Area
                 type="monotone"
                 dataKey="q1"
-                stroke="#8884d8"
-                fill="white"
+                stroke="var(--accent)"
+                fill="var(--bg-2)"
                 fillOpacity={1}
                 strokeWidth={1}
                 dot={false}
@@ -143,7 +157,7 @@ export function CumulativeDamage({ data, targetId }: CumulativeDamageProps) {
               <Area
                 type="monotone"
                 dataKey="min"
-                stroke="#94a3b8"
+                stroke="var(--fg-2)"
                 fill="none"
                 strokeWidth={1}
                 dot={false}
@@ -151,7 +165,7 @@ export function CumulativeDamage({ data, targetId }: CumulativeDamageProps) {
             </AreaChart>
           </ResponsiveContainer>
         ) : null}
-      </ChartCard>
+      </ChartShell>
     </div>
   );
 }

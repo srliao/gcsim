@@ -78,21 +78,21 @@ describe("CharacterActionsChart", () => {
 
   it("renders chart title", () => {
     render(<CharacterActionsChart data={mockData} characterNames={mockNames} />);
-    expect(screen.getByTestId("chart-title")).toHaveTextContent("Character Actions");
+    expect(screen.getByTestId("chart-shell-title")).toHaveTextContent("Character Actions");
   });
 
   it("renders chart container when data is provided", () => {
     render(<CharacterActionsChart data={mockData} characterNames={mockNames} />);
-    expect(screen.getByTestId("chart-container")).toBeInTheDocument();
+    expect(screen.getByTestId("chart-shell-body")).toBeInTheDocument();
   });
 
   it("renders empty state when data is empty", () => {
     render(<CharacterActionsChart data={[]} characterNames={[]} />);
-    expect(screen.getByTestId("chart-empty")).toHaveTextContent("No data available");
+    expect(screen.getByTestId("chart-shell-empty")).toHaveTextContent("No data available");
   });
 
   it("renders empty state when data is undefined", () => {
     render(<CharacterActionsChart data={undefined} characterNames={[]} />);
-    expect(screen.getByTestId("chart-empty")).toHaveTextContent("No data available");
+    expect(screen.getByTestId("chart-shell-empty")).toHaveTextContent("No data available");
   });
 });

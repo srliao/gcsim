@@ -64,21 +64,21 @@ describe("SourceDpsChart", () => {
 
   it("renders chart title", () => {
     render(<SourceDpsChart data={mockData} characterNames={mockNames} />);
-    expect(screen.getByTestId("chart-title")).toHaveTextContent("Source DPS");
+    expect(screen.getByTestId("chart-shell-title")).toHaveTextContent("Source DPS");
   });
 
   it("renders chart container when data is provided", () => {
     render(<SourceDpsChart data={mockData} characterNames={mockNames} />);
-    expect(screen.getByTestId("chart-container")).toBeInTheDocument();
+    expect(screen.getByTestId("chart-shell-body")).toBeInTheDocument();
   });
 
   it("renders empty state when data is empty", () => {
     render(<SourceDpsChart data={[]} characterNames={[]} />);
-    expect(screen.getByTestId("chart-empty")).toHaveTextContent("No data available");
+    expect(screen.getByTestId("chart-shell-empty")).toHaveTextContent("No data available");
   });
 
   it("renders empty state when data is undefined", () => {
     render(<SourceDpsChart data={undefined} characterNames={[]} />);
-    expect(screen.getByTestId("chart-empty")).toHaveTextContent("No data available");
+    expect(screen.getByTestId("chart-shell-empty")).toHaveTextContent("No data available");
   });
 });

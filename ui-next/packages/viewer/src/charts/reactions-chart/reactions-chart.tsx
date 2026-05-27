@@ -1,5 +1,5 @@
 import type { Sim } from "@gcsim/types";
-import { ChartCard } from "../util/chart-card.js";
+import { ChartShell } from "../../chart-shell/chart-shell.js";
 import { characterColor } from "../util/colors.js";
 import { formatDamage } from "../util/format.js";
 import { HorizontalBarStack } from "../util/horizontal-bar-stack.js";
@@ -60,7 +60,7 @@ export function ReactionsChart({ data, characterNames }: ReactionsChartProps) {
 
   return (
     <div data-testid="reactions-chart">
-      <ChartCard title="Reactions">
+      <ChartShell title="Reactions">
         {hasData ? (
           <HorizontalBarStack
             data={rows}
@@ -70,7 +70,7 @@ export function ReactionsChart({ data, characterNames }: ReactionsChartProps) {
             xTickFormatter={formatDamage}
           />
         ) : null}
-      </ChartCard>
+      </ChartShell>
     </div>
   );
 }

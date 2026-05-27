@@ -9,7 +9,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { ChartCard } from "../util/chart-card.js";
+import { ChartShell } from "../../chart-shell/chart-shell.js";
 import { elementColor } from "../util/colors.js";
 
 export interface TargetAuraUptimeChartProps {
@@ -50,13 +50,19 @@ export function transformAuraUptime(
   return { rows, keys };
 }
 
+const AXIS_TICK = {
+  fill: "var(--fg-2)",
+  fontFamily: "var(--font-mono)",
+  fontSize: 11,
+} as const;
+
 export function TargetAuraUptimeChart({ data }: TargetAuraUptimeChartProps) {
   const { rows } = transformAuraUptime(data);
   const hasData = rows.length > 0;
 
   return (
     <div data-testid="target-aura-uptime-chart">
-      <ChartCard title="Target Aura Uptime">
+      <ChartShell title="Target Aura Uptime">
         {hasData ? (
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
@@ -64,20 +70,36 @@ export function TargetAuraUptimeChart({ data }: TargetAuraUptimeChartProps) {
               data={rows}
               margin={{ top: 4, right: 16, bottom: 24, left: 8 }}
             >
-              <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+              <CartesianGrid stroke="var(--line-1)" strokeDasharray="3 3" horizontal={false} />
               <XAxis
                 type="number"
                 domain={[0, 100]}
+                tick={AXIS_TICK}
                 tickFormatter={(v) => `${v}%`}
-                label={{ value: "% of total duration", position: "insideBottom", offset: -12 }}
+                label={{
+                  value: "% of total duration",
+                  position: "insideBottom",
+                  offset: -12,
+                  fill: "var(--fg-2)",
+                }}
               />
-              <YAxis type="category" dataKey="name" width={72} />
+              <YAxis type="category" dataKey="name" width={72} tick={AXIS_TICK} />
               <Tooltip
                 formatter={(value) =>
                   typeof value === "number"
                     ? [`${value.toFixed(1)}%`, "Uptime"]
                     : [String(value), "Uptime"]
                 }
+                contentStyle={{
+                  background: "var(--bg-2)",
+                  border: "1px solid var(--line-2)",
+                  borderRadius: 6,
+                  color: "var(--fg-1)",
+                  fontSize: 12,
+                }}
+                itemStyle={{ color: "var(--fg-1)" }}
+                labelStyle={{ color: "var(--fg-1)" }}
+                cursor={{ fill: "var(--line-1)" }}
               />
               <Bar dataKey="uptime">
                 {rows.map((row) => (
@@ -87,7 +109,7 @@ export function TargetAuraUptimeChart({ data }: TargetAuraUptimeChartProps) {
             </BarChart>
           </ResponsiveContainer>
         ) : null}
-      </ChartCard>
+      </ChartShell>
     </div>
   );
 }

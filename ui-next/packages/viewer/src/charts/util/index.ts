@@ -1,5 +1,7 @@
 export type { ChartCardProps } from "./chart-card.js";
 export { ChartCard } from "./chart-card.js";
+export type { ChartTooltipShellProps } from "./chart-tooltip-shell.js";
+export { ChartTooltipShell } from "./chart-tooltip-shell.js";
 export { actionColor, characterColor, elementColor, reactionColor } from "./colors.js";
 export { formatDamage, formatDuration, formatPercent, formatStat } from "./format.js";
 export type { HorizontalBarStackProps } from "./horizontal-bar-stack.js";

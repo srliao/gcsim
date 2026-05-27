@@ -57,21 +57,21 @@ describe("ReactionsChart", () => {
 
   it("renders chart title", () => {
     render(<ReactionsChart data={mockData} characterNames={mockNames} />);
-    expect(screen.getByTestId("chart-title")).toHaveTextContent("Reactions");
+    expect(screen.getByTestId("chart-shell-title")).toHaveTextContent("Reactions");
   });
 
   it("renders chart container when data is provided", () => {
     render(<ReactionsChart data={mockData} characterNames={mockNames} />);
-    expect(screen.getByTestId("chart-container")).toBeInTheDocument();
+    expect(screen.getByTestId("chart-shell-body")).toBeInTheDocument();
   });
 
   it("renders empty state when data is empty", () => {
     render(<ReactionsChart data={[]} characterNames={[]} />);
-    expect(screen.getByTestId("chart-empty")).toHaveTextContent("No data available");
+    expect(screen.getByTestId("chart-shell-empty")).toHaveTextContent("No data available");
   });
 
   it("renders empty state when data is undefined", () => {
     render(<ReactionsChart data={undefined} characterNames={[]} />);
-    expect(screen.getByTestId("chart-empty")).toHaveTextContent("No data available");
+    expect(screen.getByTestId("chart-shell-empty")).toHaveTextContent("No data available");
   });
 });

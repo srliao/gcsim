@@ -71,21 +71,21 @@ describe("FieldTimeChart", () => {
 
   it("renders chart title", () => {
     render(<FieldTimeChart fieldTime={mockFieldTime} characterNames={mockNames} />);
-    expect(screen.getByTestId("chart-title")).toHaveTextContent("Field Time");
+    expect(screen.getByTestId("chart-shell-title")).toHaveTextContent("Field Time");
   });
 
   it("renders chart container when data is provided", () => {
     render(<FieldTimeChart fieldTime={mockFieldTime} characterNames={mockNames} />);
-    expect(screen.getByTestId("chart-container")).toBeInTheDocument();
+    expect(screen.getByTestId("chart-shell-body")).toBeInTheDocument();
   });
 
   it("renders empty state when fieldTime is empty", () => {
     render(<FieldTimeChart fieldTime={[]} characterNames={[]} />);
-    expect(screen.getByTestId("chart-empty")).toHaveTextContent("No data available");
+    expect(screen.getByTestId("chart-shell-empty")).toHaveTextContent("No data available");
   });
 
   it("renders empty state when fieldTime is undefined", () => {
     render(<FieldTimeChart fieldTime={undefined} characterNames={[]} />);
-    expect(screen.getByTestId("chart-empty")).toHaveTextContent("No data available");
+    expect(screen.getByTestId("chart-shell-empty")).toHaveTextContent("No data available");
   });
 });

@@ -11,7 +11,8 @@ import {
   YAxis,
 } from "recharts";
 import type { NameType, ValueType } from "recharts/types/component/DefaultTooltipContent";
-import { ChartCard } from "../util/chart-card.js";
+import { ChartShell } from "../../chart-shell/chart-shell.js";
+import { ChartTooltipShell } from "../util/chart-tooltip-shell.js";
 import { formatDamage } from "../util/format.js";
 
 export interface DamageTimelineProps {
@@ -48,6 +49,12 @@ export function transformBuckets(buckets: Sim.BucketStats | undefined): BucketDa
   });
 }
 
+const AXIS_TICK = {
+  fill: "var(--fg-2)",
+  fontFamily: "var(--font-mono)",
+  fontSize: 11,
+} as const;
+
 function DamageTooltip({ active, payload, label }: TooltipContentProps<ValueType, NameType>) {
   if (!active || !payload?.length) return null;
 
@@ -57,15 +64,16 @@ function DamageTooltip({ active, payload, label }: TooltipContentProps<ValueType
   if (!point) return null;
 
   return (
-    <div className="bg-popover text-popover-foreground rounded-md border p-2 text-xs shadow-md">
-      <div className="mb-1 font-medium">{`${label}s`}</div>
+    <ChartTooltipShell title={`${label}s`}>
       {keys.map((key) => (
         <div key={key} className="flex justify-between gap-4">
-          <span className="capitalize">{key}</span>
-          <span className="tabular-nums">{formatDamage(point[key])}</span>
+          <span className="capitalize text-[var(--fg-2)]">{key}</span>
+          <span className="font-mono tabular-nums text-[var(--fg-1)]">
+            {formatDamage(point[key])}
+          </span>
         </div>
       ))}
-    </div>
+    </ChartTooltipShell>
   );
 }
 
@@ -75,23 +83,29 @@ export function DamageTimeline({ buckets }: DamageTimelineProps) {
 
   return (
     <div data-testid="damage-timeline">
-      <ChartCard title="DPS Timeline">
+      <ChartShell title="DPS Timeline">
         {hasData ? (
-          <ResponsiveContainer width="100%" height={300}>
+          <ResponsiveContainer width="100%" height="100%">
             <ComposedChart data={data}>
               <defs>
                 <linearGradient id="sdBandGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#8884d8" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#8884d8" stopOpacity={0.05} />
+                  <stop offset="5%" stopColor="var(--accent)" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="var(--accent)" stopOpacity={0.05} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" />
+              <CartesianGrid stroke="var(--line-1)" strokeDasharray="3 3" />
               <XAxis
                 dataKey="time"
-                label={{ value: "Time (s)", position: "insideBottom", offset: -5 }}
+                tick={AXIS_TICK}
+                label={{
+                  value: "Time (s)",
+                  position: "insideBottom",
+                  offset: -5,
+                  fill: "var(--fg-2)",
+                }}
               />
-              <YAxis tickFormatter={formatDamage} />
-              <Tooltip content={DamageTooltip} />
+              <YAxis tickFormatter={formatDamage} tick={AXIS_TICK} />
+              <Tooltip content={DamageTooltip} cursor={{ stroke: "var(--line-2)" }} />
               <Area
                 type="monotone"
                 dataKey="sdUpper"
@@ -99,14 +113,38 @@ export function DamageTimeline({ buckets }: DamageTimelineProps) {
                 fill="url(#sdBandGradient)"
                 fillOpacity={0.2}
               />
-              <Area type="monotone" dataKey="sdLower" stroke="none" fill="white" fillOpacity={1} />
-              <Line type="monotone" dataKey="min" stroke="#94a3b8" dot={false} strokeWidth={1} />
-              <Line type="monotone" dataKey="max" stroke="#f97316" dot={false} strokeWidth={1} />
-              <Line type="monotone" dataKey="mean" stroke="#3b82f6" dot={false} strokeWidth={2} />
+              <Area
+                type="monotone"
+                dataKey="sdLower"
+                stroke="none"
+                fill="var(--bg-2)"
+                fillOpacity={1}
+              />
+              <Line
+                type="monotone"
+                dataKey="min"
+                stroke="var(--fg-2)"
+                dot={false}
+                strokeWidth={1}
+              />
+              <Line
+                type="monotone"
+                dataKey="max"
+                stroke="var(--el-pyro)"
+                dot={false}
+                strokeWidth={1}
+              />
+              <Line
+                type="monotone"
+                dataKey="mean"
+                stroke="var(--accent)"
+                dot={false}
+                strokeWidth={2}
+              />
               <Line
                 type="monotone"
                 dataKey="sdUpper"
-                stroke="#8884d8"
+                stroke="var(--accent)"
                 dot={false}
                 strokeWidth={1}
                 strokeDasharray="4 2"
@@ -114,7 +152,7 @@ export function DamageTimeline({ buckets }: DamageTimelineProps) {
               <Line
                 type="monotone"
                 dataKey="sdLower"
-                stroke="#8884d8"
+                stroke="var(--accent)"
                 dot={false}
                 strokeWidth={1}
                 strokeDasharray="4 2"
@@ -122,7 +160,7 @@ export function DamageTimeline({ buckets }: DamageTimelineProps) {
             </ComposedChart>
           </ResponsiveContainer>
         ) : null}
-      </ChartCard>
+      </ChartShell>
     </div>
   );
 }

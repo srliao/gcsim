@@ -55,30 +55,30 @@ describe("EndingEnergyChart", () => {
 
   it("renders chart title", () => {
     render(<EndingEnergyChart endStats={mockEndStats} characterNames={mockNames} />);
-    expect(screen.getByTestId("chart-title")).toHaveTextContent("Ending Energy");
+    expect(screen.getByTestId("chart-shell-title")).toHaveTextContent("Ending Energy");
   });
 
   it("renders empty state when endStats is empty", () => {
     render(<EndingEnergyChart endStats={[]} characterNames={[]} />);
-    expect(screen.getByTestId("chart-empty")).toHaveTextContent("No data available");
+    expect(screen.getByTestId("chart-shell-empty")).toHaveTextContent("No data available");
   });
 
   it("renders empty state when endStats is undefined", () => {
     render(<EndingEnergyChart endStats={undefined} characterNames={[]} />);
-    expect(screen.getByTestId("chart-empty")).toHaveTextContent("No data available");
+    expect(screen.getByTestId("chart-shell-empty")).toHaveTextContent("No data available");
   });
 
   it("renders chart container when data is provided", () => {
     render(<EndingEnergyChart endStats={mockEndStats} characterNames={mockNames} />);
-    expect(screen.getByTestId("chart-container")).toBeInTheDocument();
+    expect(screen.getByTestId("chart-shell-body")).toBeInTheDocument();
   });
 
   it("renders one bar per character", () => {
     render(<EndingEnergyChart endStats={mockEndStats} characterNames={mockNames} />);
     // The recharts BarChart renders rectangles for each bar
-    const container = screen.getByTestId("chart-container");
+    const container = screen.getByTestId("chart-shell-body");
     expect(container).toBeInTheDocument();
-    // Verify data-driven: two characters means chart-container has correct height
+    // Verify data-driven: two characters means chart-shell-body has correct height
     const style = container.getAttribute("style");
     expect(style).toContain(`height: ${mockNames.length * 40}px`);
   });

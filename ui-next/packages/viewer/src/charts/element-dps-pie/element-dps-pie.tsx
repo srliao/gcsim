@@ -1,7 +1,7 @@
 import type { Sim } from "@gcsim/types";
 import type { PieLabelRenderProps } from "recharts";
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
-import { ChartCard } from "../util/chart-card.js";
+import { ChartShell } from "../../chart-shell/chart-shell.js";
 import { elementColor } from "../util/colors.js";
 
 export interface ElementDpsPieProps {
@@ -48,9 +48,9 @@ export function ElementDpsPie({ elementDps }: ElementDpsPieProps) {
 
   return (
     <div data-testid="element-dps-pie">
-      <ChartCard title="Element DPS">
+      <ChartShell title="Element DPS">
         {hasData ? (
-          <ResponsiveContainer width="100%" height={300}>
+          <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
                 data={data}
@@ -70,12 +70,21 @@ export function ElementDpsPie({ elementDps }: ElementDpsPieProps) {
                 formatter={(value) =>
                   typeof value === "number" ? value.toFixed(0) : String(value)
                 }
+                contentStyle={{
+                  background: "var(--bg-2)",
+                  border: "1px solid var(--line-2)",
+                  borderRadius: 6,
+                  color: "var(--fg-1)",
+                  fontSize: 12,
+                }}
+                itemStyle={{ color: "var(--fg-1)" }}
+                labelStyle={{ color: "var(--fg-1)" }}
               />
-              <Legend />
+              <Legend wrapperStyle={{ fontFamily: "var(--font-mono)", fontSize: 11 }} />
             </PieChart>
           </ResponsiveContainer>
         ) : null}
-      </ChartCard>
+      </ChartShell>
     </div>
   );
 }

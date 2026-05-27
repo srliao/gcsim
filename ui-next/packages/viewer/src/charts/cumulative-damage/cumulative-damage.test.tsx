@@ -126,26 +126,26 @@ describe("CumulativeDamage", () => {
 
   it("renders chart title", () => {
     render(<CumulativeDamage data={mockData} />);
-    expect(screen.getByTestId("chart-title")).toHaveTextContent("Cumulative Damage");
+    expect(screen.getByTestId("chart-shell-title")).toHaveTextContent("Cumulative Damage");
   });
 
   it("renders chart container when data is provided", () => {
     render(<CumulativeDamage data={mockData} />);
-    expect(screen.getByTestId("chart-container")).toBeInTheDocument();
+    expect(screen.getByTestId("chart-shell-body")).toBeInTheDocument();
   });
 
   it("renders empty state when data is undefined", () => {
     render(<CumulativeDamage data={undefined} />);
-    expect(screen.getByTestId("chart-empty")).toHaveTextContent("No data available");
+    expect(screen.getByTestId("chart-shell-empty")).toHaveTextContent("No data available");
   });
 
   it("defaults to first target when targetId not provided", () => {
     render(<CumulativeDamage data={mockData} />);
-    expect(screen.getByTestId("chart-container")).toBeInTheDocument();
+    expect(screen.getByTestId("chart-shell-body")).toBeInTheDocument();
   });
 
   it("renders empty state when targets is missing", () => {
     render(<CumulativeDamage data={{ bucket_size: 60 }} />);
-    expect(screen.getByTestId("chart-empty")).toHaveTextContent("No data available");
+    expect(screen.getByTestId("chart-shell-empty")).toHaveTextContent("No data available");
   });
 });
