@@ -8,11 +8,11 @@ const meta = {
   argTypes: {
     variant: {
       control: "select",
-      options: ["default", "destructive", "outline", "secondary", "ghost", "link"],
+      options: ["primary", "default", "destructive", "outline", "secondary", "ghost", "link"],
     },
     size: {
       control: "select",
-      options: ["default", "xs", "sm", "lg", "icon"],
+      options: ["xs", "sm", "md", "default", "lg", "icon", "icon-xs", "icon-sm", "icon-lg"],
     },
     disabled: { control: "boolean" },
   },
@@ -20,6 +20,10 @@ const meta = {
 
 export default meta;
 type Story = StoryObj<typeof meta>;
+
+export const Primary: Story = {
+  args: { children: "Primary", variant: "primary" },
+};
 
 export const Default: Story = {
   args: { children: "Button" },
@@ -57,15 +61,63 @@ export const Disabled: Story = {
   args: { children: "Disabled", disabled: true },
 };
 
+const PlayIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <path d="M8 5v14l11-7z" />
+  </svg>
+);
+
+const ArrowRightIcon = () => (
+  <svg
+    width="14"
+    height="14"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    aria-hidden="true"
+  >
+    <path d="M5 12h14M13 5l7 7-7 7" />
+  </svg>
+);
+
+export const WithLeadingIcon: Story = {
+  args: {
+    children: "Run",
+    variant: "primary",
+    leading: <PlayIcon />,
+  },
+};
+
+export const WithTrailingIcon: Story = {
+  args: {
+    children: "Continue",
+    variant: "primary",
+    trailing: <ArrowRightIcon />,
+  },
+};
+
 export const AllVariants: Story = {
   render: () => (
     <div className="flex flex-wrap gap-4">
-      <Button variant="default">Default</Button>
-      <Button variant="destructive">Destructive</Button>
-      <Button variant="outline">Outline</Button>
+      <Button variant="primary">Primary</Button>
+      <Button variant="default">Default (alias)</Button>
       <Button variant="secondary">Secondary</Button>
+      <Button variant="outline">Outline</Button>
       <Button variant="ghost">Ghost</Button>
+      <Button variant="destructive">Destructive</Button>
       <Button variant="link">Link</Button>
+    </div>
+  ),
+};
+
+export const AllSizes: Story = {
+  render: () => (
+    <div className="flex flex-wrap items-end gap-4">
+      <Button size="xs">xs (22)</Button>
+      <Button size="sm">sm (26)</Button>
+      <Button size="md">md (32)</Button>
+      <Button size="lg">lg (38)</Button>
     </div>
   ),
 };
