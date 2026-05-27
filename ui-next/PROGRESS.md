@@ -601,3 +601,81 @@ Full design spec: `docs/superpowers/specs/2026-03-20-viewer-charts-design.md`
 - Full monorepo: 22 typecheck tasks pass, 21 test tasks pass
 - Production build succeeds with lazy-loaded code splitting
 - All Phase 4 steps complete
+
+### Phase 3b-i (ui-next redesign — viewer rollup/dps/metadata/chart-shell) — DONE
+
+Implements `docs/design_handoff_ui_next/README.md` § Phase 3b parts 1–4
+and `docs/design_handoff_ui_next/docs/component-inventory.md` L207–262.
+
+New components in `@gcsim/viewer`:
+
+- **`DetailedMetricTile`** (`src/rollup/detailed-metric-tile.tsx`) —
+  replaces `RollupCard`. 4px tone-colored left bar, large mono value
+  (38px / 500 / -0.03em), 3x2 stats grid `min·max·std` / `p25·p50·p75`.
+  Supports 8 tones (`accent` + 7 elements).
+- **`formatSummaryStat`** (`src/rollup/format.ts`) — helper that maps
+  `Sim.SummaryStat` (`mean/sd/min/max/q1/q2/q3`) to the pre-formatted
+  strings the tile expects. `q1/q2/q3` → `p25/p50/p75`.
+- **`DPSCard`** (`src/dps-card/dps-card.tsx`) — reworked, **breaking
+  API change**. New props: `char: string | Sim.Character`, `dps`,
+  `share`, `mean`, `std`, optional `role`. Renders a 44px `Portrait`,
+  name + role, headline mono DPS, element-colored contribution bar
+  (`share * 100%`), and a `μ {mean} · σ {std}` meta line. Moved from
+  `src/result-cards/` to its own folder.
+- **`MetadataChip`** (`src/metadata/metadata-chip.tsx`) — inline pill
+  used by the metadata strip. Mono uppercase label + value, with
+  `mono` toggle for tabular monospace values and `tone` of
+  `neutral|accent|info`.
+- **`ChartShell`** (`src/chart-shell/chart-shell.tsx`) — successor to
+  `ChartCard`. Title + subtitle + badge slot + action slot + bordered
+  footer slot. Empty state + custom height. Existing 13 charts continue
+  to use `ChartCard`; migration is Phase 3b-ii (Recharts skinning).
+
+Apps/consumers:
+
+- `apps/web/src/pages/viewer/results-tab.tsx` migrated:
+  - 6× `<RollupCard>` → `<DetailedMetricTile>` with per-stat tone
+    mapping (DPS=pyro, EPS=cryo, RPS=electro, HPS=anemo, SHP=geo,
+    Duration=dendro). Built `buildRollups()` helper + uses
+    `formatSummaryStat()`.
+  - `<DPSCard>` switched to new props: `char` (full `Sim.Character`),
+    `dps`/`mean` (per-char mean), `std`, `share = mean / totalDps`.
+  - Metadata strip now renders 4× `<MetadataChip>` (`iter`, `mode`,
+    `ver`, `build`) instead of `<Iterations>/<Mode>/<Commit>`.
+- 13 charts + `<TargetInfoCard>` left untouched (Phase 3b-ii).
+
+Deletions:
+- `packages/viewer/src/result-cards/rollup-card.tsx` (+ test)
+- `apps/storybook/src/stories/rollup-card.stories.tsx`
+- `packages/viewer/src/result-cards/dps-card.tsx` (+ test) — replaced
+  by `src/dps-card/dps-card.tsx`.
+
+Dependencies:
+- `@gcsim/viewer` now depends on `@gcsim/avatar` (for `Portrait`).
+
+Storybook stories added:
+- `metadata-chip.stories.tsx` (4 tones + composed strip)
+- `chart-shell.stories.tsx` (default, subtitle, badge+action, footer,
+  empty, custom height)
+- `detailed-metric-tile.stories.tsx` (8 tones + unit + grid)
+- `dps-card.stories.tsx` updated for new API (TeamGrid uses real
+  `Sim.Character` objects with elements).
+
+Verification:
+- `pnpm --filter @gcsim/viewer test` — 322 passing (33 files).
+- `pnpm --filter @gcsim/viewer typecheck` — clean.
+- `pnpm --filter @gcsim/viewer build` — clean.
+- `pnpm --filter @gcsim/web typecheck` — clean.
+- `pnpm --filter @gcsim/web test` — 92 passing.
+- `pnpm --filter @gcsim/storybook build` — clean.
+- `npx biome check --write packages/viewer/ apps/storybook/src/stories/
+  apps/web/src/pages/viewer/results-tab.tsx` — clean (139 files).
+
+TODOs left for Phase 3b-ii:
+- Migrate all 13 chart components from `ChartCard` → `ChartShell` and
+  apply Recharts skinning (grid/axis/tooltip tokens). `ChartCard`
+  carries a TODO marker pointing at this.
+- Add `FieldTimeBar` + `FrameTrack`.
+- Legacy `Iterations`/`Mode`/`Commit` components remain exported for
+  backwards compat; results-tab no longer uses them. Decide whether to
+  keep them or remove in 3b-ii.
