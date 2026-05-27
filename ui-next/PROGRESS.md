@@ -806,3 +806,54 @@ Verification:
 - `pnpm --filter @gcsim/web test` — 92 tests pass (no regressions).
 - `pnpm --filter @gcsim/storybook build` — clean.
 - `npx biome check packages/editor/ apps/storybook/src/stories/editor.stories.tsx` — clean.
+
+### Phase 5 (ui-next redesign — Simulator rework) — DONE
+
+Implements `docs/design_handoff_ui_next/README.md` § Phase 5.
+
+**Step 1 — `useParsedTeam` real wiring (`@gcsim/preview`)**
+- Replaced the Phase 3d stub with a `useQuery`-backed hook that accepts
+  an externally supplied `validateFn: (config) => Promise<Sim.ParsedResult>`
+  and a config string. Returns `{ team: Sim.Character[]; errors: string[]; isLoading }`.
+- Mapper: `ParsedCharacterProfile -> Sim.Character` pulls `name/level/element/
+  max_level/cons` from `profile.base`, `weapon`/`talents`/`sets`/`stats`
+  directly off the profile, and emits `snapshot: []` (parser doesn't compute it).
+- Added `@tanstack/react-query` as a peer dependency (consumer apps already
+  provide a `QueryClientProvider`). Keeping `validateFn` as an injected
+  dependency means `@gcsim/preview` stays free of any executor runtime.
+- 5 tests for the hook (loading, empty config skip, success mapping,
+  validate-rejection error path, parser-returned errors).
+- `packages/preview/CLAUDE.md` Public API updated to match the new shape.
+
+**Step 2 — `simulator.tsx` rebuilt**
+- New page composition: team-preview section (4 `CharacterCard`s or
+  `CharacterCardEmpty` slots) + editor section (`<Editor showChrome>` with
+  Action list / Config / Preview tabs) + sticky bottom action bar
+  (Settings · WASM status pill · `untitled.gcsl` · Tools · seed input · Run).
+- Run replicates the old `run-controls.tsx` behaviour:
+  `executor.run(config, setResults)` → `navigate({ to: "/web" })`.
+- Settings dialog reuses `<ExecutorSettings />` (no duplicate form).
+- Tools dialog ships with Enka / GOOD tab stubs (placeholder bodies).
+- Editor font-size persists via local state (no store change).
+- `useParsedTeam` is fed `executor.validate.bind(executor)` from the
+  `useExecutor()` context.
+
+**Step 3 — deleted obsolete sub-components**
+- `apps/web/src/pages/simulator/{team-builder,config-editor,action-editor,run-controls}.tsx`
+  and their `.test.tsx` siblings are gone. The barrel `index.ts` already
+  only exported `Simulator`, no change needed.
+
+**TODOs left in code**
+- `TODO(phase 5 follow-up): wire Enka/GOOD import flows` — Tools dialog bodies
+- `TODO(phase 5 follow-up): wire Preview tab to @gcsim/preview` — Preview tab body
+- `TODO(phase 5 follow-up): real "options" badges (iter/duration/workers) from parsed config` — editor footer
+
+**Verification**
+- `pnpm --filter @gcsim/preview test` — 19 tests pass (was 3).
+- `pnpm --filter @gcsim/preview typecheck` — clean.
+- `pnpm --filter @gcsim/web test` — 75 tests pass (down from 95 because the
+  4 deleted children removed 25 tests, the new `simulator.test.tsx` added
+  8 covering the new structure).
+- `pnpm --filter @gcsim/web typecheck` — clean.
+- `pnpm --filter @gcsim/web build` — clean.
+- `npx biome check apps/web/src/pages/simulator/ packages/preview/` — clean.
