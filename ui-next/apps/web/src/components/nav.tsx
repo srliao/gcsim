@@ -93,6 +93,8 @@ export function Nav() {
           onClick={() => setMenuOpen(!menuOpen)}
           className="rounded-md p-2 text-muted-foreground hover:bg-muted md:hidden"
           aria-label="Toggle menu"
+          aria-expanded={menuOpen}
+          aria-controls="mobile-nav-menu"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -124,7 +126,7 @@ export function Nav() {
 
       {/* Mobile menu */}
       {menuOpen && (
-        <div className="border-t border-border px-4 py-2 md:hidden">
+        <div id="mobile-nav-menu" className="border-t border-border px-4 py-2 md:hidden">
           <Link
             to="/simulator"
             className="block rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
