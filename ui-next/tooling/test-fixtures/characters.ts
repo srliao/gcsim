@@ -24,7 +24,7 @@ export const mockHutao: Sim.Character = {
   },
 };
 
-export const mockXingqiu: Character = {
+export const mockXingqiu: Sim.Character = {
   name: "xingqiu",
   level: 90,
   element: "hydro",
