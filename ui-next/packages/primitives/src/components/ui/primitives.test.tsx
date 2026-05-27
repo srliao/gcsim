@@ -3,6 +3,16 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { Badge } from "./badge.js";
 import { Button } from "./button.js";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "./card.js";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+  CommandShortcut,
+} from "./command.js";
 import { Input } from "./input.js";
 import { Kbd } from "./kbd.js";
 import { NumberStepper } from "./number-stepper.js";
@@ -388,5 +398,87 @@ describe("Skeleton", () => {
   it("renders", () => {
     const { container } = render(<Skeleton className="h-4 w-32" />);
     expect(container.firstChild).toBeDefined();
+  });
+});
+
+describe("Command", () => {
+  it("renders the full command composition", () => {
+    const { container } = render(
+      <Command>
+        <CommandInput placeholder="Search" />
+        <CommandList>
+          <CommandEmpty>No results</CommandEmpty>
+          <CommandGroup heading="Characters">
+            <CommandItem value="hutao">
+              Hu Tao
+              <CommandShortcut>⌘C</CommandShortcut>
+            </CommandItem>
+            <CommandItem value="ayaka">Ayaka</CommandItem>
+          </CommandGroup>
+          <CommandSeparator />
+          <CommandGroup heading="Actions">
+            <CommandItem value="skill">skill</CommandItem>
+          </CommandGroup>
+        </CommandList>
+      </Command>,
+    );
+    expect(container.querySelector("[data-slot='command']")).not.toBeNull();
+    expect(container.querySelector("[data-slot='command-input']")).not.toBeNull();
+    expect(container.querySelector("[data-slot='command-list']")).not.toBeNull();
+    expect(container.querySelectorAll("[data-slot='command-group']").length).toBe(2);
+    expect(container.querySelector("[data-slot='command-separator']")).not.toBeNull();
+    expect(container.querySelector("[data-slot='command-shortcut']")).not.toBeNull();
+    expect(screen.getByText("Hu Tao")).toBeDefined();
+    expect(screen.getByText("Ayaka")).toBeDefined();
+  });
+
+  it("filters items based on input value", () => {
+    const { container } = render(
+      <Command>
+        <CommandInput placeholder="Search" />
+        <CommandList>
+          <CommandEmpty>No results</CommandEmpty>
+          <CommandGroup heading="Characters">
+            <CommandItem value="hutao">Hu Tao</CommandItem>
+            <CommandItem value="ayaka">Ayaka</CommandItem>
+          </CommandGroup>
+        </CommandList>
+      </Command>,
+    );
+    const input = container.querySelector("[data-slot='command-input']") as HTMLInputElement;
+    fireEvent.change(input, { target: { value: "huta" } });
+    // cmdk hides non-matching items via inline styles. Visible items keep their text in DOM.
+    expect(screen.getByText("Hu Tao")).toBeDefined();
+  });
+
+  it("fires onSelect when an item is clicked", () => {
+    const onSelect = vi.fn();
+    render(
+      <Command>
+        <CommandList>
+          <CommandGroup heading="Characters">
+            <CommandItem value="hutao" onSelect={onSelect}>
+              Hu Tao
+            </CommandItem>
+          </CommandGroup>
+        </CommandList>
+      </Command>,
+    );
+    fireEvent.click(screen.getByText("Hu Tao"));
+    expect(onSelect).toHaveBeenCalledWith("hutao");
+  });
+
+  it("renders heading uppercase via cmdk-group-heading classes", () => {
+    const { container } = render(
+      <Command>
+        <CommandList>
+          <CommandGroup heading="My Group">
+            <CommandItem value="x">x</CommandItem>
+          </CommandGroup>
+        </CommandList>
+      </Command>,
+    );
+    const group = container.querySelector("[data-slot='command-group']");
+    expect(group?.className).toContain("[&_[cmdk-group-heading]]:uppercase");
   });
 });

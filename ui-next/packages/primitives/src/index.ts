@@ -14,6 +14,16 @@ export {
   CardTitle,
 } from "./components/ui/card.js";
 export {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+  CommandShortcut,
+} from "./components/ui/command.js";
+export {
   Dialog,
   DialogClose,
   DialogContent,

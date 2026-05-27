@@ -39,6 +39,7 @@ Verified 2026-03-19 via npm dist-tags. Agents should reference this file when ad
 |---------|---------|-------|
 | lucide-react | 0.577.0 | |
 | @radix-ui/react-dialog | 1.1.15 | (and other Radix primitives as needed by shadcn) |
+| cmdk | 1.1.1 | Command palette (⌘K). React 19 compatible. |
 
 ## State & Routing
 
