@@ -20,7 +20,8 @@
   "dependencies": {
     "@gcsim/primitives": "workspace:*",
     "@gcsim/types": "workspace:*",
-    "@gcsim/avatar": "workspace:*"
+    "@gcsim/avatar": "workspace:*",
+    "@gcsim/viewer": "workspace:*"
   },
   "peerDependencies": {
     "react": "^19.0.0",

@@ -274,6 +274,9 @@ importers:
       '@codemirror/view':
         specifier: 6.40.0
         version: 6.40.0
+      '@gcsim/primitives':
+        specifier: workspace:*
+        version: link:../primitives
       '@lezer/common':
         specifier: 1.5.1
         version: 1.5.1
@@ -361,6 +364,9 @@ importers:
       '@gcsim/types':
         specifier: workspace:*
         version: link:../types
+      '@gcsim/viewer':
+        specifier: workspace:*
+        version: link:../viewer
     devDependencies:
       '@testing-library/jest-dom':
         specifier: 6.6.3

@@ -20,31 +20,55 @@ describe("PreviewCard", () => {
     expect(alts).toContain("xingqiu");
   });
 
-  it("renders DPS badge with formatted value", () => {
+  it("renders DPS metadata chip with formatted value", () => {
     render(<PreviewCard data={mockSimResult} />);
-    const dpsBadge = screen.getByTestId("preview-dps");
-    expect(dpsBadge).toHaveTextContent("DPS:");
-    expect(dpsBadge).toHaveTextContent("50,251"); // 50250.5 rounded
+    const dpsChip = screen.getByTestId("preview-dps");
+    expect(dpsChip).toHaveTextContent("DPS");
+    expect(dpsChip).toHaveTextContent("50,251"); // 50250.5 rounded
   });
 
-  it("renders iterations badge", () => {
+  it("renders iterations metadata chip", () => {
     render(<PreviewCard data={mockSimResult} />);
-    expect(screen.getByTestId("preview-iterations")).toHaveTextContent("1,000 iterations");
+    const iter = screen.getByTestId("preview-iterations");
+    expect(iter).toHaveTextContent("Iter");
+    expect(iter).toHaveTextContent("1,000");
   });
 
-  it("renders mode badge", () => {
+  it("renders mode metadata chip", () => {
     render(<PreviewCard data={mockSimResult} />);
-    expect(screen.getByTestId("preview-mode")).toHaveTextContent("Duration");
+    const mode = screen.getByTestId("preview-mode");
+    expect(mode).toHaveTextContent("Mode");
+    expect(mode).toHaveTextContent("Duration");
   });
 
-  it("does not render modified badge when not modified", () => {
+  it("does not render modified chip when not modified", () => {
     render(<PreviewCard data={mockSimResult} />);
     expect(screen.queryByTestId("preview-modified")).not.toBeInTheDocument();
   });
 
-  it("renders modified badge when modified", () => {
+  it("renders modified chip when modified", () => {
     render(<PreviewCard data={{ ...mockSimResult, modified: true }} />);
     expect(screen.getByTestId("preview-modified")).toHaveTextContent("Modified");
+  });
+
+  it("renders metadata chips using the viewer MetadataChip component", () => {
+    render(<PreviewCard data={mockSimResult} />);
+    const metadata = screen.getByTestId("preview-metadata");
+    // The new design uses MetadataChip from @gcsim/viewer (which marks each
+    // chip with data-testid="metadata-chip").
+    const chips = metadata.querySelectorAll('[data-testid="metadata-chip"]');
+    expect(chips.length).toBeGreaterThanOrEqual(3); // DPS + Iter + Mode at minimum
+  });
+
+  it("colors each character DPS bar with its element token", () => {
+    render(<PreviewCard data={mockSimResult} />);
+    const charDps = screen.getByTestId("preview-char-dps");
+    const rows = charDps.querySelectorAll("[data-element]");
+    expect(rows.length).toBeGreaterThan(0);
+    // The first row should be hutao (pyro).
+    const hutaoBar = rows[0]?.querySelector('div[style*="background"]') as HTMLElement | null;
+    expect(hutaoBar).not.toBeNull();
+    expect(hutaoBar?.style.background).toContain("--el-pyro");
   });
 
   it("renders character DPS breakdown with names and values", () => {
@@ -63,7 +87,8 @@ describe("PreviewCard", () => {
     };
     render(<PreviewCard data={minimalData} />);
     expect(screen.getByTestId("preview-card")).toBeInTheDocument();
-    expect(screen.getByTestId("preview-dps")).toHaveTextContent("DPS: —");
+    expect(screen.getByTestId("preview-dps")).toHaveTextContent("DPS");
+    expect(screen.getByTestId("preview-dps")).toHaveTextContent("—");
   });
 
   it("does not render warnings badge when no warnings", () => {
