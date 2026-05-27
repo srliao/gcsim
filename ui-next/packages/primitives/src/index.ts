@@ -1,7 +1,8 @@
 // @gcsim/primitives public API
 
+export type { BadgeProps, BadgeTone } from "./components/ui/badge.js";
 export { Badge, badgeVariants } from "./components/ui/badge.js";
-
+export type { ButtonProps } from "./components/ui/button.js";
 // Components
 export { Button, buttonVariants } from "./components/ui/button.js";
 export {
@@ -42,6 +43,10 @@ export {
   DropdownMenuTrigger,
 } from "./components/ui/dropdown-menu.js";
 export { Input } from "./components/ui/input.js";
+export type { KbdProps } from "./components/ui/kbd.js";
+export { Kbd } from "./components/ui/kbd.js";
+export type { NumberStepperProps } from "./components/ui/number-stepper.js";
+export { NumberStepper } from "./components/ui/number-stepper.js";
 export { ScrollArea, ScrollBar } from "./components/ui/scroll-area.js";
 export {
   Select,
@@ -56,6 +61,8 @@ export {
   SelectValue,
 } from "./components/ui/select.js";
 export { Skeleton } from "./components/ui/skeleton.js";
+export type { StatusPillProps, StatusPillStatus } from "./components/ui/status-pill.js";
+export { StatusPill } from "./components/ui/status-pill.js";
 export {
   Tabs,
   TabsContent,
