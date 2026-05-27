@@ -1,4 +1,4 @@
-import { Portrait } from "@gcsim/avatar";
+import { Portrait, resolveElementColor } from "@gcsim/avatar";
 import { Card, cn } from "@gcsim/primitives";
 import type { Sim } from "@gcsim/types";
 
@@ -18,28 +18,12 @@ export interface DPSCardProps {
   className?: string;
 }
 
-const ELEMENT_BAR: Record<string, string> = {
-  anemo: "var(--el-anemo)",
-  geo: "var(--el-geo)",
-  electro: "var(--el-electro)",
-  hydro: "var(--el-hydro)",
-  pyro: "var(--el-pyro)",
-  cryo: "var(--el-cryo)",
-  dendro: "var(--el-dendro)",
-  physical: "var(--el-physical)",
-};
-
 function resolveChar(char: string | Sim.Character): {
   name: string;
   element?: string;
 } {
   if (typeof char === "string") return { name: char };
   return { name: char.name, element: char.element || undefined };
-}
-
-function elementColor(element: string | undefined): string {
-  if (!element) return "var(--accent)";
-  return ELEMENT_BAR[element.toLowerCase()] ?? "var(--accent)";
 }
 
 function formatNumber(n: number | undefined): string {
@@ -61,7 +45,7 @@ function clamp01(n: number): number {
 export function DPSCard({ char, dps, share, mean, std, role, className }: DPSCardProps) {
   const resolved = resolveChar(char);
   const element = resolved.element;
-  const barColor = elementColor(element);
+  const barColor = resolveElementColor(element);
   const fillPct = clamp01(share) * 100;
   const displayRole =
     role ?? (element ? `${element.charAt(0).toUpperCase()}${element.slice(1)}` : undefined);

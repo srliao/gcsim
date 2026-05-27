@@ -42,6 +42,13 @@ All exports go through `src/index.ts`:
   return `null` for unknown keys.
 - **`normalizeKey(input)`** — Shared slug helper (lowercase + non-alphanum
   stripped). Re-exported for callers that need it.
+- **`ELEMENT_TOKENS`** — `Record<string, string>` mapping each lowercase
+  element key (`anemo`/`geo`/`electro`/`hydro`/`pyro`/`cryo`/`dendro`/`physical`)
+  to its `var(--el-*)` CSS color expression.
+- **`resolveElementColor(element)`** — Resolves an element string (any
+  casing, nullable) to the matching `var(--el-*)` expression, falling
+  back to `var(--bg-3)` for unknown/blank elements. Use this anywhere
+  consumers need to tint UI by character element.
 
 Usage:
 
