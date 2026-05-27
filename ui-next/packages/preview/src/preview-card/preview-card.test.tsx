@@ -13,7 +13,7 @@ describe("PreviewCard", () => {
     render(<PreviewCard data={mockSimResult} />);
     const team = screen.getByTestId("preview-team");
     expect(team).toBeInTheDocument();
-    // TeamDisplay renders Portrait <img>s whose alt text matches char names.
+    // TeamStrip renders CharacterCardCompact <img>s whose alt text matches char names.
     const imgs = team.querySelectorAll("img");
     const alts = Array.from(imgs).map((i) => i.getAttribute("alt"));
     expect(alts).toContain("hutao");
