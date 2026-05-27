@@ -44,23 +44,20 @@ describe("Dash", () => {
 
   it("simulator link points to /simulator", () => {
     render(<Dash />);
-    const link = screen.getByText("Simulator").closest("a");
-    expect(link).toBeDefined();
-    expect(link?.getAttribute("href")).toBe("/simulator");
+    const link = screen.getByRole("link", { name: /simulator/i });
+    expect(link.getAttribute("href")).toBe("/simulator");
   });
 
   it("teams db link points to external URL", () => {
     render(<Dash />);
-    const link = screen.getByText("Teams DB").closest("a");
-    expect(link).toBeDefined();
-    expect(link?.getAttribute("href")).toBe("https://db.gcsim.app");
+    const link = screen.getByRole("link", { name: /teams db/i });
+    expect(link.getAttribute("href")).toBe("https://db.gcsim.app");
   });
 
   it("documentation link points to external URL", () => {
     render(<Dash />);
-    const link = screen.getByText("Documentation").closest("a");
-    expect(link).toBeDefined();
-    expect(link?.getAttribute("href")).toBe("https://docs.gcsim.app");
+    const link = screen.getByRole("link", { name: /documentation/i });
+    expect(link.getAttribute("href")).toBe("https://docs.gcsim.app");
   });
 
   it("renders the mascot image above the title", () => {

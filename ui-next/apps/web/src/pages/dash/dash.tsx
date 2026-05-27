@@ -1,10 +1,10 @@
 import { Link } from "@tanstack/react-router";
 
 const cardBase =
-  "group relative flex min-h-[180px] flex-col gap-3 overflow-hidden rounded-xl border p-[22px] no-underline transition-[border-color,background,transform] duration-150 ease-out";
+  "group relative flex min-h-[180px] flex-col gap-3 overflow-hidden rounded-xl border p-[22px] no-underline transition-[border-color,background,transform] duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-0)]";
 
 const cardNeutral =
-  "border-[var(--line-2)] bg-[var(--bg-1)] hover:border-[var(--line-3)] hover:bg-[oklch(0.21_0.012_250)]";
+  "border-[var(--line-2)] bg-[var(--bg-1)] hover:border-[var(--line-3)] hover:bg-[var(--bg-2)]";
 
 const cardPrimary =
   "border-[var(--accent-line)] bg-[var(--bg-1)] bg-[radial-gradient(120%_100%_at_100%_0%,var(--accent-soft),transparent_60%),var(--bg-1)] hover:border-[var(--accent)]";
