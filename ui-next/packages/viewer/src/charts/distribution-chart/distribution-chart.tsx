@@ -92,33 +92,35 @@ export function DistributionChart({
   const hasData = buckets.length > 0;
 
   return (
-    <ChartShell title={label}>
-      {hasData ? (
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={buckets}>
-            <CartesianGrid stroke="var(--line-1)" strokeDasharray="3 3" />
-            <XAxis dataKey="bucket" angle={-45} textAnchor="end" interval={0} tick={AXIS_TICK} />
-            <YAxis
-              tick={AXIS_TICK}
-              label={{
-                value: "Count",
-                angle: -90,
-                position: "insideLeft",
-                fill: "var(--fg-2)",
-              }}
-            />
-            <Tooltip content={HistogramTooltip} cursor={{ fill: "var(--line-1)" }} />
-            {meanBucket != null && (
-              <ReferenceLine
-                x={meanBucket}
-                stroke={accentColor}
-                label={{ value: "Mean", fill: accentColor, fontSize: 12 }}
+    <div data-testid="distribution-chart">
+      <ChartShell title={label}>
+        {hasData ? (
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={buckets}>
+              <CartesianGrid stroke="var(--line-1)" strokeDasharray="3 3" />
+              <XAxis dataKey="bucket" angle={-45} textAnchor="end" interval={0} tick={AXIS_TICK} />
+              <YAxis
+                tick={AXIS_TICK}
+                label={{
+                  value: "Count",
+                  angle: -90,
+                  position: "insideLeft",
+                  fill: "var(--fg-2)",
+                }}
               />
-            )}
-            <Bar dataKey="count" fill={accentColor} />
-          </BarChart>
-        </ResponsiveContainer>
-      ) : null}
-    </ChartShell>
+              <Tooltip content={HistogramTooltip} cursor={{ fill: "var(--line-1)" }} />
+              {meanBucket != null && (
+                <ReferenceLine
+                  x={meanBucket}
+                  stroke={accentColor}
+                  label={{ value: "Mean", fill: accentColor, fontSize: 12 }}
+                />
+              )}
+              <Bar dataKey="count" fill={accentColor} />
+            </BarChart>
+          </ResponsiveContainer>
+        ) : null}
+      </ChartShell>
+    </div>
   );
 }

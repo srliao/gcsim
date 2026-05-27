@@ -54,6 +54,7 @@ describe("transformHistogram", () => {
 describe("DistributionChart", () => {
   it("renders with sample SummaryStat data", () => {
     render(<DistributionChart stat={mockStat} label="DPS Distribution" />);
+    expect(screen.getByTestId("distribution-chart")).toBeInTheDocument();
     expect(screen.getByTestId("chart-shell")).toBeInTheDocument();
     expect(screen.getByTestId("chart-shell-title")).toHaveTextContent("DPS Distribution");
     expect(screen.getByTestId("chart-shell-body")).toBeInTheDocument();

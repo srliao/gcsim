@@ -125,7 +125,8 @@ export function FrameTrack({
         })}
 
         {/* Click surface – placed above lanes so the click target is the full svg */}
-        {/* biome-ignore lint/a11y/noStaticElementInteractions: SVG <rect> hit target; keyboard scrubbing tracked in a follow-up */}
+        {/* TODO(Phase 8): add keyboard scrubbing (arrow keys / home / end) to FrameTrack. */}
+        {/* biome-ignore lint/a11y/noStaticElementInteractions: SVG <rect> hit target; keyboard scrubbing tracked in a follow-up (Phase 8) */}
         <rect
           data-testid="frame-track-surface"
           x={0}
