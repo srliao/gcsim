@@ -147,6 +147,13 @@ describe("Simulator", () => {
     expect(screen.getAllByTestId("mock-editor").length).toBeGreaterThan(0);
   });
 
+  it("mounts exactly one Editor instance (no duplicate CodeMirror across tabs)", () => {
+    renderSimulator();
+    // Regression: previously the actions + config TabsContent panels each
+    // rendered their own <Editor>, double-mounting CodeMirror.
+    expect(screen.getAllByTestId("mock-editor")).toHaveLength(1);
+  });
+
   it("renders the sticky bottom action bar with settings, tools, and run buttons", () => {
     renderSimulator();
     const bar = screen.getByTestId("action-bar");
@@ -155,6 +162,12 @@ describe("Simulator", () => {
     expect(within(bar).getByTestId("run-button")).toBeDefined();
     expect(within(bar).getByTestId("seed-input")).toBeDefined();
     expect(within(bar).getByText("untitled.gcsl")).toBeDefined();
+  });
+
+  it("renders the seed input as disabled (not yet wired to executor)", () => {
+    renderSimulator();
+    const seed = screen.getByTestId("seed-input") as HTMLInputElement;
+    expect(seed.disabled).toBe(true);
   });
 
   it("opens the settings dialog when the Settings button is clicked", async () => {
@@ -204,6 +217,19 @@ describe("Simulator", () => {
     await waitFor(() => {
       const list = screen.getByTestId("parser-error-list");
       expect(list.textContent).toContain("unknown character: foo");
+    });
+  });
+
+  it("uses error tone on the parsed badge when validate returns errors and no characters", async () => {
+    mocks.executor.validate.mockResolvedValueOnce({
+      characters: [],
+      errors: ["unknown character: foo"],
+      player_initial_pos: { x: 0, y: 0, r: 0 },
+    });
+    renderSimulator();
+    await waitFor(() => {
+      const badge = screen.getByTestId("parser-status-badge");
+      expect(badge.getAttribute("data-tone")).toBe("error");
     });
   });
 });

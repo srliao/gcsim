@@ -65,7 +65,8 @@ export function Simulator() {
         : "ok";
 
   const parsedCount = team.length;
-  const parsedTone = parsedCount === 4 ? "ok" : parsedCount > 0 ? "warn" : "neutral";
+  const parsedTone =
+    errors.length > 0 ? "error" : parsedCount === 4 ? "ok" : parsedCount > 0 ? "warn" : "neutral";
 
   const handleRun = useCallback(async () => {
     setRunError(null);
@@ -134,53 +135,31 @@ export function Simulator() {
         </section>
 
         {/* EDITOR SECTION */}
+        {/*
+          Single <Editor> instance — passes `tabs / activeTab / onTabChange`
+          to the chrome so the tab strip lives in the editor header. We
+          deliberately do NOT wrap the Editor in Radix <TabsContent>: Radix
+          keeps inactive tab panels mounted, which would mount multiple
+          CodeMirror instances fighting over the same value/onChange. For
+          non-edit tabs (e.g. Preview) we conditionally swap in a placeholder
+          instead of mounting another Editor.
+
+          The placeholder renders its own TabsList so the user can navigate
+          back to the editor tabs (the Editor's chrome isn't mounted while
+          the placeholder is shown).
+        */}
         <section data-testid="editor-section" className="space-y-3">
-          <Tabs
-            value={activeTab}
-            onValueChange={(v) => setActiveTab(v as EditorTabValue)}
-            data-testid="editor-tabs"
-          >
-            <TabsList variant="underline" size="md" className="mb-2">
-              {editorTabs.map((t) => (
-                <TabsTrigger key={t.value} value={t.value}>
-                  {t.label}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-
-            <TabsContent value="actions">
-              <Editor
-                value={config}
-                onChange={setConfig}
-                fontSize={fontSize}
-                onFontSizeChange={setFontSize}
-                showChrome
-                tabs={editorTabs}
-                activeTab={activeTab}
-                onTabChange={(v) => setActiveTab(v as EditorTabValue)}
-                parseStatus={parseStatus}
-                optionsBadges={optionsBadges}
-                className="min-h-[520px]"
-              />
-            </TabsContent>
-
-            <TabsContent value="config">
-              <Editor
-                value={config}
-                onChange={setConfig}
-                fontSize={fontSize}
-                onFontSizeChange={setFontSize}
-                showChrome
-                tabs={editorTabs}
-                activeTab={activeTab}
-                onTabChange={(v) => setActiveTab(v as EditorTabValue)}
-                parseStatus={parseStatus}
-                optionsBadges={optionsBadges}
-                className="min-h-[520px]"
-              />
-            </TabsContent>
-
-            <TabsContent value="preview">
+          {activeTab === "preview" ? (
+            <div className="space-y-2">
+              <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as EditorTabValue)}>
+                <TabsList variant="pill" size="sm">
+                  {editorTabs.map((t) => (
+                    <TabsTrigger key={t.value} value={t.value}>
+                      {t.label}
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+              </Tabs>
               <div
                 data-testid="preview-tab-placeholder"
                 className="flex min-h-[520px] flex-col items-center justify-center rounded-lg border border-dashed border-[var(--line-2)] bg-[var(--bg-1)] p-8 text-center text-sm text-[var(--fg-2)]"
@@ -192,8 +171,22 @@ export function Simulator() {
                   above already reflects the parsed config.
                 </p>
               </div>
-            </TabsContent>
-          </Tabs>
+            </div>
+          ) : (
+            <Editor
+              value={config}
+              onChange={setConfig}
+              fontSize={fontSize}
+              onFontSizeChange={setFontSize}
+              showChrome
+              tabs={editorTabs}
+              activeTab={activeTab}
+              onTabChange={(v) => setActiveTab(v as EditorTabValue)}
+              parseStatus={parseStatus}
+              optionsBadges={optionsBadges}
+              className="min-h-[520px]"
+            />
+          )}
 
           {errors.length > 0 ? (
             <ul
@@ -243,6 +236,15 @@ export function Simulator() {
           </div>
 
           <div className="flex items-center gap-2">
+            {/*
+              TODO(phase 5 follow-up): seed input — Executor.run() does not
+              yet accept a seed override, so the value here is intentionally
+              not wired through. The input is rendered as a visual element
+              per the design mock and disabled so users can't be fooled into
+              thinking it does something. Either extend the executor
+              interface to accept a seed, or document that seed must be set
+              in the config text and remove this control.
+            */}
             <label className="text-xs text-[var(--fg-2)]" htmlFor="seed-input">
               SEED
             </label>
@@ -250,6 +252,8 @@ export function Simulator() {
               id="seed-input"
               value={seed}
               onChange={(e) => setSeed(e.target.value)}
+              disabled
+              title="Seed is not yet wired — set seed in the config text for now"
               className="w-32 font-mono text-xs"
               data-testid="seed-input"
             />
