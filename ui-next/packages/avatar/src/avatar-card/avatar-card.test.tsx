@@ -39,8 +39,7 @@ describe("AvatarCard", () => {
 
   it("includes portrait with correct element", () => {
     render(<AvatarCard character={mockHutao} />);
-    const element = screen.getByTestId("portrait-element");
-    expect(element).toHaveTextContent("pyro");
+    expect(screen.getByTestId("portrait")).toHaveAttribute("data-element", "pyro");
   });
 
   it("handles partial data gracefully", () => {

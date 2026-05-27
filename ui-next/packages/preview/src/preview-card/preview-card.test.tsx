@@ -13,9 +13,11 @@ describe("PreviewCard", () => {
     render(<PreviewCard data={mockSimResult} />);
     const team = screen.getByTestId("preview-team");
     expect(team).toBeInTheDocument();
-    // TeamDisplay renders Portrait initials (H for hutao, X for xingqiu)
-    expect(team.textContent).toContain("H");
-    expect(team.textContent).toContain("X");
+    // TeamDisplay renders Portrait <img>s whose alt text matches char names.
+    const imgs = team.querySelectorAll("img");
+    const alts = Array.from(imgs).map((i) => i.getAttribute("alt"));
+    expect(alts).toContain("hutao");
+    expect(alts).toContain("xingqiu");
   });
 
   it("renders DPS badge with formatted value", () => {

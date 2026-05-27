@@ -23,7 +23,7 @@ export function AvatarCard({ character, className }: AvatarCardProps) {
   return (
     <Card data-testid="avatar-card" className={cn("w-fit", className)}>
       <CardHeader className="flex-row items-center gap-3">
-        <Portrait characterKey={character.name} element={character.element} size="lg" />
+        <Portrait char={character} size={64} cons={character.cons} />
         <div>
           <CardTitle data-testid="avatar-card-name">{character.name}</CardTitle>
           <p data-testid="avatar-card-level" className="text-xs text-muted-foreground">

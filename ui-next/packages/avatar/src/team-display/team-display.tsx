@@ -19,7 +19,7 @@ export function TeamDisplay({ characters, className }: TeamDisplayProps) {
   return (
     <div data-testid="team-display" className={cn("flex items-center gap-2", className)}>
       {characters.map((char) => (
-        <Portrait key={char.name} characterKey={char.name} element={char.element} size="md" />
+        <Portrait key={char.name} char={char} size={48} />
       ))}
     </div>
   );

@@ -30,8 +30,7 @@ describe("TeamDisplay", () => {
 
   it("passes element to portraits", () => {
     render(<TeamDisplay characters={[mockHutao]} />);
-    const element = screen.getByTestId("portrait-element");
-    expect(element).toHaveTextContent("pyro");
+    expect(screen.getByTestId("portrait")).toHaveAttribute("data-element", "pyro");
   });
 
   it("applies custom className", () => {
