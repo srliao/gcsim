@@ -21,8 +21,8 @@ export type {
 } from "./metadata/index.js";
 export { Commit, Iterations, MetadataChip, Mode, Warnings } from "./metadata/index.js";
 // Result Cards
-export type { RollupCardProps, TargetInfoCardProps } from "./result-cards/index.js";
-export { RollupCard, TargetInfoCard } from "./result-cards/index.js";
+export type { TargetInfoCardProps } from "./result-cards/index.js";
+export { TargetInfoCard } from "./result-cards/index.js";
 // Rollup (DetailedMetricTile + SummaryStat formatter)
 export type {
   DetailedMetricTileProps,
