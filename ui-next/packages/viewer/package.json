@@ -18,6 +18,7 @@
     "lint": "biome check"
   },
   "dependencies": {
+    "@gcsim/avatar": "workspace:*",
     "@gcsim/i18n": "workspace:*",
     "@gcsim/primitives": "workspace:*",
     "@gcsim/types": "workspace:*",

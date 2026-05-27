@@ -472,6 +472,9 @@ importers:
 
   packages/viewer:
     dependencies:
+      '@gcsim/avatar':
+        specifier: workspace:*
+        version: link:../avatar
       '@gcsim/i18n':
         specifier: workspace:*
         version: link:../i18n
