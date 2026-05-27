@@ -45,10 +45,12 @@ All exports go through `src/index.ts` → `src/charts/index.ts`:
 
 **Non-chart components:**
 - **Metadata:** `Iterations`, `Mode`, `Commit`, `Warnings`
+- **MetadataChip** -- compact label/value chip used for metadata strips
 - **TeamHeader** -- character card row
-- **RollupCard** -- stat rollup (mean/min/max/SD)
+- **DetailedMetricTile** -- stat rollup tile (mean/min/max/SD) with element tone; pair with the `formatSummaryStat` helper to format numeric summary values
 - **DPSCard** -- per-character DPS with proportional bar
 - **TargetInfoCard** -- enemy info display
+- **ChartShell** -- chart container (title/subtitle/footer/empty state); successor to `ChartCard`. `ChartCard` is still exported for backwards compatibility while existing charts migrate.
 
 **Chart components (13 total):**
 - `DamageTimeline`, `CumulativeDamage`, `DistributionChart` -- time series / histogram
@@ -79,6 +81,7 @@ All exports go through `src/index.ts` → `src/charts/index.ts`:
 
 - `@gcsim/primitives` -- Card, Badge, cn() utility
 - `@gcsim/types` -- `Sim.*` interfaces for all props
+- `@gcsim/avatar` -- `Portrait` (used by `DPSCard`) and element-style helpers
 - `@gcsim/i18n` -- internationalization (for future use)
 - `recharts` -- charting library (v3.8.0)
 
