@@ -1,7 +1,10 @@
+import { CharacterCard, CharacterCardEmpty } from "@gcsim/avatar";
+import { Badge, Tabs, TabsList, TabsTrigger } from "@gcsim/primitives";
 import type { Sim } from "@gcsim/types";
 import {
   CharacterActionsChart,
   CharacterDpsPie,
+  ChartShell,
   CumulativeDamage,
   DamageTimeline,
   DetailedMetricTile,
@@ -12,17 +15,19 @@ import {
   ElementDpsPie,
   EndingEnergyChart,
   EnergyChart,
-  FieldTimeChart,
+  FieldTimeBar,
+  FrameTrack,
+  type FrameTrackEvent,
   formatSummaryStat,
   MetadataChip,
   ReactionsChart,
   SourceDpsChart,
   TargetAuraUptimeChart,
   TargetInfoCard,
-  TeamHeader,
   Warnings,
 } from "@gcsim/viewer";
-import { Component, type ErrorInfo, type ReactNode } from "react";
+import { Component, type ErrorInfo, type ReactNode, useState } from "react";
+import { useViewerStore } from "../../stores/viewer-store";
 
 interface ResultsTabProps {
   results: Sim.SimResults;
@@ -87,17 +92,48 @@ function buildRollups(stats: Sim.Statistics | undefined): RollupConfig[] {
   ];
 }
 
+type DpsMetric = "dps" | "dmg" | "cnt";
+
 export function ResultsTab({ results }: ResultsTabProps) {
   const stats = results.statistics;
   const characters = results.character_details ?? [];
   const characterNames = characters.map((c) => c.name);
+  const characterElements = characters.map((c) => c.element ?? "");
   const characterDps = stats?.character_dps ?? [];
   const totalDps = characterDps.reduce((sum, s) => sum + (s.mean ?? 0), 0);
   const rollups = buildRollups(stats);
+  const setActiveTab = useViewerStore((s) => s.setActiveTab);
+
+  // TODO(phase 6 follow-up): metric switch (DPS/Total dmg/Hits) wires to
+  // different stat sources. For now this just toggles a UI label.
+  const [dpsMetric, setDpsMetric] = useState<DpsMetric>("dps");
+
+  // TODO(phase 6 follow-up): swap-delay + energy + created chips when
+  // SimResults exposes them.
+
+  // Build a sample-frame events array for FrameTrack from sample data.
+  // TODO(phase 8): wire FrameTrack to real sample data with events.
+  const sampleEvents: FrameTrackEvent[] = [];
+  const sampleFrames = 0;
+  const hasSampleData = sampleEvents.length > 0 && sampleFrames > 0;
 
   return (
     <div data-testid="results-tab" className="space-y-6 overflow-y-auto">
-      {/* Metadata */}
+      {/* Character banner — 4 CharacterCards (or empties to fill 4 slots) */}
+      <section
+        data-testid="character-banner"
+        className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4"
+      >
+        {characters.slice(0, 4).map((char) => (
+          <CharacterCard key={char.name} char={char} />
+        ))}
+        {Array.from({ length: Math.max(0, 4 - characters.length) }).map((_, i) => {
+          const slotNumber = characters.length + i + 1;
+          return <CharacterCardEmpty key={`empty-${slotNumber}`} slot={slotNumber} />;
+        })}
+      </section>
+
+      {/* Metadata strip */}
       <div data-testid="metadata-section" className="flex flex-wrap items-center gap-2">
         {stats?.iterations != null && (
           <MetadataChip label="iter" value={stats.iterations.toLocaleString()} mono />
@@ -114,10 +150,7 @@ export function ResultsTab({ results }: ResultsTabProps) {
       {/* Warnings */}
       <Warnings warnings={stats?.warnings} />
 
-      {/* Team header */}
-      <TeamHeader characters={characters} />
-
-      {/* Rollup stats */}
+      {/* 6 Rollup tiles — 3x2 grid */}
       <div
         data-testid="rollup-section"
         className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"
@@ -137,72 +170,184 @@ export function ResultsTab({ results }: ResultsTabProps) {
         })}
       </div>
 
-      {/* Character DPS cards */}
-      {characterDps.length > 0 && (
-        <div data-testid="dps-cards-section" className="grid grid-cols-1 gap-3 md:grid-cols-2">
-          {characters.map((char, i) => {
-            const stat = characterDps[i];
-            const mean = stat?.mean ?? 0;
-            const share = totalDps > 0 ? mean / totalDps : 0;
-            return (
-              <DPSCard
-                key={char.name}
-                char={char}
-                dps={mean}
-                share={share}
-                mean={mean}
-                std={stat?.sd ?? 0}
-              />
-            );
-          })}
-        </div>
-      )}
-
-      {/* Target info */}
-      <TargetInfoCard enemies={results.target_details} />
-
-      {/* Charts */}
-      <div data-testid="charts-section" className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+      {/* Target Info + DPS Distribution side-by-side */}
+      <div data-testid="info-split" className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <TargetInfoCard enemies={results.target_details} />
         <ChartErrorBoundary>
           {stats?.dps && <DistributionChart stat={stats.dps} label="DPS Distribution" />}
         </ChartErrorBoundary>
-        <ChartErrorBoundary>
-          <DamageTimeline buckets={stats?.damage_buckets} />
-        </ChartErrorBoundary>
-        <ChartErrorBoundary>
-          <CumulativeDamage data={stats?.cumu_damage} characterNames={characterNames} />
-        </ChartErrorBoundary>
-        <ChartErrorBoundary>
-          <CharacterDpsPie characterDps={stats?.character_dps} characterNames={characterNames} />
-        </ChartErrorBoundary>
-        <ChartErrorBoundary>
-          <ElementDpsPie elementDps={stats?.element_dps} />
-        </ChartErrorBoundary>
-        <ChartErrorBoundary>
-          <ElementDpsChart data={stats?.dps_by_element} characterNames={characterNames} />
-        </ChartErrorBoundary>
-        <ChartErrorBoundary>
-          <SourceDpsChart data={stats?.source_dps} characterNames={characterNames} />
-        </ChartErrorBoundary>
-        <ChartErrorBoundary>
-          <CharacterActionsChart data={stats?.character_actions} characterNames={characterNames} />
-        </ChartErrorBoundary>
-        <ChartErrorBoundary>
-          <FieldTimeChart fieldTime={stats?.field_time} characterNames={characterNames} />
-        </ChartErrorBoundary>
-        <ChartErrorBoundary>
-          <EnergyChart data={stats?.total_source_energy} characterNames={characterNames} />
-        </ChartErrorBoundary>
-        <ChartErrorBoundary>
-          <EndingEnergyChart endStats={stats?.end_stats} characterNames={characterNames} />
-        </ChartErrorBoundary>
-        <ChartErrorBoundary>
-          <ReactionsChart data={stats?.source_reactions} characterNames={characterNames} />
-        </ChartErrorBoundary>
-        <ChartErrorBoundary>
-          <TargetAuraUptimeChart data={stats?.target_aura_uptime} />
-        </ChartErrorBoundary>
       </div>
+
+      {/* Per-character DPS */}
+      {characterDps.length > 0 && (
+        <section data-testid="per-character-dps">
+          <div className="mb-3 flex items-end justify-between gap-3">
+            <div>
+              <p className="text-[10px] font-medium tracking-wider text-[var(--fg-2)] uppercase">
+                Per-character
+              </p>
+              <h3 className="text-base font-semibold text-[var(--fg-0)]">DPS contribution</h3>
+            </div>
+            <Tabs value={dpsMetric} onValueChange={(v) => setDpsMetric(v as DpsMetric)}>
+              <TabsList size="sm" data-testid="dps-metric-tabs">
+                <TabsTrigger value="dps">DPS</TabsTrigger>
+                <TabsTrigger value="dmg">Total dmg</TabsTrigger>
+                <TabsTrigger value="cnt">Hits</TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
+          <div
+            data-testid="dps-cards-section"
+            className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4"
+          >
+            {characters.map((char, i) => {
+              const stat = characterDps[i];
+              const mean = stat?.mean ?? 0;
+              const share = totalDps > 0 ? mean / totalDps : 0;
+              return (
+                <DPSCard
+                  key={char.name}
+                  char={char}
+                  dps={mean}
+                  share={share}
+                  mean={mean}
+                  std={stat?.sd ?? 0}
+                />
+              );
+            })}
+          </div>
+        </section>
+      )}
+
+      {/* Main chart grid — 6 column responsive layout */}
+      <section data-testid="charts-section" className="grid grid-cols-6 gap-4">
+        {/* Field time (half) */}
+        <div className="col-span-6 md:col-span-3">
+          <ChartErrorBoundary>
+            <ChartShell title="Field time" subtitle="On-field share per character" height={140}>
+              <FieldTimeBar
+                fieldTime={stats?.field_time}
+                characterNames={characterNames}
+                characterElements={characterElements}
+              />
+            </ChartShell>
+          </ChartErrorBoundary>
+        </div>
+
+        {/* Damage share donut (half) */}
+        <div className="col-span-6 md:col-span-3">
+          <ChartErrorBoundary>
+            <CharacterDpsPie characterDps={stats?.character_dps} characterNames={characterNames} />
+          </ChartErrorBoundary>
+        </div>
+
+        {/* Cumulative damage (full) */}
+        <div className="col-span-6">
+          <ChartErrorBoundary>
+            <CumulativeDamage data={stats?.cumu_damage} characterNames={characterNames} />
+          </ChartErrorBoundary>
+        </div>
+
+        {/* Damage timeline (full) */}
+        <div className="col-span-6">
+          <ChartErrorBoundary>
+            <DamageTimeline buckets={stats?.damage_buckets} />
+          </ChartErrorBoundary>
+        </div>
+
+        {/* DPS by element bars (two-thirds) */}
+        <div className="col-span-6 md:col-span-4">
+          <ChartErrorBoundary>
+            <ElementDpsChart data={stats?.dps_by_element} characterNames={characterNames} />
+          </ChartErrorBoundary>
+        </div>
+
+        {/* Element share donut (one-third) */}
+        <div className="col-span-6 md:col-span-2">
+          <ChartErrorBoundary>
+            <ElementDpsPie elementDps={stats?.element_dps} />
+          </ChartErrorBoundary>
+        </div>
+
+        {/* Character actions (full) */}
+        <div className="col-span-6">
+          <ChartErrorBoundary>
+            <CharacterActionsChart
+              data={stats?.character_actions}
+              characterNames={characterNames}
+            />
+          </ChartErrorBoundary>
+        </div>
+
+        {/* Sample frame timeline preview (full) — clicks navigate to Sample tab */}
+        <div className="col-span-6">
+          <ChartErrorBoundary>
+            {/* biome-ignore lint/a11y/useKeyWithClickEvents: the deep-link to the
+                Sample tab is a convenience; keyboard users still have the Tabs
+                in the sticky header. */}
+            {/* biome-ignore lint/a11y/noStaticElementInteractions: same as above. */}
+            <div
+              data-testid="sample-frame-preview"
+              onClick={() => setActiveTab("sample")}
+              className="cursor-pointer"
+            >
+              <ChartShell
+                title="Sample frame timeline"
+                subtitle="Single iteration — switch to Sample tab for full scrubber"
+                badge={
+                  results.sample_seed ? (
+                    <Badge tone="accent">seed {results.sample_seed}</Badge>
+                  ) : undefined
+                }
+                height={hasSampleData ? 120 : 96}
+              >
+                {hasSampleData ? (
+                  <FrameTrack frames={sampleFrames} cursor={0} events={sampleEvents} />
+                ) : null}
+              </ChartShell>
+            </div>
+          </ChartErrorBoundary>
+        </div>
+      </section>
+
+      {/* Additional charts — preserved from the original layout but not part
+          of the redesign mock. Keeps backwards compatibility with the full
+          13-chart set while honouring the new 6-col grid for the spec'd 8. */}
+      <section data-testid="additional-charts">
+        <div className="mb-3">
+          <p className="text-[10px] font-medium tracking-wider text-[var(--fg-2)] uppercase">
+            Supplementary
+          </p>
+          <h3 className="text-base font-semibold text-[var(--fg-0)]">Additional charts</h3>
+        </div>
+        <div className="grid grid-cols-6 gap-4">
+          <div className="col-span-6 md:col-span-3">
+            <ChartErrorBoundary>
+              <ReactionsChart data={stats?.source_reactions} characterNames={characterNames} />
+            </ChartErrorBoundary>
+          </div>
+          <div className="col-span-6 md:col-span-3">
+            <ChartErrorBoundary>
+              <EnergyChart data={stats?.total_source_energy} characterNames={characterNames} />
+            </ChartErrorBoundary>
+          </div>
+          <div className="col-span-6 md:col-span-3">
+            <ChartErrorBoundary>
+              <EndingEnergyChart endStats={stats?.end_stats} characterNames={characterNames} />
+            </ChartErrorBoundary>
+          </div>
+          <div className="col-span-6 md:col-span-3">
+            <ChartErrorBoundary>
+              <SourceDpsChart data={stats?.source_dps} characterNames={characterNames} />
+            </ChartErrorBoundary>
+          </div>
+          <div className="col-span-6">
+            <ChartErrorBoundary>
+              <TargetAuraUptimeChart data={stats?.target_aura_uptime} />
+            </ChartErrorBoundary>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

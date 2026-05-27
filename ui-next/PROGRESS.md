@@ -857,3 +857,56 @@ Implements `docs/design_handoff_ui_next/README.md` § Phase 5.
 - `pnpm --filter @gcsim/web typecheck` — clean.
 - `pnpm --filter @gcsim/web build` — clean.
 - `npx biome check apps/web/src/pages/simulator/ packages/preview/` — clean.
+
+### Phase 6 (ui-next redesign — Viewer Results tab restructure) — DONE
+
+Implements `docs/design_handoff_ui_next/README.md` § Phase 6.
+
+**Step 1 — `viewer-shell.tsx` sticky header + action buttons**
+- Moved the Results/Config/Sample tabs out of the main content body and
+  into a `sticky top-14` header strip aligned beneath the top nav.
+- Added three action buttons on the right of the header:
+  - Copy Config → `navigator.clipboard.writeText(results.config_file)`
+    with a transient "Copied!" label for 2s.
+  - Send To Simulator → `useSimulatorStore.setConfig(results.config_file)`
+    then `navigate({ to: "/simulator" })`.
+  - Share → placeholder `console.log` for now (TODO phase 9).
+- Loading / error / empty states are preserved.
+
+**Step 2 — `results-tab.tsx` full restructure**
+- **Character banner** — 4 `CharacterCard` (from `@gcsim/avatar`) at the
+  top of the page, filled with `CharacterCardEmpty` for missing slots.
+  `TeamHeader` is no longer used here (still exported from `@gcsim/viewer`).
+- **Metadata strip** — `MetadataChip` row of iter / mode / ver / build
+  for now. `TODO(phase 6 follow-up): swap-delay + energy + created chips`
+  once `Sim.SimResults` exposes them.
+- **6 rollup tiles** — kept `buildRollups` helper; locked to
+  `lg:grid-cols-3` for a clean 3×2 grid (was 4 cols at lg before).
+- **Target Info + DPS Distribution split** — `lg:grid-cols-2`. The
+  `DistributionChart` already wraps itself in `ChartShell`, used as-is.
+- **Per-character DPS section** — eyebrow + h3 + `Tabs` (size="sm")
+  metric switch (DPS / Total dmg / Hits). The switch only toggles UI
+  state right now; `TODO(phase 6 follow-up): metric switch wires to
+  different stat sources`.
+- **6-col chart grid** — Tailwind `grid-cols-6`, cells use `col-span-*`:
+  - Field time (`md:col-span-3`) — `FieldTimeBar` in `ChartShell`
+  - Damage share (`md:col-span-3`) — `CharacterDpsPie`
+  - Cumulative damage (`col-span-6`) — `CumulativeDamage`
+  - Damage timeline (`col-span-6`) — `DamageTimeline`
+  - DPS by element (`md:col-span-4`) — `ElementDpsChart`
+  - Element share (`md:col-span-2`) — `ElementDpsPie`
+  - Character actions (`col-span-6`) — `CharacterActionsChart`
+  - Sample frame preview (`col-span-6`) — `ChartShell` (clicking sets
+    viewer tab to `sample`). `TODO(phase 8): wire FrameTrack to real
+    sample data with events`. Empty state for now.
+- **Additional charts section** — preserves Reactions / Energy /
+  EndingEnergy / SourceDps / TargetAuraUptime (5 charts that aren't in
+  the mock but were in the old layout) in a secondary `grid-cols-6`
+  block under heading "Additional charts" so no data is lost.
+- All chart cells stay wrapped in `ChartErrorBoundary`.
+
+**Verification**
+- `pnpm --filter @gcsim/web test` — 85 tests pass (was 75).
+- `pnpm --filter @gcsim/web typecheck` — clean.
+- `pnpm --filter @gcsim/web build` — clean.
+- `npx biome check --write apps/web/src/pages/viewer/` — clean.
