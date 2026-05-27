@@ -100,6 +100,14 @@ export function ResultsTab({ results }: ResultsTabProps) {
   const characterNames = characters.map((c) => c.name);
   const characterElements = characters.map((c) => c.element ?? "");
   const characterDps = stats?.character_dps ?? [];
+  // character_dps is a FloatStat[] with no name field, so it's coupled to
+  // character_details by index. Warn loudly if those arrays ever diverge so
+  // we don't silently render the wrong DPS against the wrong portrait.
+  if (characterDps.length > 0 && characterDps.length !== characters.length) {
+    console.warn(
+      `[ResultsTab] character_dps length (${characterDps.length}) does not match character_details length (${characters.length}); per-character DPS may be misaligned.`,
+    );
+  }
   const totalDps = characterDps.reduce((sum, s) => sum + (s.mean ?? 0), 0);
   const rollups = buildRollups(stats);
   const setActiveTab = useViewerStore((s) => s.setActiveTab);
@@ -201,6 +209,10 @@ export function ResultsTab({ results }: ResultsTabProps) {
             className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4"
           >
             {characters.map((char, i) => {
+              // FloatStat has no name field (see @gcsim/types Sim.FloatStat —
+              // only min/max/mean/sd), so character_dps is necessarily indexed
+              // positionally to mirror character_details. The guard above logs
+              // a warning if these arrays ever diverge.
               const stat = characterDps[i];
               const mean = stat?.mean ?? 0;
               const share = totalDps > 0 ? mean / totalDps : 0;
@@ -282,14 +294,12 @@ export function ResultsTab({ results }: ResultsTabProps) {
         {/* Sample frame timeline preview (full) — clicks navigate to Sample tab */}
         <div className="col-span-6">
           <ChartErrorBoundary>
-            {/* biome-ignore lint/a11y/useKeyWithClickEvents: the deep-link to the
-                Sample tab is a convenience; keyboard users still have the Tabs
-                in the sticky header. */}
-            {/* biome-ignore lint/a11y/noStaticElementInteractions: same as above. */}
-            <div
+            <button
+              type="button"
               data-testid="sample-frame-preview"
               onClick={() => setActiveTab("sample")}
-              className="cursor-pointer"
+              aria-label="Sample frame timeline — open Sample tab"
+              className="block w-full cursor-pointer text-left rounded-[var(--radius-md)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-0)]"
             >
               <ChartShell
                 title="Sample frame timeline"
@@ -305,7 +315,7 @@ export function ResultsTab({ results }: ResultsTabProps) {
                   <FrameTrack frames={sampleFrames} cursor={0} events={sampleEvents} />
                 ) : null}
               </ChartShell>
-            </div>
+            </button>
           </ChartErrorBoundary>
         </div>
       </section>
