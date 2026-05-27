@@ -1,11 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle, cn } from "@gcsim/primitives";
 
-/**
- * @deprecated Use `ChartShell` from `@gcsim/viewer` (`src/chart-shell/`) instead.
- * All 13 in-tree chart components were migrated to `ChartShell` in Phase 3b-ii;
- * `ChartCard` remains exported only so external/downstream callers don't break.
- * Delete once all consumers have migrated.
- */
 export interface ChartCardProps {
   title: string;
   children: React.ReactNode;
@@ -14,6 +8,12 @@ export interface ChartCardProps {
   className?: string;
 }
 
+/**
+ * @deprecated Use `ChartShell` from `@gcsim/viewer` (`src/chart-shell/`) instead.
+ * All 13 in-tree chart components were migrated to `ChartShell` in Phase 3b-ii;
+ * `ChartCard` remains exported only so external/downstream callers don't break.
+ * Delete once all consumers have migrated.
+ */
 export function ChartCard({ title, children, height = 300, selector, className }: ChartCardProps) {
   const hasChildren = children != null && children !== false;
 
