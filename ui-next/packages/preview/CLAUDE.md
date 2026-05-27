@@ -19,13 +19,25 @@ Compact preview/embed card component for displaying simulation result summaries.
 
 ## Public API
 
-- **`PreviewCard`** — Compact result card showing team portraits, DPS, iterations, mode, warnings, and per-character DPS breakdown. Includes `#images_loaded` signal for headless capture.
+- **`PreviewCard`** — Compact result card showing team portraits
+  (`TeamStrip` from `@gcsim/avatar`), a `MetadataChip` strip
+  (DPS / Iter / Mode / Modified / Warnings), and a per-character DPS
+  breakdown with element-colored bars (via `resolveElementColor`).
+  Includes the `#images_loaded` signal for headless capture.
+- **`useParsedTeam(config: string): Sim.Character[]`** — Hook signature
+  for deriving a `Sim.Character[]` from a config string. Phase 3d ships
+  a stub returning `[]`; Phase 5 wires it to `@gcsim/executor`'s async
+  `validate()` API (which returns `Sim.ParsedResult`) and maps the
+  parsed profiles to `Sim.Character`. See `src/use-parsed-team.ts` for
+  the TODO.
 
 ## Dependencies
 
-- `@gcsim/primitives` — Card, Badge, cn() utility
-- `@gcsim/types` — `Sim.SimResults` interface
-- `@gcsim/avatar` — `TeamStrip` for character cards
+- `@gcsim/primitives` — Card, cn() utility
+- `@gcsim/types` — `Sim.SimResults`, `Sim.Character` interfaces
+- `@gcsim/avatar` — `TeamStrip` (compact character cards) +
+  `resolveElementColor` for the per-character bar tint
+- `@gcsim/viewer` — `MetadataChip` for the metadata strip
 
 ## Don'ts
 

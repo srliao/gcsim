@@ -85,6 +85,14 @@ const meta = {
   title: "Preview/PreviewCard",
   component: PreviewCard,
   tags: ["autodocs"],
+  parameters: {
+    docs: {
+      description: {
+        component:
+          "Compact preview/embed card used by the embed and DB apps. Renders a TeamStrip (compact CharacterCards), a row of MetadataChips (DPS / Iter / Mode / Modified / Warnings), and a per-character DPS breakdown with element-colored bars.",
+      },
+    },
+  },
 } satisfies Meta<typeof PreviewCard>;
 
 export default meta;
@@ -134,4 +142,31 @@ export const MinimalData: Story = {
       mode: 0,
     } as Sim.SimResults,
   },
+};
+
+export const AllVariants: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Side-by-side gallery showing the new MetadataChip strip and element-tinted DPS bars across the canonical states.",
+      },
+    },
+  },
+  render: () => (
+    <div className="flex flex-col gap-4">
+      <PreviewCard data={mockData} />
+      <PreviewCard data={{ ...mockData, modified: true }} />
+      <PreviewCard
+        data={{
+          ...mockData,
+          statistics: {
+            ...mockData.statistics,
+            warnings: { ...mockData.statistics?.warnings, swap_cd: true },
+          },
+        }}
+      />
+    </div>
+  ),
+  args: { data: mockData },
 };
