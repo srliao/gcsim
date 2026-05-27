@@ -8,7 +8,7 @@
 import { ActionName, CharacterName, ElementName, StatName } from "./parser.terms";
 
 // Source: pkg/gcs/ast/keys.go -> actionKeys
-const ACTIONS = new Set([
+export const ACTION_NAMES = [
   "skill",
   "burst",
   "attack",
@@ -20,10 +20,11 @@ const ACTIONS = new Set([
   "jump",
   "walk",
   "swap",
-]);
+] as const;
+const ACTIONS = new Set<string>(ACTION_NAMES);
 
 // Source: pkg/gcs/ast/keys.go -> StatKeys
-const STATS = new Set([
+export const STAT_NAMES = [
   "def%",
   "def",
   "hp",
@@ -45,10 +46,11 @@ const STATS = new Set([
   "dendro%",
   "atkspd%",
   "dmg%",
-]);
+] as const;
+const STATS = new Set<string>(STAT_NAMES);
 
 // Source: pkg/gcs/ast/keys.go -> EleKeys
-const ELEMENTS = new Set([
+export const ELEMENT_NAMES = [
   "electro",
   "pyro",
   "cryo",
@@ -59,10 +61,11 @@ const ELEMENTS = new Set([
   "geo",
   "physical",
   "none",
-]);
+] as const;
+const ELEMENTS = new Set<string>(ELEMENT_NAMES);
 
 // Source: pkg/shortcut/characters.go -> CharNameToKey
-const CHARACTERS = new Set([
+export const CHARACTER_NAMES = [
   // Traveler variants
   "traveleranemo",
   "travelergeo",
@@ -252,7 +255,8 @@ const CHARACTERS = new Set([
   "ororon",
   "olorun",
   "candace",
-]);
+] as const;
+const CHARACTERS = new Set<string>(CHARACTER_NAMES);
 
 /**
  * External specializer function.

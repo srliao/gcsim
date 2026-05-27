@@ -12,6 +12,13 @@ export type { GcsimError } from "./diagnostics/diagnostics";
 export { applyDiagnostics, clearDiagnostics } from "./diagnostics/diagnostics";
 export { gcsimCompletionSource } from "./language/autocomplete";
 export { gcsim } from "./language/gcsim-language";
+// Token name lists (used by the ⌘K palette and other consumers)
+export {
+  ACTION_NAMES,
+  CHARACTER_NAMES,
+  ELEMENT_NAMES,
+  STAT_NAMES,
+} from "./language/tokens";
 
 // Theme
 export { gcsimDarkTheme, gcsimHighlightStyle } from "./theme/dark-theme";
