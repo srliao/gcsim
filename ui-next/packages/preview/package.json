@@ -24,10 +24,12 @@
     "@gcsim/viewer": "workspace:*"
   },
   "peerDependencies": {
+    "@tanstack/react-query": "^5.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
+    "@tanstack/react-query": "5.91.2",
     "@testing-library/jest-dom": "6.6.3",
     "@testing-library/react": "16.3.0",
     "@types/react": "^19.0.0",

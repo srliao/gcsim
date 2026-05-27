@@ -24,12 +24,16 @@ Compact preview/embed card component for displaying simulation result summaries.
   (DPS / Iter / Mode / Modified / Warnings), and a per-character DPS
   breakdown with element-colored bars (via `resolveElementColor`).
   Includes the `#images_loaded` signal for headless capture.
-- **`useParsedTeam(config: string): Sim.Character[]`** — Hook signature
-  for deriving a `Sim.Character[]` from a config string. Phase 3d ships
-  a stub returning `[]`; Phase 5 wires it to `@gcsim/executor`'s async
-  `validate()` API (which returns `Sim.ParsedResult`) and maps the
-  parsed profiles to `Sim.Character`. See `src/use-parsed-team.ts` for
-  the TODO.
+- **`useParsedTeam(validateFn, config): UseParsedTeamResult`** — Hook
+  that derives a `Sim.Character[]` from a gcsim config string by
+  delegating to an externally supplied `validateFn` (typically
+  `executor.validate.bind(executor)` from `@gcsim/executor`). Wrapped
+  in TanStack Query so identical configs reuse the parse result.
+  Returns `{ team: Sim.Character[]; errors: string[]; isLoading: boolean }`.
+  When `config` is empty, `validateFn` is not invoked. Requires a
+  `QueryClientProvider` in the consumer's React tree. Keeping
+  `validateFn` as an injected dependency means this package stays
+  free of any executor runtime.
 
 ## Dependencies
 
@@ -38,6 +42,8 @@ Compact preview/embed card component for displaying simulation result summaries.
 - `@gcsim/avatar` — `TeamStrip` (compact character cards) +
   `resolveElementColor` for the per-character bar tint
 - `@gcsim/viewer` — `MetadataChip` for the metadata strip
+- `@tanstack/react-query` (peer) — `useParsedTeam` runs the parse via
+  `useQuery`. The consumer must provide a `QueryClientProvider`.
 
 ## Don'ts
 
