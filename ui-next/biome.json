@@ -30,12 +30,21 @@
     }
   },
   "files": {
-    "includes": ["apps/**", "packages/**", "tooling/**"],
+    "includes": [
+      "apps/**",
+      "packages/**",
+      "tooling/**",
+      "!**/public/wasm_exec.js",
+      "!**/assets/wasm/wasm_exec.js"
+    ],
     "ignoreUnknown": false
   },
   "overrides": [
     {
-      "includes": ["**/packages/editor/src/language/parser.ts", "**/packages/editor/src/language/parser.terms.ts"],
+      "includes": [
+        "**/packages/editor/src/language/parser.ts",
+        "**/packages/editor/src/language/parser.terms.ts"
+      ],
       "linter": { "enabled": false },
       "formatter": { "enabled": false }
     }

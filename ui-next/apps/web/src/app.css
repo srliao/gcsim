@@ -1,7 +1,7 @@
 @import "@gcsim/primitives/theme.css";
 
-@source "../../packages/primitives/src";
-@source "../../packages/avatar/src";
-@source "../../packages/viewer/src";
-@source "../../packages/editor/src";
-@source "../../packages/preview/src";
+@source "../../../packages/primitives/src";
+@source "../../../packages/avatar/src";
+@source "../../../packages/viewer/src";
+@source "../../../packages/editor/src";
+@source "../../../packages/preview/src";
