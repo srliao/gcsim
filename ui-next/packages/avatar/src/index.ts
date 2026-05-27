@@ -14,5 +14,5 @@ export {
 export { artifactSrc, avatarSrc, normalizeKey, weaponSrc } from "./lib/index.js";
 export type { PortraitProps } from "./portrait/index.js";
 export { Portrait } from "./portrait/index.js";
-export type { TeamDisplayProps } from "./team-display/index.js";
-export { TeamDisplay } from "./team-display/index.js";
+export type { TeamStripProps } from "./team-strip/index.js";
+export { TeamStrip } from "./team-strip/index.js";

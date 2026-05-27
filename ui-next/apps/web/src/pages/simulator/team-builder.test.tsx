@@ -4,8 +4,8 @@ import { useSimulatorStore } from "../../stores/simulator-store";
 import { TeamBuilder } from "./team-builder";
 
 vi.mock("@gcsim/avatar", () => ({
-  TeamDisplay: ({ characters }: { characters: unknown[] }) => (
-    <div data-testid="team-display">{characters.length} characters</div>
+  TeamStrip: ({ team }: { team: unknown[] }) => (
+    <div data-testid="team-strip">{team.length} characters</div>
   ),
 }));
 
@@ -51,7 +51,7 @@ describe("TeamBuilder", () => {
       ],
     });
     render(<TeamBuilder />);
-    const display = screen.getByTestId("team-display");
+    const display = screen.getByTestId("team-strip");
     expect(display.textContent).toBe("1 characters");
   });
 

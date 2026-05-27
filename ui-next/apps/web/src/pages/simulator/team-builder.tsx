@@ -1,4 +1,4 @@
-import { TeamDisplay } from "@gcsim/avatar";
+import { TeamStrip } from "@gcsim/avatar";
 import { latestChars } from "@gcsim/data";
 import {
   Button,
@@ -67,7 +67,7 @@ export function TeamBuilder() {
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex items-center gap-2">
-          <TeamDisplay characters={team} />
+          <TeamStrip team={team} />
           {team.map((char, i) => (
             <Button
               key={char.name}

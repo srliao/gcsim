@@ -1,4 +1,4 @@
-import { TeamDisplay } from "@gcsim/avatar";
+import { TeamStrip } from "@gcsim/avatar";
 import { Badge, Card, CardContent, cn } from "@gcsim/primitives";
 import type { Sim } from "@gcsim/types";
 import { useEffect } from "react";
@@ -42,7 +42,7 @@ export function PreviewCard({ data, onImageLoaded, className }: PreviewCardProps
       <CardContent className="flex flex-col gap-3 p-4">
         {/* Team portraits */}
         <div data-testid="preview-team">
-          <TeamDisplay characters={characters} />
+          <TeamStrip team={characters} />
         </div>
 
         {/* Metadata badges */}

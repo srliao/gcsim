@@ -25,7 +25,7 @@ Compact preview/embed card component for displaying simulation result summaries.
 
 - `@gcsim/primitives` — Card, Badge, cn() utility
 - `@gcsim/types` — `Sim.SimResults` interface
-- `@gcsim/avatar` — `TeamDisplay` for character portraits
+- `@gcsim/avatar` — `TeamStrip` for character cards
 
 ## Don'ts
 
