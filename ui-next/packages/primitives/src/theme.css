@@ -2,8 +2,6 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-@custom-variant dark (&:is(.dark *));
-
 /* ---------------------------------------------------------------------------
  * gcsim ui-next design tokens — dark-first, mascot-anchored.
  * Source of truth: ui-next/docs/design-system.md § Tokens.
