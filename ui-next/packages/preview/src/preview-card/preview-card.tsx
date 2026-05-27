@@ -32,6 +32,10 @@ export function PreviewCard({ data, onImageLoaded, className }: PreviewCardProps
   const dps = stats?.dps;
   const iterations = stats?.iterations ?? data.simulator_settings?.iterations;
   const hasWarnings = stats?.warnings ? Object.values(stats.warnings).some(Boolean) : false;
+  const characterDps = stats?.character_dps;
+  // Hoisted: computed once per render rather than on every map iteration.
+  const maxDps =
+    characterDps && characterDps.length > 0 ? Math.max(...characterDps.map((d) => d.mean ?? 0)) : 0;
 
   // Signal image readiness for headless capture (no actual images to load currently)
   useEffect(() => {
@@ -76,13 +80,12 @@ export function PreviewCard({ data, onImageLoaded, className }: PreviewCardProps
         </div>
 
         {/* DPS breakdown per character (element-colored bars) */}
-        {stats?.character_dps && stats.character_dps.length > 0 && (
+        {characterDps && characterDps.length > 0 && (
           <div className="flex flex-col gap-1" data-testid="preview-char-dps">
-            {stats.character_dps.map((charDps, idx) => {
+            {characterDps.map((charDps, idx) => {
               const char = characters[idx];
               const name = char?.name ?? `Character ${idx + 1}`;
               const element = char?.element;
-              const maxDps = Math.max(...(stats.character_dps ?? []).map((d) => d.mean ?? 0));
               const barWidth =
                 charDps.mean != null && maxDps > 0 ? (charDps.mean / maxDps) * 100 : 0;
               const barColor = resolveElementColor(element);
