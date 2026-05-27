@@ -15,6 +15,7 @@ export const Single: Story = {
 };
 
 export const Sequence: Story = {
+  args: { children: null },
   render: () => (
     <span className="inline-flex items-center gap-1">
       <Kbd>⌘</Kbd>
@@ -24,6 +25,7 @@ export const Sequence: Story = {
 };
 
 export const InText: Story = {
+  args: { children: null },
   render: () => (
     <p className="text-sm text-muted-foreground">
       Press <Kbd>⌘</Kbd>
