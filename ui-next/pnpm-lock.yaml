@@ -200,9 +200,6 @@ importers:
 
   packages/avatar:
     dependencies:
-      '@gcsim/data':
-        specifier: workspace:*
-        version: link:../data
       '@gcsim/primitives':
         specifier: workspace:*
         version: link:../primitives

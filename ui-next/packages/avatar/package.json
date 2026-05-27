@@ -19,8 +19,7 @@
   },
   "dependencies": {
     "@gcsim/primitives": "workspace:*",
-    "@gcsim/types": "workspace:*",
-    "@gcsim/data": "workspace:*"
+    "@gcsim/types": "workspace:*"
   },
   "peerDependencies": {
     "react": "^19.0.0",
