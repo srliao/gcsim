@@ -910,3 +910,72 @@ Implements `docs/design_handoff_ui_next/README.md` § Phase 6.
 - `pnpm --filter @gcsim/web typecheck` — clean.
 - `pnpm --filter @gcsim/web build` — clean.
 - `npx biome check --write apps/web/src/pages/viewer/` — clean.
+
+### Phase 7 (ui-next redesign — ⌘K command palette) — DONE
+
+Implements `docs/design_handoff_ui_next/README.md` § Phase 7.
+
+**Step 1 — `cmdk` dep + `Command*` primitives in `@gcsim/primitives`**
+- Added `cmdk@1.1.1` (React 19 compatible) to `@gcsim/primitives` and
+  pinned in `DEPENDENCIES.md`.
+- New `packages/primitives/src/components/ui/command.tsx` exposing
+  `Command`, `CommandInput`, `CommandList`, `CommandEmpty`,
+  `CommandGroup`, `CommandItem`, `CommandSeparator`, `CommandShortcut`.
+  All styled with gcsim design tokens
+  (`--bg-1`, `--line-1`, `--accent-soft`, `--fg-3`, etc).
+- Polyfilled `ResizeObserver` and `Element.prototype.scrollIntoView`
+  in `packages/primitives/src/test-setup.ts` (cmdk + jsdom).
+- 4 new primitive tests added (52 total in package).
+- Storybook story `apps/storybook/src/stories/command.stories.tsx`.
+
+**Step 2 — exported name lists from `@gcsim/editor`**
+- Converted the private `ACTIONS / STATS / ELEMENTS / CHARACTERS`
+  Sets in `packages/editor/src/language/tokens.ts` into exported
+  readonly arrays (`ACTION_NAMES`, `STAT_NAMES`, `ELEMENT_NAMES`,
+  `CHARACTER_NAMES`). The Sets are kept as one-line wraps so the
+  specializer behavior is unchanged.
+- Re-exported from `packages/editor/src/index.ts`.
+
+**Step 3 — `CommandPalette` component + nav wiring**
+- New `apps/web/src/components/command-palette.tsx`.
+  - Listens for `mod+k` globally (Cmd/Ctrl+K) to toggle.
+  - Also listens for the `'gcsim:open-palette'` window event.
+  - Six groups: Characters / Weapons / Artifacts / Enemies / Actions
+    / Stats. Each header shows its kbd hint (⌘C / ⌘W / ⌘A / ⌘E /
+    ⌘X / ⌘S).
+  - Recent group (top 5) persisted to `localStorage` under
+    `gcsim-palette-recent`.
+  - On select dispatches `'gcsim:insert-at-cursor'` CustomEvent with
+    `{ token, group }` detail.
+- Hand-curated weapons / artifacts / enemies in
+  `apps/web/src/components/command-palette-data.ts`. Characters are
+  pulled from the editor + `@gcsim/data` `latestChars`.
+- `apps/web/src/components/nav.tsx`: the existing ⌘K ghost button
+  dispatches `'gcsim:open-palette'`.
+- `apps/web/src/routes.tsx`: mounted `<CommandPalette />` once in the
+  root layout so it's available from every route.
+- 8 new web tests added (93 total in app), covering: closed by
+  default, opens on ⌘K, opens on custom event, all six groups render,
+  filtering by query, insert-at-cursor event payload, recent group
+  persistence across remounts, toggle close.
+
+**Step 4 — simulator `insert-at-cursor` listener**
+- `apps/web/src/pages/simulator/simulator.tsx` now has a `useEffect`
+  that listens on `window` for `'gcsim:insert-at-cursor'` and appends
+  the token on its own line via the store's `setConfig`. The editor's
+  CodeMirror cursor-position dispatch is left as a follow-up.
+
+**Preserved TODOs**
+- `TODO(phase 7 follow-up): viewer-context filter mode`
+- `TODO(phase 7 follow-up): real cursor-position insert via CodeMirror dispatch`
+- `TODO(phase 7 follow-up): source weapons/artifacts/enemies from real game data`
+- `TODO(phase 7 follow-up): wire keyboard prefix jumps`
+
+**Verification**
+- `pnpm --filter @gcsim/primitives test` — 52 tests pass (was 48).
+- `pnpm --filter @gcsim/primitives typecheck` — clean.
+- `pnpm --filter @gcsim/web test` — 93 tests pass (was 85).
+- `pnpm --filter @gcsim/web typecheck` — clean.
+- `pnpm --filter @gcsim/web build` — clean.
+- `pnpm --filter @gcsim/storybook build` — clean.
+- `npx biome check --write` over all changed files — clean.
