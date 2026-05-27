@@ -6,7 +6,11 @@ vi.mock("@tanstack/react-router", () => ({
     to,
     children,
     ...props
-  }: { to: string; children: React.ReactNode; className?: string }) => (
+  }: {
+    to: string;
+    children: React.ReactNode;
+    className?: string;
+  }) => (
     <a href={to} {...props}>
       {children}
     </a>
@@ -57,5 +61,26 @@ describe("Dash", () => {
     const link = screen.getByText("Documentation").closest("a");
     expect(link).toBeDefined();
     expect(link?.getAttribute("href")).toBe("https://docs.gcsim.app");
+  });
+
+  it("renders the mascot image above the title", () => {
+    render(<Dash />);
+    const mascot = screen.getByAltText("gcsim mascot") as HTMLImageElement;
+    expect(mascot).toBeDefined();
+    expect(mascot.getAttribute("src")).toBe("/assets/gcsim-logo.png");
+  });
+
+  it("marks the Simulator card as the primary variant", () => {
+    render(<Dash />);
+    const link = screen.getByText("Simulator").closest("a");
+    expect(link?.getAttribute("data-variant")).toBe("primary");
+  });
+
+  it("flags external cards with an external data attribute", () => {
+    render(<Dash />);
+    const teamsDb = screen.getByText("Teams DB").closest("a");
+    const docs = screen.getByText("Documentation").closest("a");
+    expect(teamsDb?.getAttribute("data-external")).toBe("true");
+    expect(docs?.getAttribute("data-external")).toBe("true");
   });
 });
