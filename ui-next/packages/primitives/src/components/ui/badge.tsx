@@ -85,6 +85,13 @@ const toneOutlinedStyles: Record<BadgeTone, string> = {
 
 type BadgeProps = React.ComponentProps<"span"> &
   VariantProps<typeof badgeVariants> & {
+    /**
+     * Render the badge as its single child via Radix Slot.
+     *
+     * NOTE: When `asChild` is `true`, `dot` and `leading` are ignored —
+     * Radix Slot expects exactly one child element, so we can't inject
+     * wrapper spans around the consumer's child.
+     */
     asChild?: boolean;
     /**
      * Semantic tone. When set, overrides `variant` styling. Defaults to
@@ -93,9 +100,9 @@ type BadgeProps = React.ComponentProps<"span"> &
     tone?: BadgeTone;
     /** When tone is set: soft fill (default true) vs outlined. */
     soft?: boolean;
-    /** Render a 6px circle of the current tone color before content. */
+    /** Render a 6px circle of the current tone color before content. Ignored when `asChild` is true. */
     dot?: boolean;
-    /** Custom node rendered before children (after the dot). */
+    /** Custom node rendered before children (after the dot). Ignored when `asChild` is true. */
     leading?: React.ReactNode;
   };
 

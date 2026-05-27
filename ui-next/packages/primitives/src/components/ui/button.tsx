@@ -63,10 +63,18 @@ const buttonVariants = cva(
 
 type ButtonProps = React.ComponentProps<"button"> &
   VariantProps<typeof buttonVariants> & {
+    /**
+     * Render the button as its single child via Radix Slot, forwarding
+     * variant classes and props onto that child.
+     *
+     * NOTE: When `asChild` is `true`, `leading` and `trailing` are ignored —
+     * Radix Slot expects exactly one child element, so we can't inject
+     * wrapper spans around the consumer's child.
+     */
     asChild?: boolean;
-    /** Icon or node rendered before children. */
+    /** Icon or node rendered before children. Ignored when `asChild` is true. */
     leading?: React.ReactNode;
-    /** Icon or node rendered after children. */
+    /** Icon or node rendered after children. Ignored when `asChild` is true. */
     trailing?: React.ReactNode;
   };
 

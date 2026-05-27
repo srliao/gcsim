@@ -79,6 +79,22 @@ describe("Button", () => {
     const btn = screen.getByRole("button");
     expect(btn.className).toContain("h-8");
   });
+
+  it("ignores leading/trailing when asChild is set", () => {
+    const { container } = render(
+      <Button
+        asChild
+        leading={<span data-testid="leading">L</span>}
+        trailing={<span data-testid="trailing">T</span>}
+      >
+        <a href="/">link</a>
+      </Button>,
+    );
+    expect(container.querySelector('[data-testid="leading"]')).toBeNull();
+    expect(container.querySelector('[data-testid="trailing"]')).toBeNull();
+    expect(container.querySelector('[data-slot="button-leading"]')).toBeNull();
+    expect(container.querySelector('[data-slot="button-trailing"]')).toBeNull();
+  });
 });
 
 describe("Card", () => {
@@ -172,6 +188,19 @@ describe("Badge", () => {
     const el = container.querySelector('[data-slot="badge"]') as HTMLElement;
     expect(el.className).not.toContain("hover:bg-primary");
     expect(el.className).not.toContain("bg-primary");
+  });
+
+  it("ignores dot/leading when asChild is set", () => {
+    const { container } = render(
+      <Badge asChild tone="ok" dot leading={<span data-testid="badge-leading">L</span>}>
+        <a href="/">link</a>
+      </Badge>,
+    );
+    expect(container.querySelector('[data-testid="badge-leading"]')).toBeNull();
+    expect(container.querySelector('[data-slot="badge-leading"]')).toBeNull();
+    // The dot is rendered as an aria-hidden span when not in asChild mode;
+    // here it must not be present.
+    expect(container.querySelector("span[aria-hidden='true']")).toBeNull();
   });
 
   it("uses outlined styling when soft=false", () => {
