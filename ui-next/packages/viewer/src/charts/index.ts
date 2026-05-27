@@ -24,6 +24,8 @@ export { EndingEnergyChart, transformEndingEnergy } from "./ending-energy-chart/
 export type { EnergyChartProps } from "./energy-chart/index.js";
 // Energy & field time charts
 export { EnergyChart, transformEnergy } from "./energy-chart/index.js";
+export type { FieldTimeBarProps, FieldTimeBarSegment } from "./field-time-bar/index.js";
+export { FieldTimeBar, transformFieldTimeBar } from "./field-time-bar/index.js";
 export type { FieldTimeChartProps, FieldTimeDataPoint } from "./field-time-chart/index.js";
 export { FieldTimeChart, transformFieldTime } from "./field-time-chart/index.js";
 export type { ReactionsChartProps } from "./reactions-chart/index.js";
@@ -33,10 +35,16 @@ export { SourceDpsChart, transformSourceDps } from "./source-dps-chart/index.js"
 export type { TargetAuraUptimeChartProps } from "./target-aura-uptime-chart/index.js";
 // Aura
 export { TargetAuraUptimeChart, transformAuraUptime } from "./target-aura-uptime-chart/index.js";
-export type { ChartCardProps, HorizontalBarStackProps, StatTooltipProps } from "./util/index.js";
+export type {
+  ChartCardProps,
+  ChartTooltipShellProps,
+  HorizontalBarStackProps,
+  StatTooltipProps,
+} from "./util/index.js";
 export {
   actionColor,
   ChartCard,
+  ChartTooltipShell,
   characterColor,
   elementColor,
   formatDamage,
