@@ -1,5 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle, cn } from "@gcsim/primitives";
 
+// TODO(phase-3b-ii): `ChartCard` is superseded by `ChartShell` in
+// `src/chart-shell/`. All 13 chart components currently wrap with
+// `ChartCard`; they'll be migrated to `ChartShell` during the Recharts
+// skinning pass. Once migration is complete, delete this file.
+
 export interface ChartCardProps {
   title: string;
   children: React.ReactNode;

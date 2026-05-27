@@ -1,5 +1,8 @@
 // @gcsim/viewer public API
 
+// Chart Shell (successor to ChartCard; charts migrate in Phase 3b-ii)
+export type { ChartShellProps } from "./chart-shell/index.js";
+export { ChartShell } from "./chart-shell/index.js";
 // Charts (13 chart components + utilities)
 export * from "./charts/index.js";
 // Events (event log abstraction layer)
