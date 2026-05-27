@@ -48,7 +48,6 @@ export const gcsimDarkTheme = EditorView.theme(
     "&": {
       backgroundColor: "var(--bg-0)",
       color: "var(--fg-1)",
-      fontSize: "14px",
     },
     ".cm-content": {
       caretColor: "var(--accent)",
