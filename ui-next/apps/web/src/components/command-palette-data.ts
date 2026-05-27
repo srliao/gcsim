@@ -54,5 +54,5 @@ export const ENEMY_NAMES: readonly string[] = [
   "mitachurl",
   "lawachurl",
   "primomachina",
-  "consecratedhorned crocodile",
+  "consecratedhornedcrocodile",
 ];

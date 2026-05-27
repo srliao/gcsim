@@ -70,15 +70,11 @@ function CommandEmpty({
 
 function CommandGroup({
   className,
-  heading,
   ...props
-}: React.ComponentProps<typeof CommandPrimitive.Group> & {
-  heading?: React.ReactNode;
-}) {
+}: React.ComponentProps<typeof CommandPrimitive.Group>) {
   return (
     <CommandPrimitive.Group
       data-slot="command-group"
-      heading={heading as string | undefined}
       className={cn(
         "overflow-hidden p-1 text-[var(--fg-1)]",
         "[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-[10px] [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-wider [&_[cmdk-group-heading]]:text-[var(--fg-3)]",

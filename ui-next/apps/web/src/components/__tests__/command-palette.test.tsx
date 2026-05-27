@@ -101,11 +101,45 @@ describe("CommandPalette", () => {
     expect(screen.getAllByText("burst").length).toBeGreaterThanOrEqual(1);
   });
 
-  it("closes when ⌘K is pressed while open (toggle)", () => {
+  it("closes via Escape when open", () => {
     render(<CommandPalette />);
     openPaletteViaKeyboard();
     expect(screen.getByTestId("command-palette-dialog")).toBeInTheDocument();
+    fireEvent.keyDown(document, { key: "Escape" });
+    expect(screen.queryByTestId("command-palette-dialog")).toBeNull();
+  });
+
+  it("does NOT open on ⌘K while focus is inside an <input>", () => {
+    render(<CommandPalette />);
+    const input = document.createElement("input");
+    document.body.appendChild(input);
+    input.focus();
+    expect(document.activeElement).toBe(input);
     openPaletteViaKeyboard();
     expect(screen.queryByTestId("command-palette-dialog")).toBeNull();
+    document.body.removeChild(input);
+  });
+
+  it("does NOT open on ⌘K while focus is inside a contenteditable element", () => {
+    render(<CommandPalette />);
+    const editable = document.createElement("div");
+    editable.setAttribute("contenteditable", "true");
+    editable.tabIndex = 0;
+    document.body.appendChild(editable);
+    editable.focus();
+    // jsdom focuses contenteditable via tabindex; verify before asserting.
+    expect(document.activeElement).toBe(editable);
+    expect(editable.getAttribute("contenteditable")).toBe("true");
+    openPaletteViaKeyboard();
+    expect(screen.queryByTestId("command-palette-dialog")).toBeNull();
+    document.body.removeChild(editable);
+  });
+
+  it("opens on ⌘K when no editable element has focus (regression)", () => {
+    render(<CommandPalette />);
+    // Ensure focus is on document body (no editable focus).
+    (document.activeElement as HTMLElement | null)?.blur?.();
+    openPaletteViaKeyboard();
+    expect(screen.getByTestId("command-palette-dialog")).toBeInTheDocument();
   });
 });

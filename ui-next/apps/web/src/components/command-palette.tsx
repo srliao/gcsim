@@ -99,6 +99,19 @@ export function CommandPalette() {
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        // Let editable controls (inputs, textareas, contenteditable like the
+        // CodeMirror .cm-content) handle ⌘K themselves.
+        const active = document.activeElement as HTMLElement | null;
+        const tag = active?.tagName;
+        const ceAttr = active?.getAttribute?.("contenteditable");
+        const isEditable =
+          tag === "INPUT" ||
+          tag === "TEXTAREA" ||
+          active?.isContentEditable === true ||
+          ceAttr === "" ||
+          ceAttr === "true" ||
+          ceAttr === "plaintext-only";
+        if (isEditable) return;
         e.preventDefault();
         setOpen((o) => !o);
       }
@@ -186,16 +199,16 @@ export function CommandPalette() {
             )}
 
             <CommandGroup
-              heading={
-                <span className="flex items-center justify-between gap-2">
-                  <span>{GROUP_META[0].heading}</span>
-                  <span className="font-mono text-[10px] text-[var(--fg-3)]">
-                    {GROUP_META[0].shortcut}
-                  </span>
-                </span>
-              }
+              heading={GROUP_META[0].heading}
+              className="relative"
               data-testid="command-group-characters"
             >
+              <span
+                aria-hidden
+                className="pointer-events-none absolute right-3 top-1.5 font-mono text-[10px] tracking-wider text-[var(--fg-3)]"
+              >
+                {GROUP_META[0].shortcut}
+              </span>
               {characters.map((token) => (
                 <CommandItem
                   key={`char-${token}`}
@@ -208,16 +221,16 @@ export function CommandPalette() {
             </CommandGroup>
 
             <CommandGroup
-              heading={
-                <span className="flex items-center justify-between gap-2">
-                  <span>{GROUP_META[1].heading}</span>
-                  <span className="font-mono text-[10px] text-[var(--fg-3)]">
-                    {GROUP_META[1].shortcut}
-                  </span>
-                </span>
-              }
+              heading={GROUP_META[1].heading}
+              className="relative"
               data-testid="command-group-weapons"
             >
+              <span
+                aria-hidden
+                className="pointer-events-none absolute right-3 top-1.5 font-mono text-[10px] tracking-wider text-[var(--fg-3)]"
+              >
+                {GROUP_META[1].shortcut}
+              </span>
               {weapons.map((token) => (
                 <CommandItem
                   key={`weap-${token}`}
@@ -230,16 +243,16 @@ export function CommandPalette() {
             </CommandGroup>
 
             <CommandGroup
-              heading={
-                <span className="flex items-center justify-between gap-2">
-                  <span>{GROUP_META[2].heading}</span>
-                  <span className="font-mono text-[10px] text-[var(--fg-3)]">
-                    {GROUP_META[2].shortcut}
-                  </span>
-                </span>
-              }
+              heading={GROUP_META[2].heading}
+              className="relative"
               data-testid="command-group-artifacts"
             >
+              <span
+                aria-hidden
+                className="pointer-events-none absolute right-3 top-1.5 font-mono text-[10px] tracking-wider text-[var(--fg-3)]"
+              >
+                {GROUP_META[2].shortcut}
+              </span>
               {artifacts.map((token) => (
                 <CommandItem
                   key={`arti-${token}`}
@@ -252,16 +265,16 @@ export function CommandPalette() {
             </CommandGroup>
 
             <CommandGroup
-              heading={
-                <span className="flex items-center justify-between gap-2">
-                  <span>{GROUP_META[3].heading}</span>
-                  <span className="font-mono text-[10px] text-[var(--fg-3)]">
-                    {GROUP_META[3].shortcut}
-                  </span>
-                </span>
-              }
+              heading={GROUP_META[3].heading}
+              className="relative"
               data-testid="command-group-enemies"
             >
+              <span
+                aria-hidden
+                className="pointer-events-none absolute right-3 top-1.5 font-mono text-[10px] tracking-wider text-[var(--fg-3)]"
+              >
+                {GROUP_META[3].shortcut}
+              </span>
               {enemies.map((token) => (
                 <CommandItem
                   key={`enem-${token}`}
@@ -274,16 +287,16 @@ export function CommandPalette() {
             </CommandGroup>
 
             <CommandGroup
-              heading={
-                <span className="flex items-center justify-between gap-2">
-                  <span>{GROUP_META[4].heading}</span>
-                  <span className="font-mono text-[10px] text-[var(--fg-3)]">
-                    {GROUP_META[4].shortcut}
-                  </span>
-                </span>
-              }
+              heading={GROUP_META[4].heading}
+              className="relative"
               data-testid="command-group-actions"
             >
+              <span
+                aria-hidden
+                className="pointer-events-none absolute right-3 top-1.5 font-mono text-[10px] tracking-wider text-[var(--fg-3)]"
+              >
+                {GROUP_META[4].shortcut}
+              </span>
               {actions.map((token) => (
                 <CommandItem
                   key={`act-${token}`}
@@ -296,16 +309,16 @@ export function CommandPalette() {
             </CommandGroup>
 
             <CommandGroup
-              heading={
-                <span className="flex items-center justify-between gap-2">
-                  <span>{GROUP_META[5].heading}</span>
-                  <span className="font-mono text-[10px] text-[var(--fg-3)]">
-                    {GROUP_META[5].shortcut}
-                  </span>
-                </span>
-              }
+              heading={GROUP_META[5].heading}
+              className="relative"
               data-testid="command-group-stats"
             >
+              <span
+                aria-hidden
+                className="pointer-events-none absolute right-3 top-1.5 font-mono text-[10px] tracking-wider text-[var(--fg-3)]"
+              >
+                {GROUP_META[5].shortcut}
+              </span>
               {stats.map((token) => (
                 <CommandItem
                   key={`stat-${token}`}
