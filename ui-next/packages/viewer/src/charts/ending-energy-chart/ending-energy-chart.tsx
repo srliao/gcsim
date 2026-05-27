@@ -1,4 +1,5 @@
 import type { Sim } from "@gcsim/types";
+import type { TooltipContentProps } from "recharts";
 import {
   Bar,
   BarChart,
@@ -9,7 +10,9 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import type { NameType, ValueType } from "recharts/types/component/DefaultTooltipContent";
 import { ChartShell } from "../../chart-shell/chart-shell.js";
+import { ChartTooltipShell } from "../util/chart-tooltip-shell.js";
 import { characterColor } from "../util/colors.js";
 
 export interface EndingEnergyChartProps {
@@ -42,6 +45,24 @@ const AXIS_TICK = {
   fontSize: 11,
 } as const;
 
+function EndingEnergyTooltip({ active, payload, label }: TooltipContentProps<ValueType, NameType>) {
+  if (!active || !payload?.length) return null;
+
+  const entry = payload[0];
+  const name = String(entry?.name ?? "energy");
+  const rawValue = entry?.value;
+  const value = typeof rawValue === "number" ? rawValue.toString() : String(rawValue ?? "");
+
+  return (
+    <ChartTooltipShell title={label != null ? String(label) : undefined}>
+      <div className="flex justify-between gap-4">
+        <span className="text-[var(--fg-2)]">{name}</span>
+        <span className="font-mono tabular-nums text-[var(--fg-1)]">{value}</span>
+      </div>
+    </ChartTooltipShell>
+  );
+}
+
 export function EndingEnergyChart({ endStats, characterNames }: EndingEnergyChartProps) {
   const data = transformEndingEnergy(endStats, characterNames);
   const hasData = data.length > 0;
@@ -56,18 +77,7 @@ export function EndingEnergyChart({ endStats, characterNames }: EndingEnergyChar
               <CartesianGrid stroke="var(--line-1)" strokeDasharray="3 3" />
               <XAxis type="number" tick={AXIS_TICK} />
               <YAxis type="category" dataKey="name" width={120} tick={AXIS_TICK} />
-              <Tooltip
-                contentStyle={{
-                  background: "var(--bg-2)",
-                  border: "1px solid var(--line-2)",
-                  borderRadius: 6,
-                  color: "var(--fg-1)",
-                  fontSize: 12,
-                }}
-                itemStyle={{ color: "var(--fg-1)" }}
-                labelStyle={{ color: "var(--fg-1)" }}
-                cursor={{ fill: "var(--line-1)" }}
-              />
+              <Tooltip content={EndingEnergyTooltip} cursor={{ fill: "var(--line-1)" }} />
               <Bar dataKey="energy">
                 {data.map((entry, index) => (
                   <Cell key={`cell-${entry.name}`} fill={characterColor(index)} />

@@ -1,4 +1,5 @@
 import type { Sim } from "@gcsim/types";
+import type { TooltipContentProps } from "recharts";
 import {
   Bar,
   BarChart,
@@ -9,7 +10,9 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import type { NameType, ValueType } from "recharts/types/component/DefaultTooltipContent";
 import { ChartShell } from "../../chart-shell/chart-shell.js";
+import { ChartTooltipShell } from "../util/chart-tooltip-shell.js";
 import { elementColor } from "../util/colors.js";
 
 export interface TargetAuraUptimeChartProps {
@@ -56,6 +59,23 @@ const AXIS_TICK = {
   fontSize: 11,
 } as const;
 
+function AuraUptimeTooltip({ active, payload, label }: TooltipContentProps<ValueType, NameType>) {
+  if (!active || !payload?.length) return null;
+
+  const entry = payload[0];
+  const rawValue = entry?.value;
+  const value = typeof rawValue === "number" ? `${rawValue.toFixed(1)}%` : String(rawValue ?? "");
+
+  return (
+    <ChartTooltipShell title={label != null ? String(label) : undefined}>
+      <div className="flex justify-between gap-4">
+        <span className="text-[var(--fg-2)]">Uptime</span>
+        <span className="font-mono tabular-nums text-[var(--fg-1)]">{value}</span>
+      </div>
+    </ChartTooltipShell>
+  );
+}
+
 export function TargetAuraUptimeChart({ data }: TargetAuraUptimeChartProps) {
   const { rows } = transformAuraUptime(data);
   const hasData = rows.length > 0;
@@ -84,23 +104,7 @@ export function TargetAuraUptimeChart({ data }: TargetAuraUptimeChartProps) {
                 }}
               />
               <YAxis type="category" dataKey="name" width={72} tick={AXIS_TICK} />
-              <Tooltip
-                formatter={(value) =>
-                  typeof value === "number"
-                    ? [`${value.toFixed(1)}%`, "Uptime"]
-                    : [String(value), "Uptime"]
-                }
-                contentStyle={{
-                  background: "var(--bg-2)",
-                  border: "1px solid var(--line-2)",
-                  borderRadius: 6,
-                  color: "var(--fg-1)",
-                  fontSize: 12,
-                }}
-                itemStyle={{ color: "var(--fg-1)" }}
-                labelStyle={{ color: "var(--fg-1)" }}
-                cursor={{ fill: "var(--line-1)" }}
-              />
+              <Tooltip content={AuraUptimeTooltip} cursor={{ fill: "var(--line-1)" }} />
               <Bar dataKey="uptime">
                 {rows.map((row) => (
                   <Cell key={row.name} fill={elementColor(row.name.toLowerCase())} />

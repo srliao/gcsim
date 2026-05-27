@@ -1,7 +1,9 @@
 import type { Sim } from "@gcsim/types";
-import type { PieLabelRenderProps } from "recharts";
+import type { PieLabelRenderProps, TooltipContentProps } from "recharts";
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
+import type { NameType, ValueType } from "recharts/types/component/DefaultTooltipContent";
 import { ChartShell } from "../../chart-shell/chart-shell.js";
+import { ChartTooltipShell } from "../util/chart-tooltip-shell.js";
 import { characterColor } from "../util/colors.js";
 
 export interface CharacterDpsPieProps {
@@ -36,6 +38,24 @@ export function transformCharacterDps(
   });
 }
 
+function CharacterDpsTooltip({ active, payload }: TooltipContentProps<ValueType, NameType>) {
+  if (!active || !payload?.length) return null;
+
+  const entry = payload[0];
+  const name = String(entry?.name ?? "");
+  const rawValue = entry?.value;
+  const value = typeof rawValue === "number" ? rawValue.toFixed(1) : String(rawValue ?? "");
+
+  return (
+    <ChartTooltipShell>
+      <div className="flex justify-between gap-4">
+        <span className="text-[var(--fg-2)]">{name}</span>
+        <span className="font-mono tabular-nums text-[var(--fg-1)]">{value}</span>
+      </div>
+    </ChartTooltipShell>
+  );
+}
+
 export function CharacterDpsPie({ characterDps, characterNames }: CharacterDpsPieProps) {
   const data = transformCharacterDps(characterDps, characterNames);
   const hasData = data.length > 0;
@@ -60,20 +80,7 @@ export function CharacterDpsPie({ characterDps, characterNames }: CharacterDpsPi
                   <Cell key={`cell-${entry.name}`} fill={characterColor(index)} />
                 ))}
               </Pie>
-              <Tooltip
-                formatter={(value) =>
-                  typeof value === "number" ? value.toFixed(1) : String(value)
-                }
-                contentStyle={{
-                  background: "var(--bg-2)",
-                  border: "1px solid var(--line-2)",
-                  borderRadius: 6,
-                  color: "var(--fg-1)",
-                  fontSize: 12,
-                }}
-                itemStyle={{ color: "var(--fg-1)" }}
-                labelStyle={{ color: "var(--fg-1)" }}
-              />
+              <Tooltip content={CharacterDpsTooltip} />
               <Legend wrapperStyle={{ fontFamily: "var(--font-mono)", fontSize: 11 }} />
             </PieChart>
           </ResponsiveContainer>
