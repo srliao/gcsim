@@ -1,6 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle, cn } from "@gcsim/primitives";
 import type { Sim } from "@gcsim/types";
 
+// TODO(phase-3b-i): `RollupCard` is superseded by `DetailedMetricTile`
+// in `src/rollup/`. Kept exported only while `apps/web/src/pages/viewer/
+// results-tab.tsx` migrates to the new component; delete this file
+// (and its test + storybook story) immediately after the migration.
+
 export interface RollupCardProps {
   label: string;
   stat?: Sim.FloatStat | Sim.SummaryStat;

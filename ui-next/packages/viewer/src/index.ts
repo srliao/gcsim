@@ -20,6 +20,15 @@ export { Commit, Iterations, MetadataChip, Mode, Warnings } from "./metadata/ind
 // Result Cards
 export type { DPSCardProps, RollupCardProps, TargetInfoCardProps } from "./result-cards/index.js";
 export { DPSCard, RollupCard, TargetInfoCard } from "./result-cards/index.js";
+// Rollup (DetailedMetricTile + SummaryStat formatter)
+export type {
+  DetailedMetricTileProps,
+  DetailedMetricTileStats,
+  DetailedMetricTileTone,
+  FormatSummaryStatOptions,
+  FormattedSummaryStat,
+} from "./rollup/index.js";
+export { DetailedMetricTile, formatSummaryStat } from "./rollup/index.js";
 // Sample Viewer
 export * from "./sample/index.js";
 // Team Header
