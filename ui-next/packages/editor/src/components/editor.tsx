@@ -296,8 +296,9 @@ export const Editor: FC<EditorProps> = ({
               disabled={!onFontSizeChange}
             />
           </div>
-          <Select value={theme} data-slot="editor-theme-select">
-            <SelectTrigger size="sm" aria-label="Editor theme">
+          {/* Visual placeholder; enable when a second theme ships. */}
+          <Select value={theme} disabled data-slot="editor-theme-select">
+            <SelectTrigger size="sm" aria-label="Editor theme" title="Only one theme available">
               <SelectValue placeholder="Theme" />
             </SelectTrigger>
             <SelectContent>
