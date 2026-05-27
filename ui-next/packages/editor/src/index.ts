@@ -1,6 +1,10 @@
 // Language
 
-export type { EditorProps } from "./components/editor";
+export type {
+  EditorParseStatus,
+  EditorProps,
+  EditorTab,
+} from "./components/editor";
 // React component
 export { Editor } from "./components/editor";
 export type { GcsimError } from "./diagnostics/diagnostics";
