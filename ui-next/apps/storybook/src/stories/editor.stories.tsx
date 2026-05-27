@@ -1,4 +1,5 @@
-import { Editor } from "@gcsim/editor";
+import { Editor, type EditorParseStatus } from "@gcsim/editor";
+import { Badge } from "@gcsim/primitives";
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
 
@@ -22,6 +23,12 @@ while 1 {
 }
 `;
 
+const DEFAULT_TABS = [
+  { value: "config", label: "Config" },
+  { value: "action", label: "Action list" },
+  { value: "preview", label: "Preview" },
+];
+
 const meta: Meta<typeof Editor> = {
   title: "Editor/Editor",
   component: Editor,
@@ -32,7 +39,12 @@ const meta: Meta<typeof Editor> = {
   decorators: [
     (Story) => (
       <div
-        style={{ height: 400, border: "1px solid #45475a", borderRadius: 8, overflow: "hidden" }}
+        style={{
+          height: 480,
+          border: "1px solid var(--line-2, #45475a)",
+          borderRadius: 8,
+          overflow: "hidden",
+        }}
       >
         <Story />
       </div>
@@ -82,8 +94,91 @@ export const Controlled: Story = {
         <div style={{ flex: 1, overflow: "hidden" }}>
           <Editor value={value} onChange={setValue} className="h-full" />
         </div>
-        <div style={{ color: "#6c7086", fontSize: 12 }}>{value.length} characters</div>
+        <div style={{ color: "var(--fg-3)", fontSize: 12 }}>{value.length} characters</div>
       </div>
     );
+  },
+};
+
+/**
+ * Editor with the full chrome shell — header (tabs + font-size stepper +
+ * theme select + Format button) and footer (parse status + line count +
+ * cursor pos + optional badges slot). All chrome props are optional;
+ * existing call sites that omit `showChrome` are unaffected.
+ */
+export const WithChrome: Story = {
+  args: { value: sampleConfig, className: "h-full" },
+  render: () => {
+    const [value, setValue] = useState(sampleConfig);
+    const [tab, setTab] = useState("action");
+    const [fontSize, setFontSize] = useState(14);
+    return (
+      <Editor
+        value={value}
+        onChange={setValue}
+        showChrome
+        tabs={DEFAULT_TABS}
+        activeTab={tab}
+        onTabChange={setTab}
+        fontSize={fontSize}
+        onFontSizeChange={setFontSize}
+        onFormat={() => {
+          // No-op for the story; apps wire a real formatter.
+        }}
+        parseStatus="ok"
+        optionsBadges={
+          <>
+            <Badge tone="neutral">iter=100</Badge>
+            <Badge tone="neutral">workers=4</Badge>
+          </>
+        }
+        className="h-full"
+      />
+    );
+  },
+};
+
+export const ChromeParseStatusOK: Story = {
+  args: {
+    value: sampleConfig,
+    showChrome: true,
+    tabs: DEFAULT_TABS,
+    activeTab: "action",
+    parseStatus: "ok",
+    className: "h-full",
+  },
+};
+
+export const ChromeParseStatusParsing: Story = {
+  args: {
+    value: sampleConfig,
+    showChrome: true,
+    tabs: DEFAULT_TABS,
+    activeTab: "action",
+    parseStatus: "parsing",
+    className: "h-full",
+  },
+};
+
+export const ChromeParseStatusError: Story = {
+  args: {
+    value: "bennett char lvl=90/90;\nunknown_command foo bar;",
+    showChrome: true,
+    tabs: DEFAULT_TABS,
+    activeTab: "action",
+    parseStatus: "error" as EditorParseStatus,
+    errors: [{ line: 2, message: "unknown command: unknown_command" }],
+    className: "h-full",
+  },
+};
+
+export const ChromeParseStatusIdle: Story = {
+  args: {
+    value: "",
+    showChrome: true,
+    tabs: DEFAULT_TABS,
+    activeTab: "config",
+    parseStatus: "idle",
+    className: "h-full",
   },
 };

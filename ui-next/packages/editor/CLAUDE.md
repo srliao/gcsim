@@ -50,16 +50,32 @@ Edit `src/language/autocomplete.ts` — add to the appropriate completion array 
 
 ### Changing the theme
 
-Edit `src/theme/dark-theme.ts`. The theme uses Catppuccin Mocha colors. `gcsimDarkTheme` controls editor chrome (gutters, background, cursor). `gcsimHighlightStyle` controls syntax token colors.
+Edit `src/theme/dark-theme.ts`. The `gcsim-dark` theme reads from the
+`ui-next` design-system CSS variables (`--bg-0/1/2`, `--fg-0/1/2/3`,
+`--line-1/2`, `--accent`, `--accent-soft`, `--warn-soft`, the
+`--el-*` element hues, `--brand-blue-2`, `--font-mono`). The
+JSDoc block at the top of the file documents which token drives each
+surface. Never hard-code hex colours — always use `var(--token)`.
+`gcsimDarkTheme` controls editor chrome (gutters, background, cursor).
+`gcsimHighlightStyle` controls syntax token colors.
 
 ## Public API
 
 ```typescript
 import { Editor, gcsim, applyDiagnostics, clearDiagnostics, gcsimDarkTheme } from "@gcsim/editor";
-import type { EditorProps, GcsimError } from "@gcsim/editor";
+import type { EditorProps, EditorParseStatus, EditorTab, GcsimError } from "@gcsim/editor";
 ```
 
-- **`Editor`** — Controlled React component (`value`, `onChange`, `readOnly`, `errors`, `className`)
+- **`Editor`** — Controlled React component. Core props: `value`, `onChange`,
+  `readOnly`, `errors`, `className`, `fontSize` (default `14`, applied via
+  a CodeMirror Compartment so it can be re-configured live),
+  `onFontSizeChange`, `theme` (only `'gcsim-dark'` ships).
+  Optional chrome props (rendered only when `showChrome` is `true`):
+  `tabs`, `activeTab`, `onTabChange`, `onFormat`, `parseStatus`
+  (`'ok' | 'parsing' | 'error' | 'idle'`, maps to a `<StatusPill>`),
+  `optionsBadges` (right-aligned ReactNode slot in the footer).
+  When `showChrome` is false (default), the component renders only the
+  CodeMirror surface — existing call sites are unaffected.
 - **`gcsim()`** — `LanguageSupport` extension for standalone CM6 usage
 - **`applyDiagnostics(view, errors)`** — Push WASM validation errors to editor
 - **`clearDiagnostics(view)`** — Remove all diagnostics

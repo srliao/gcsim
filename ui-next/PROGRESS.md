@@ -742,3 +742,67 @@ TODOs left for downstream phases:
   intentionally deferred — the biome `noStaticElementInteractions`
   suppression notes this. Pick this up when the sample-viewer wiring
   lands.
+
+### Phase 3c (ui-next redesign — @gcsim/editor gcsim-dark theme + chrome) — DONE
+
+Implements `docs/design_handoff_ui_next/README.md` § Phase 3c and
+`docs/design_handoff_ui_next/docs/component-inventory.md` L299–316.
+
+**Theme (`packages/editor/src/theme/dark-theme.ts`)** — replaced
+Catppuccin Mocha hex codes with `var(--*)` references into the
+ui-next design system. JSDoc at the top of the file documents the
+mapping (background → `--bg-0`, gutter → `--fg-3` / `--line-1`, caret
++ selection → `--accent` / `--accent-soft`, search match →
+`--warn-soft`, tooltip → `--bg-2` / `--line-2`, fold placeholder →
+`--bg-2` / `--fg-2`). HighlightStyle: comments → `--fg-3` italic,
+keywords → `--accent`, strings → `--el-dendro`, numbers/booleans →
+`--el-geo`, identifiers → `--el-electro`, functions → `--brand-blue-2`,
+character class names → `--el-pyro`, stat attribute names →
+`--el-hydro`, element atoms → `--el-anemo`, punctuation → `--fg-3`.
+Content font set via `var(--font-mono)`.
+
+**Editor component** — added `fontSize` (default 14, applied via a
+CodeMirror Compartment so the theme-injected font-size rule reconfigures
+live) + `onFontSizeChange` + `theme` (only `'gcsim-dark'` ships). Added
+optional chrome props: `showChrome` (default `false` keeps existing
+behaviour), `tabs`, `activeTab`, `onTabChange`, `onFormat`,
+`parseStatus`, `optionsBadges`. When `showChrome` is true the
+CodeMirror surface is wrapped in a `<Card>` with:
+
+- header: `<Tabs variant="pill" size="sm">` + NumberStepper (12–20px,
+  step 1, suffix `px`) + theme `<Select>` + Format `<Button>`
+- footer: `<StatusPill>` (mapped via `ok→ready`, `parsing→running`,
+  `error→failed`, `idle→idle`) + monospace line count + cursor pos
+  (`Ln N, Col N`) + right-aligned `optionsBadges` slot
+
+Line count + cursor position track the existing single `EditorView`
+via the same `updateListener` (no second editor instance). Re-exported
+`EditorParseStatus` and `EditorTab` from the package index.
+
+Added `@gcsim/primitives` as a workspace dep on `@gcsim/editor` so the
+chrome shell can reuse Phase 2 primitives.
+
+**Tests** — added `theme/__tests__/dark-theme.test.ts` (5 tests
+asserting extensions compose, the runtime stylesheet uses the
+`var(--*)` tokens, and the source contains no hex codes outside
+comments). Extended `components/__tests__/editor.test.tsx` to cover the
+fontSize prop (default + custom + rerender) and chrome (no-chrome
+default, shell rendering, tabs list, tab activation, Format button +
+disabled state, parse-status pill, line count, cursor pos,
+optionsBadges, fontSize stepper). Editor tests: 32 → 54 (+22).
+
+**Storybook** — extended `apps/storybook/src/stories/editor.stories.tsx`
+with `WithChrome` (controlled, full chrome composition) plus four
+`ChromeParseStatus*` stories covering ok/parsing/error/idle.
+
+**CLAUDE.md** — updated `packages/editor/CLAUDE.md` Public API to list
+the new optional chrome props, the new `fontSize` prop, the new
+exported types, and the design-system-token theme contract.
+
+Verification:
+- `pnpm --filter @gcsim/editor test` — 54 tests pass (up from 32).
+- `pnpm --filter @gcsim/editor typecheck` — clean.
+- `pnpm --filter @gcsim/web typecheck` — clean.
+- `pnpm --filter @gcsim/web test` — 92 tests pass (no regressions).
+- `pnpm --filter @gcsim/storybook build` — clean.
+- `npx biome check packages/editor/ apps/storybook/src/stories/editor.stories.tsx` — clean.

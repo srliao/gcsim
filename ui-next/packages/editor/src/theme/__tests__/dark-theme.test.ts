@@ -39,7 +39,7 @@ describe("gcsim-dark theme", () => {
     test("editor root background uses var(--bg-0)", () => {
       const editor = container.querySelector(".cm-editor") as HTMLElement;
       expect(editor).toBeTruthy();
-      const style = editor.style.cssText + "" + getComputedStyle(editor).backgroundColor;
+      const style = `${editor.style.cssText}${getComputedStyle(editor).backgroundColor}`;
       // jsdom's getComputedStyle doesn't resolve var(), so the raw inline
       // string should still contain `var(--bg-0)` somewhere in the
       // generated stylesheet. Search the actual style element CM6 injects.
