@@ -2,76 +2,120 @@ import { HighlightStyle } from "@codemirror/language";
 import { EditorView } from "@codemirror/view";
 import { tags as t } from "@lezer/highlight";
 
+/**
+ * gcsim-dark — CodeMirror theme bound to the gcsim ui-next design system
+ * tokens (see `ui-next/docs/design-system.md` § Tokens and
+ * `packages/primitives/src/theme.css`).
+ *
+ * The values below intentionally reference CSS variables rather than fixed
+ * hex codes so the editor inherits any future theme adjustments at runtime.
+ *
+ * Token mapping:
+ *
+ * Editor chrome
+ * - background           → var(--bg-0)             (page surface)
+ * - text                 → var(--fg-1)             (secondary fg — easier on eyes than fg-0)
+ * - caret                → var(--accent)
+ * - selection            → var(--accent-soft)
+ * - gutter background    → oklch(1 0 0 / 0.015)    (subtle lift, per spec)
+ * - gutter text          → var(--fg-3)
+ * - gutter border-right  → var(--line-1)
+ * - active line gutter   → var(--bg-1)
+ * - matching bracket     → var(--accent-soft) + outline var(--accent)
+ * - tooltip background   → var(--bg-2)             (raised surface)
+ * - tooltip border       → var(--line-2)
+ * - search match         → var(--warn-soft)
+ * - fold placeholder     → bg var(--bg-2), text var(--fg-2)
+ *
+ * Syntax (HighlightStyle)
+ * - comments             → var(--fg-3), italic
+ * - keywords             → var(--accent)
+ * - strings              → var(--el-dendro)        (warm green)
+ * - numbers / booleans   → var(--el-geo)           (warm yellow-amber)
+ * - identifiers          → var(--el-electro)       (cool purple)
+ * - functions / actions  → var(--brand-blue-2)     (distinct from keyword)
+ * - class names (chars)  → var(--el-pyro)          (warm)
+ * - attribute names      → var(--el-hydro)         (cool)
+ * - atoms (elements)     → var(--el-anemo)         (cool teal)
+ * - punctuation / sep    → var(--fg-3)
+ *
+ * Font: `var(--font-mono)` (JetBrains Mono) at 14px default. The font size
+ * is also exposed as the `fontSize` prop on `<Editor>` and applied via a
+ * Compartment so it can be reconfigured live.
+ */
 export const gcsimDarkTheme = EditorView.theme(
   {
     "&": {
-      backgroundColor: "#1e1e2e",
-      color: "#cdd6f4",
+      backgroundColor: "var(--bg-0)",
+      color: "var(--fg-1)",
       fontSize: "14px",
     },
     ".cm-content": {
-      caretColor: "#f5e0dc",
-      fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
+      caretColor: "var(--accent)",
+      fontFamily: "var(--font-mono), 'JetBrains Mono', 'Fira Code', monospace",
     },
-    "&.cm-focused .cm-cursor": { borderLeftColor: "#f5e0dc" },
-    "&.cm-focused .cm-selectionBackground, ::selection": {
-      backgroundColor: "#45475a",
+    "&.cm-focused .cm-cursor": { borderLeftColor: "var(--accent)" },
+    "&.cm-focused .cm-selectionBackground, ::selection, .cm-selectionBackground": {
+      backgroundColor: "var(--accent-soft)",
     },
     ".cm-gutters": {
-      backgroundColor: "#181825",
-      color: "#6c7086",
+      backgroundColor: "oklch(1 0 0 / 0.015)",
+      color: "var(--fg-3)",
       border: "none",
+      borderRight: "1px solid var(--line-1)",
     },
     ".cm-activeLineGutter": {
-      backgroundColor: "#1e1e2e",
-      color: "#cdd6f4",
+      backgroundColor: "var(--bg-1)",
+      color: "var(--fg-1)",
     },
     "&.cm-focused .cm-matchingBracket": {
-      backgroundColor: "#45475a",
-      outline: "1px solid #89b4fa",
+      backgroundColor: "var(--accent-soft)",
+      outline: "1px solid var(--accent)",
     },
     ".cm-tooltip": {
-      backgroundColor: "#1e1e2e",
-      border: "1px solid #45475a",
+      backgroundColor: "var(--bg-2)",
+      border: "1px solid var(--line-2)",
+      color: "var(--fg-1)",
     },
     ".cm-tooltip-autocomplete": {
-      "& > ul > li": { color: "#cdd6f4" },
+      "& > ul > li": { color: "var(--fg-1)" },
       "& > ul > li[aria-selected]": {
-        backgroundColor: "#45475a",
-        color: "#cdd6f4",
+        backgroundColor: "var(--accent-soft)",
+        color: "var(--fg-0)",
       },
     },
-    ".cm-searchMatch": { backgroundColor: "#f9e2af40" },
+    ".cm-searchMatch": { backgroundColor: "var(--warn-soft)" },
     ".cm-searchMatch.cm-searchMatch-selected": {
-      backgroundColor: "#f9e2af80",
+      backgroundColor: "var(--warn-soft)",
+      outline: "1px solid var(--warn, oklch(0.82 0.14 75))",
     },
     ".cm-foldPlaceholder": {
-      backgroundColor: "#45475a",
-      color: "#cdd6f4",
-      border: "none",
+      backgroundColor: "var(--bg-2)",
+      color: "var(--fg-2)",
+      border: "1px solid var(--line-2)",
     },
   },
   { dark: true },
 );
 
 export const gcsimHighlightStyle = HighlightStyle.define([
-  { tag: t.keyword, color: "#cba6f7" }, // purple
+  { tag: t.keyword, color: "var(--accent)" },
   {
     tag: [t.lineComment, t.blockComment],
-    color: "#6c7086",
+    color: "var(--fg-3)",
     fontStyle: "italic",
   },
-  { tag: t.string, color: "#a6e3a1" }, // green
-  { tag: t.number, color: "#fab387" }, // peach
-  { tag: t.bool, color: "#fab387" }, // peach
-  { tag: t.operator, color: "#89dceb" }, // sky
-  { tag: t.variableName, color: "#cdd6f4" }, // text
-  { tag: t.function(t.variableName), color: "#89b4fa" }, // blue (actions)
-  { tag: t.className, color: "#f9e2af" }, // yellow (characters)
-  { tag: t.attributeName, color: "#94e2d5" }, // teal (stats)
-  { tag: t.atom, color: "#f5c2e7" }, // pink (elements)
-  { tag: [t.paren, t.brace, t.squareBracket], color: "#9399b2" },
-  { tag: t.separator, color: "#9399b2" },
-  { tag: t.derefOperator, color: "#9399b2" },
-  { tag: t.punctuation, color: "#9399b2" },
+  { tag: t.string, color: "var(--el-dendro)" },
+  { tag: t.number, color: "var(--el-geo)" },
+  { tag: t.bool, color: "var(--el-geo)" },
+  { tag: t.operator, color: "var(--fg-2)" },
+  { tag: t.variableName, color: "var(--el-electro)" },
+  { tag: t.function(t.variableName), color: "var(--brand-blue-2)" },
+  { tag: t.className, color: "var(--el-pyro)" },
+  { tag: t.attributeName, color: "var(--el-hydro)" },
+  { tag: t.atom, color: "var(--el-anemo)" },
+  { tag: [t.paren, t.brace, t.squareBracket], color: "var(--fg-3)" },
+  { tag: t.separator, color: "var(--fg-3)" },
+  { tag: t.derefOperator, color: "var(--fg-3)" },
+  { tag: t.punctuation, color: "var(--fg-3)" },
 ]);
