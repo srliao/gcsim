@@ -679,3 +679,66 @@ TODOs left for Phase 3b-ii:
 - Legacy `Iterations`/`Mode`/`Commit` components remain exported for
   backwards compat; results-tab no longer uses them. Decide whether to
   keep them or remove in 3b-ii.
+
+### Phase 3b-ii (Recharts skinning + FieldTimeBar + FrameTrack) — DONE
+
+Implements `docs/design_handoff_ui_next/README.md` § Phase 3b parts 5–7.
+
+**Colors (`charts/util/colors.ts`)** — replaced hex palette with CSS
+custom-property references. `elementColor`, `actionColor`,
+`reactionColor`, and `characterColor` all return `var(--el-*)` strings
+(or `var(--el-physical)` as fallback). Action/reaction → element
+mappings documented inline. Recharts forwards CSS-var strings straight
+into SVG `stroke`/`fill`, so the browser resolves the tokens at render
+time — no `getComputedStyle` round-trip required.
+
+**Chart skinning (13 charts)** — every chart was migrated from
+`ChartCard` to `ChartShell` from `src/chart-shell/`. CartesianGrid now
+strokes `--line-1`; axis ticks use `--fg-2` + `--font-mono`; tooltips
+use `--bg-2` / `--line-2` / `--fg-1`. New `ChartTooltipShell` utility
+in `charts/util/` encapsulates the shared surface; both the existing
+`StatTooltip` and the per-chart custom tooltips use it (or its
+contentStyle equivalent for Recharts default tooltip). Chart-specific
+hardcoded `#xxxxxx` series colors were replaced with `var(--accent)`,
+`var(--el-pyro)`, etc.
+
+`ChartCard` is kept exported with an `@deprecated` marker; downstream
+callers can migrate at their own pace. Chart tests updated to the
+`chart-shell-*` testids; the `chart-card.test.tsx` retains the legacy
+testids since `ChartCard` still ships them.
+
+**`FieldTimeBar`** (new at `charts/field-time-bar/`) — horizontal
+stacked-flex bar with one segment per character; widths are integer
+percentages summing to exactly 100 (drift absorbed by the largest
+segment), and each segment is filled with `elementColor(element)` plus
+labeled "Name N%". Exported from `@gcsim/viewer`. Supplements (does
+not replace) `FieldTimeChart`. 12 tests; Storybook story w/ 5
+variants.
+
+**`FrameTrack`** (new at `sample/frame-track/`) — SVG timeline ribbon
+for the sample viewer: 4 character lanes stacked vertically; events
+placed at `start/frames` × `length/frames` (percentage-based); a
+vertical `--accent` cursor line marks the current frame; clicks
+anywhere on the surface dispatch `onCursorChange(frame)`. Event tiles
+carry `data-row` and `data-element` for headless testability. 10 tests
+(including ratio-math against a mocked `getBoundingClientRect`);
+Storybook story w/ Default, Empty, TallTrack, and Interactive.
+
+Verification:
+- `pnpm --filter @gcsim/viewer test` — 346 tests pass across 35 files
+  (up from 324 before this phase: +22 = 12 FieldTimeBar + 10
+  FrameTrack).
+- `pnpm --filter @gcsim/viewer typecheck` — clean.
+- `pnpm --filter @gcsim/web typecheck` — clean.
+- `pnpm --filter @gcsim/web test` — 92 tests pass.
+- `pnpm --filter @gcsim/storybook build` — clean.
+- `npx biome check packages/viewer/ apps/storybook/src/stories/` — clean.
+
+TODOs left for downstream phases:
+- Phase 6 (results-tab layout) will compose `FieldTimeBar`,
+  `DetailedMetricTile`, and the skinned charts into the new grid.
+- `ChartCard` can be deleted once no downstream apps consume it.
+- `FrameTrack` lacks keyboard scrubbing (left/right arrow keys);
+  intentionally deferred — the biome `noStaticElementInteractions`
+  suppression notes this. Pick this up when the sample-viewer wiring
+  lands.
