@@ -142,7 +142,15 @@ function Badge({
       data-slot="badge"
       data-variant={variant}
       data-tone={tone}
-      className={cn(tone ? badgeVariants({}) : badgeVariants({ variant }), toneClass, className)}
+      className={cn(
+        // When a `tone` is set, suppress the CVA variant entirely so we don't
+        // emit `variant: "default"` classes (which include arbitrary selectors
+        // like `[a]:hover:bg-primary/80` that tailwind-merge can't dedupe
+        // against the tone styles).
+        tone ? badgeVariants({ variant: null }) : badgeVariants({ variant }),
+        toneClass,
+        className,
+      )}
       {...props}
     >
       {content}

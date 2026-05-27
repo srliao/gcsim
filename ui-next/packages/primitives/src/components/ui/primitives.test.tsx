@@ -167,6 +167,13 @@ describe("Badge", () => {
     expect(dot?.className).toContain("bg-current");
   });
 
+  it("does not leak primary hover class when tone is set", () => {
+    const { container } = render(<Badge tone="accent">x</Badge>);
+    const el = container.querySelector('[data-slot="badge"]') as HTMLElement;
+    expect(el.className).not.toContain("hover:bg-primary");
+    expect(el.className).not.toContain("bg-primary");
+  });
+
   it("uses outlined styling when soft=false", () => {
     const { container } = render(
       <Badge tone="accent" soft={false}>
