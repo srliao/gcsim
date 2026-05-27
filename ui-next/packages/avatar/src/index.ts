@@ -1,7 +1,5 @@
 // @gcsim/avatar public API
 
-export type { AvatarCardProps } from "./avatar-card/index.js";
-export { AvatarCard } from "./avatar-card/index.js";
 export type { CharacterCardEmptyProps, CharacterCardProps } from "./character-card/index.js";
 export { CharacterCard, CharacterCardEmpty, groupSets } from "./character-card/index.js";
 export { artifactSrc, avatarSrc, normalizeKey, weaponSrc } from "./lib/index.js";
