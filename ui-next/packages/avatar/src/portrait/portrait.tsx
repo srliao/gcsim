@@ -1,27 +1,7 @@
 import { cn } from "@gcsim/primitives";
 import type { Sim } from "@gcsim/types";
 import { avatarSrc, normalizeKey } from "../lib/avatars.js";
-
-/**
- * Element name (lowercase) → CSS var carrying the element's primary color.
- * Used to tint the starry texture background. Unknown / blank elements fall
- * back to a neutral graphite tone via `var(--bg-3)` in the inline style.
- */
-const ELEMENT_TOKENS: Record<string, string> = {
-  anemo: "var(--el-anemo)",
-  geo: "var(--el-geo)",
-  electro: "var(--el-electro)",
-  hydro: "var(--el-hydro)",
-  pyro: "var(--el-pyro)",
-  cryo: "var(--el-cryo)",
-  dendro: "var(--el-dendro)",
-  physical: "var(--el-physical)",
-};
-
-function resolveElementColor(element?: string | null): string {
-  if (!element) return "var(--bg-3)";
-  return ELEMENT_TOKENS[element.toLowerCase()] ?? "var(--bg-3)";
-}
+import { resolveElementColor } from "../lib/element-style.js";
 
 function resolveChar(char: string | Sim.Character): {
   name: string;

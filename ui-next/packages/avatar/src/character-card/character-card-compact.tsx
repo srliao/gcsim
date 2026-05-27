@@ -1,23 +1,8 @@
 import { cn } from "@gcsim/primitives";
 import type { Sim } from "@gcsim/types";
 import { artifactSrc, avatarSrc, weaponSrc } from "../lib/avatars.js";
+import { resolveElementColor } from "../lib/element-style.js";
 import { groupSets } from "./character-card.js";
-
-const ELEMENT_TOKENS: Record<string, string> = {
-  anemo: "var(--el-anemo)",
-  geo: "var(--el-geo)",
-  electro: "var(--el-electro)",
-  hydro: "var(--el-hydro)",
-  pyro: "var(--el-pyro)",
-  cryo: "var(--el-cryo)",
-  dendro: "var(--el-dendro)",
-  physical: "var(--el-physical)",
-};
-
-function resolveElementColor(element?: string | null): string {
-  if (!element) return "var(--bg-3)";
-  return ELEMENT_TOKENS[element.toLowerCase()] ?? "var(--bg-3)";
-}
 
 export interface CharacterCardCompactProps {
   char: Sim.Character;
