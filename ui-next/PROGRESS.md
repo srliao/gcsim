@@ -280,6 +280,25 @@ Post-review fixes applied:
 - Storybook: all 30 stories render with correct Tailwind styling
 - Total tests: 77 (Phase 1) + 14 (primitives) = 91 tests
 
+### Phase 2 (ui-next redesign — Primitives) — DONE
+
+Implements `docs/design_handoff_ui_next/README.md` § Phase 2.
+
+- **Button**: added `primary` variant (uses `--accent`/`--accent-fg`/`--accent-hover`/`--accent-line`, 600 weight) and `md` size; legacy `default` kept as alias of `primary`/`md`. Heights now match the inventory (xs 22 / sm 26 / md 32 / lg 38). New `leading` and `trailing` ReactNode props.
+- **Badge**: added `tone` prop (`neutral|accent|ok|warn|error|info|anemo|geo|electro|hydro|pyro|cryo|dendro|physical`) with `soft` (default) vs outlined fills via `--<tone>-soft`/`--<tone>` tokens. New `dot` (6px circle in current color) and `leading` slots. When `tone` is set it overrides `variant`; legacy `variant`-only callers untouched.
+- **StatusPill** (new, in `status-pill.tsx`): wraps Badge; maps `status="ready|running|queued|failed|idle"` to `tone` + `dot` + a sensible default label. `children` overrides the label.
+- **Tabs**: added new `pill` / `underline` variants and `sm` / `md` sizes on `TabsList`. Legacy `default` → `pill`, `line` → `underline` kept as aliases. Underline indicator now uses `--accent` for the active 2px bottom border.
+- **NumberStepper** (new, in `number-stepper.tsx`): `[−] [value] [+]` row using `Button` (`size="icon-sm"`, `variant="outline"`) and lucide `Minus`/`Plus`. Mono tabular value, suffix slot, clamp to min/max, `<fieldset disabled>` for group disable.
+- **Kbd** (new, in `kbd.tsx`): 10px mono cap with `--bg-2` background and double-thickness `--line-2` bottom border.
+
+Call-site updates:
+- `apps/web/src/components/nav.tsx` now renders `<Badge tone="accent">web-rewrite</Badge>`, `<StatusPill status="ready">WASM ready</StatusPill>`, and `<Kbd>⌘K</Kbd>`.
+- `apps/web/src/pages/viewer/viewer-shell.tsx` uses `<TabsList variant="underline">` for the Results/Config/Sample tabs (matches Phase 6 spec for page-level navigation).
+
+Storybook: every new primitive (StatusPill, NumberStepper, Kbd) has a story; Button/Badge/Tabs stories extended with new variants/tones.
+
+Tests: 40 primitive tests passing (was 14). Web tests: 92 passing. Storybook build: green.
+
 ## Phase 3: Feature Packages
 
 | Step | Status | Description |
