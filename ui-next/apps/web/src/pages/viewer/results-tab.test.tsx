@@ -5,16 +5,24 @@ import { mockSimResult } from "../../../../../tooling/test-fixtures/index.js";
 import { ResultsTab } from "./results-tab";
 
 vi.mock("@gcsim/viewer", () => ({
-  Iterations: (props: { iterations?: number }) => (
-    <div data-testid="iterations">{props.iterations}</div>
+  MetadataChip: (props: { label: string; value: string }) => (
+    <div data-testid="metadata-chip" data-label={props.label}>
+      {props.value}
+    </div>
   ),
-  Mode: (props: { mode?: number }) => <div data-testid="mode">{props.mode}</div>,
-  Commit: () => <div data-testid="commit" />,
   Warnings: () => <div data-testid="warnings" />,
   TeamHeader: () => <div data-testid="team-header" />,
-  RollupCard: (props: { label: string }) => <div data-testid="rollup-card">{props.label}</div>,
-  DPSCard: (props: { characterName: string }) => (
-    <div data-testid="dps-card">{props.characterName}</div>
+  DetailedMetricTile: (props: { label: string }) => (
+    <div data-testid="detailed-metric-tile">{props.label}</div>
+  ),
+  formatSummaryStat: () => ({
+    value: "0",
+    stats: { min: "0", max: "0", std: "0", p25: "0", p50: "0", p75: "0" },
+  }),
+  DPSCard: (props: { char: string | { name: string } }) => (
+    <div data-testid="dps-card">
+      {typeof props.char === "string" ? props.char : props.char.name}
+    </div>
   ),
   TargetInfoCard: () => <div data-testid="target-info-card" />,
   DistributionChart: () => <div data-testid="distribution-chart" />,
@@ -33,12 +41,14 @@ vi.mock("@gcsim/viewer", () => ({
 }));
 
 describe("ResultsTab", () => {
-  it("renders the metadata section", () => {
+  it("renders the metadata section with chips", () => {
     render(<ResultsTab results={mockSimResult} />);
     expect(screen.getByTestId("metadata-section")).toBeInTheDocument();
-    expect(screen.getByTestId("iterations")).toBeInTheDocument();
-    expect(screen.getByTestId("mode")).toBeInTheDocument();
-    expect(screen.getByTestId("commit")).toBeInTheDocument();
+    const chips = screen.getAllByTestId("metadata-chip");
+    expect(chips.length).toBeGreaterThan(0);
+    expect(chips.map((c) => c.getAttribute("data-label"))).toEqual(
+      expect.arrayContaining(["iter", "mode"]),
+    );
   });
 
   it("renders the team header", () => {
@@ -46,14 +56,14 @@ describe("ResultsTab", () => {
     expect(screen.getByTestId("team-header")).toBeInTheDocument();
   });
 
-  it("renders rollup cards", () => {
+  it("renders detailed metric tiles for each summary stat", () => {
     render(<ResultsTab results={mockSimResult} />);
     const rollupSection = screen.getByTestId("rollup-section");
     expect(rollupSection).toBeInTheDocument();
-    const cards = screen.getAllByTestId("rollup-card");
-    expect(cards.length).toBe(6);
-    expect(cards[0]).toHaveTextContent("DPS");
-    expect(cards[1]).toHaveTextContent("Duration");
+    const tiles = screen.getAllByTestId("detailed-metric-tile");
+    expect(tiles.length).toBe(6);
+    expect(tiles[0]).toHaveTextContent("DPS");
+    expect(tiles[5]).toHaveTextContent("Duration");
   });
 
   it("renders DPS cards for each character", () => {

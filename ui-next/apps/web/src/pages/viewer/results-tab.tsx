@@ -2,9 +2,10 @@ import type { Sim } from "@gcsim/types";
 import {
   CharacterActionsChart,
   CharacterDpsPie,
-  Commit,
   CumulativeDamage,
   DamageTimeline,
+  DetailedMetricTile,
+  type DetailedMetricTileTone,
   DistributionChart,
   DPSCard,
   ElementDpsChart,
@@ -12,10 +13,9 @@ import {
   EndingEnergyChart,
   EnergyChart,
   FieldTimeChart,
-  Iterations,
-  Mode,
+  formatSummaryStat,
+  MetadataChip,
   ReactionsChart,
-  RollupCard,
   SourceDpsChart,
   TargetAuraUptimeChart,
   TargetInfoCard,
@@ -62,19 +62,53 @@ class ChartErrorBoundary extends Component<ChartErrorBoundaryProps, ChartErrorBo
   }
 }
 
+interface RollupConfig {
+  label: string;
+  tone: DetailedMetricTileTone;
+  stat?: Sim.SummaryStat;
+  unit?: string;
+  fractionDigits?: number;
+}
+
+function buildRollups(stats: Sim.Statistics | undefined): RollupConfig[] {
+  return [
+    { label: "Damage Per Second (DPS)", tone: "pyro", stat: stats?.dps },
+    { label: "Energy Per Second (EPS)", tone: "cryo", stat: stats?.eps, fractionDigits: 2 },
+    { label: "Reactions Per Second (RPS)", tone: "electro", stat: stats?.rps, fractionDigits: 2 },
+    { label: "Healing Per Second (HPS)", tone: "anemo", stat: stats?.hps },
+    { label: "Shield HP (SHP)", tone: "geo", stat: stats?.shp },
+    {
+      label: "Duration",
+      tone: "dendro",
+      stat: stats?.duration,
+      unit: "s",
+      fractionDigits: 1,
+    },
+  ];
+}
+
 export function ResultsTab({ results }: ResultsTabProps) {
   const stats = results.statistics;
   const characters = results.character_details ?? [];
   const characterNames = characters.map((c) => c.name);
-  const maxDps = stats?.character_dps?.reduce((max, s) => Math.max(max, s.mean ?? 0), 0) ?? 0;
+  const characterDps = stats?.character_dps ?? [];
+  const totalDps = characterDps.reduce((sum, s) => sum + (s.mean ?? 0), 0);
+  const rollups = buildRollups(stats);
 
   return (
     <div data-testid="results-tab" className="space-y-6 overflow-y-auto">
       {/* Metadata */}
-      <div data-testid="metadata-section" className="flex flex-wrap items-center gap-3">
-        <Iterations iterations={stats?.iterations} />
-        <Mode mode={results.mode} />
-        <Commit simVersion={results.sim_version} buildDate={results.build_date} />
+      <div data-testid="metadata-section" className="flex flex-wrap items-center gap-2">
+        {stats?.iterations != null && (
+          <MetadataChip label="iter" value={stats.iterations.toLocaleString()} mono />
+        )}
+        {results.mode != null && (
+          <MetadataChip label="mode" value={results.mode === 0 ? "SL" : "TTK"} tone="accent" />
+        )}
+        {results.sim_version && (
+          <MetadataChip label="ver" value={results.sim_version} mono tone="info" />
+        )}
+        {results.build_date && <MetadataChip label="build" value={results.build_date} mono />}
       </div>
 
       {/* Warnings */}
@@ -86,27 +120,41 @@ export function ResultsTab({ results }: ResultsTabProps) {
       {/* Rollup stats */}
       <div
         data-testid="rollup-section"
-        className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4"
+        className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"
       >
-        <RollupCard label="DPS" stat={stats?.dps} />
-        <RollupCard label="Duration" stat={stats?.duration} />
-        <RollupCard label="RPS" stat={stats?.rps} />
-        <RollupCard label="EPS" stat={stats?.eps} />
-        <RollupCard label="HPS" stat={stats?.hps} />
-        <RollupCard label="SHP" stat={stats?.shp} />
+        {rollups.map(({ label, tone, stat, unit, fractionDigits }) => {
+          const formatted = formatSummaryStat(stat, { fractionDigits });
+          return (
+            <DetailedMetricTile
+              key={label}
+              label={label}
+              tone={tone}
+              value={formatted.value}
+              unit={unit}
+              stats={formatted.stats}
+            />
+          );
+        })}
       </div>
 
       {/* Character DPS cards */}
-      {stats?.character_dps && stats.character_dps.length > 0 && (
+      {characterDps.length > 0 && (
         <div data-testid="dps-cards-section" className="grid grid-cols-1 gap-3 md:grid-cols-2">
-          {characters.map((char, i) => (
-            <DPSCard
-              key={char.name}
-              characterName={char.name}
-              stat={stats.character_dps?.[i]}
-              maxDPS={maxDps}
-            />
-          ))}
+          {characters.map((char, i) => {
+            const stat = characterDps[i];
+            const mean = stat?.mean ?? 0;
+            const share = totalDps > 0 ? mean / totalDps : 0;
+            return (
+              <DPSCard
+                key={char.name}
+                char={char}
+                dps={mean}
+                share={share}
+                mean={mean}
+                std={stat?.sd ?? 0}
+              />
+            );
+          })}
         </div>
       )}
 
