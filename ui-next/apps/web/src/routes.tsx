@@ -1,4 +1,5 @@
 import { createRootRoute, createRoute, Outlet, redirect } from "@tanstack/react-router";
+import { CommandPalette } from "./components/command-palette";
 import { ErrorBoundary } from "./components/error-boundary";
 import { Footer } from "./components/footer";
 import { Nav } from "./components/nav";
@@ -14,6 +15,7 @@ const rootRoute = createRootRoute({
         </main>
         <Footer />
       </div>
+      <CommandPalette />
     </ErrorBoundary>
   ),
 });

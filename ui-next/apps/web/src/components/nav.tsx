@@ -12,9 +12,10 @@ const externalLinks = [
 export function Nav() {
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // TODO(phase 7): wire to command palette open dispatch. For now a no-op.
+  // Dispatch the open event; the global <CommandPalette> mounted in the
+  // root layout listens for this and opens itself.
   const handleCommandPalette = () => {
-    /* phase 7: open ⌘K palette */
+    window.dispatchEvent(new CustomEvent("gcsim:open-palette"));
   };
 
   return (
@@ -59,7 +60,6 @@ export function Nav() {
           <StatusPill status="ready" aria-label="WASM ready">
             WASM ready
           </StatusPill>
-          {/* TODO(phase 7): wire to command palette */}
           <Button
             type="button"
             variant="ghost"
