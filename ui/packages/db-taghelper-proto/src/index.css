@@ -1,0 +1,35 @@
+@reference "../../tailwind.css";
+
+/*
+ * Archive prototype styling. All color/spacing/type comes from the Gauge token
+ * layer (theme.css) via the -g- utilities. The only local rules here are the
+ * body ground and a hidden-scrollbar helper for the preview frames.
+ */
+
+html,
+body {
+	margin: 0;
+	min-height: 100%;
+}
+
+body {
+	background-color: var(--g-bg);
+	color: var(--g-text);
+	font-family: var(--g-font-body);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+	display: none;
+}
+.no-scrollbar {
+	-ms-overflow-style: none;
+	scrollbar-width: none;
+}
+
+/* Uppercase mono section label, mirrors the explorer .lbl mixin. */
+.g-label {
+	font-family: var(--g-lbl-font);
+	text-transform: var(--g-lbl-transform);
+	letter-spacing: var(--g-lbl-track);
+	font-weight: var(--g-lbl-weight);
+}
