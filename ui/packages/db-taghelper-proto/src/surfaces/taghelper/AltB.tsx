@@ -27,7 +27,7 @@ export function TagHelperAltB({
 
 	return (
 		<div
-			className={`mx-auto max-w-wide gap-g-base-lg p-g-page ${split ? "flex" : "flex flex-col"}`}
+			className={`mx-auto max-w-[1160px] gap-g-base-lg p-g-page ${split ? "flex" : "flex flex-col"}`}
 		>
 			<section
 				className={

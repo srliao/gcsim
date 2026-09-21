@@ -29,7 +29,7 @@ export function DatabaseAltC({
 	const tags = tagOptions(entries);
 
 	return (
-		<div className="mx-auto flex max-w-wide flex-col gap-g-base-lg p-g-page">
+		<div className="mx-auto flex max-w-[1160px] flex-col gap-g-base-lg p-g-page">
 			<div className="flex flex-col gap-g-base">
 				<div className="flex flex-wrap items-center gap-g-base">
 					<FilterSheet

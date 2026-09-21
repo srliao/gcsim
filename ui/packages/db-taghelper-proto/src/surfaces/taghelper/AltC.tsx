@@ -30,7 +30,7 @@ export function TagHelperAltC({
 	const { main, duplicates } = useMemo(() => deriveReview(entries), [entries]);
 
 	return (
-		<div className="mx-auto flex max-w-wide flex-col gap-g-section p-g-page pb-24">
+		<div className="mx-auto flex max-w-[1160px] flex-col gap-g-section p-g-page pb-24">
 			<section className="flex flex-col gap-g-base">
 				<div className="flex items-center justify-between">
 					<h2 className="font-g-display text-g-h3 font-semibold text-g-ink">
@@ -80,7 +80,7 @@ export function TagHelperAltC({
 			</section>
 
 			<div className="fixed inset-x-0 bottom-0 z-20 border-t border-g-line bg-g-canvas/95 backdrop-blur">
-				<div className="mx-auto flex max-w-wide items-center gap-g-base p-g-base">
+				<div className="mx-auto flex max-w-[1160px] items-center gap-g-base p-g-base">
 					<div className="hidden min-w-0 flex-1 sm:block">
 						<MetaChips entry={main} />
 					</div>

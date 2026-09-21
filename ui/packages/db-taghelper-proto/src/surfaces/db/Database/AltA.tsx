@@ -34,7 +34,7 @@ export function DatabaseAltA({
 		.map(([k]) => k);
 
 	return (
-		<div className="mx-auto flex max-w-wide flex-col gap-g-base-lg p-g-page">
+		<div className="mx-auto flex max-w-[1160px] flex-col gap-g-base-lg p-g-page">
 			<div className="sticky top-0 z-10 -mx-g-page flex flex-col gap-g-base border-b border-g-line-soft bg-g-canvas/90 px-g-page py-g-base backdrop-blur">
 				<div className="flex flex-wrap items-center gap-g-base">
 					<FilterSheet

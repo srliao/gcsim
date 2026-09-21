@@ -24,7 +24,7 @@ export function DatabaseAltB({
 	const railVisible = viewport === "desktop";
 
 	return (
-		<div className="mx-auto flex max-w-wide gap-g-base-lg p-g-page">
+		<div className="mx-auto flex max-w-[1160px] gap-g-base-lg p-g-page">
 			{railVisible && (
 				<FilterRail
 					entries={entries}

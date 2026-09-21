@@ -50,7 +50,7 @@ export function DbHome({
 	viewport: "desktop" | "mobile";
 }) {
 	return (
-		<div className="mx-auto flex max-w-wide flex-col gap-g-section p-g-page">
+		<div className="mx-auto flex max-w-[1160px] flex-col gap-g-section p-g-page">
 			<section className="flex flex-col gap-g-base-lg rounded-g-xl border border-g-line-soft bg-g-surface p-8">
 				<span className="g-label text-g-xs text-g-accent">
 					gcsim · community database
