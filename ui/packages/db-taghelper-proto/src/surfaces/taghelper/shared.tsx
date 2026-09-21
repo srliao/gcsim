@@ -149,7 +149,7 @@ export function DuplicateRow({
 	main: db.Entry;
 }) {
 	return (
-		<div className="flex flex-col gap-g-base rounded-g-md border border-g-line-soft bg-g-surface-2 p-g-card sm:flex-row sm:items-center">
+		<div className="flex flex-col gap-g-base rounded-g-md border border-g-line-soft bg-g-surface p-g-card sm:flex-row sm:items-center">
 			<MiniTeam entry={entry} />
 			<div className="min-w-0 flex-1">
 				<div className="flex items-center gap-g-base">
