@@ -144,27 +144,40 @@ export function MiniTeam({ entry }: { entry: db.Entry }) {
 export function DuplicateRow({
 	entry,
 	main,
+	viewport = "desktop",
 }: {
 	entry: db.Entry;
 	main: db.Entry;
+	viewport?: "desktop" | "mobile";
 }) {
+	const row = viewport === "desktop";
 	return (
-		<div className="flex flex-col gap-g-base rounded-g-md border border-g-line-soft bg-g-surface p-g-card sm:flex-row sm:items-center">
-			<MiniTeam entry={entry} />
-			<div className="min-w-0 flex-1">
-				<div className="flex items-center gap-g-base">
-					<span className="font-g-mono text-g-sm font-semibold text-g-ink">
-						{dpsFull(entry)}
-					</span>
-					<span className="text-g-xs text-g-ink-mute">
-						DPS · {simTime(entry)}
-					</span>
+		<div
+			className={`flex flex-col gap-g-base rounded-g-md border border-g-line-soft bg-g-surface p-g-card ${
+				row ? "md:flex-row md:items-center" : ""
+			}`}
+		>
+			{/* Portraits + stats: side-by-side on the top row in both layouts. */}
+			<div className="flex min-w-0 flex-1 items-center gap-g-base">
+				<MiniTeam entry={entry} />
+				<div className="min-w-0 flex-1">
+					<div className="flex items-center gap-g-base">
+						<span className="font-g-mono text-g-sm font-semibold text-g-ink">
+							{dpsFull(entry)}
+						</span>
+						<span className="text-g-xs text-g-ink-mute">
+							DPS · {simTime(entry)}
+						</span>
+					</div>
+					<p className="line-clamp-1 text-g-xs text-g-ink-dim">
+						by {author(entry)} · {entry.description}
+					</p>
 				</div>
-				<p className="line-clamp-1 text-g-xs text-g-ink-dim">
-					by {author(entry)} · {entry.description}
-				</p>
 			</div>
-			<div className="flex shrink-0 gap-g-base-sm">
+			{/* Actions: full-width second row on mobile, inline on desktop. */}
+			<div
+				className={`flex shrink-0 gap-g-base-sm ${row ? "" : "[&>*]:flex-1"}`}
+			>
 				<Button
 					size="sm"
 					variant="outline"

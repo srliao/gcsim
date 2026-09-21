@@ -52,7 +52,12 @@ export function TagHelperAltC({
 				{viewport === "mobile" ? (
 					<div className="flex flex-col gap-g-base-lg">
 						{duplicates.map((d) => (
-							<DuplicateRow key={d._id} entry={d} main={main} />
+							<DuplicateRow
+								key={d._id}
+								entry={d}
+								main={main}
+								viewport="mobile"
+							/>
 						))}
 					</div>
 				) : (

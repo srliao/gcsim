@@ -35,7 +35,11 @@ export function TagHelperAltA({
 				</div>
 				<Card className="flex flex-col gap-g-base border-g-accent/40 p-g-card ring-1 ring-g-accent/20">
 					<ReviewHeadline entry={main} viewport={viewport} />
-					<div className="flex flex-wrap justify-end gap-g-base border-t border-g-line-soft pt-g-base">
+					<div
+						className={`flex flex-wrap gap-g-base border-t border-g-line-soft pt-g-base ${
+							viewport === "mobile" ? "[&>*]:flex-1" : "justify-end"
+						}`}
+					>
 						<DecisionButtons entry={main} />
 					</div>
 				</Card>
@@ -57,7 +61,12 @@ export function TagHelperAltA({
 				) : (
 					<div className="flex flex-col gap-g-base-lg">
 						{duplicates.map((d) => (
-							<DuplicateRow key={d._id} entry={d} main={main} />
+							<DuplicateRow
+								key={d._id}
+								entry={d}
+								main={main}
+								viewport={viewport}
+							/>
 						))}
 					</div>
 				)}

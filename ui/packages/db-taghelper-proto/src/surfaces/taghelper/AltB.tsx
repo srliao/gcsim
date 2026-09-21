@@ -68,7 +68,12 @@ export function TagHelperAltB({
 					</div>
 				) : (
 					duplicates.map((d) => (
-						<DuplicateRow key={d._id} entry={d} main={main} />
+						<DuplicateRow
+							key={d._id}
+							entry={d}
+							main={main}
+							viewport={viewport}
+						/>
 					))
 				)}
 			</section>
