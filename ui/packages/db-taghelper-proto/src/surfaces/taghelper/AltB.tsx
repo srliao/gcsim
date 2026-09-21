@@ -27,7 +27,7 @@ export function TagHelperAltB({
 
 	return (
 		<div
-			className={`mx-auto max-w-wide gap-g-gap-lg p-g-page ${split ? "flex" : "flex flex-col"}`}
+			className={`mx-auto max-w-wide gap-g-base-lg p-g-page ${split ? "flex" : "flex flex-col"}`}
 		>
 			<section
 				className={
@@ -42,15 +42,15 @@ export function TagHelperAltB({
 						id {main._id}
 					</span>
 				</div>
-				<Card className="flex flex-col gap-g-gap border-g-accent/40 p-g-card ring-1 ring-g-accent/20">
+				<Card className="flex flex-col gap-g-base border-g-accent/40 p-g-card ring-1 ring-g-accent/20">
 					<ReviewHeadline entry={main} viewport={viewport} />
-					<div className="flex flex-wrap gap-g-base border-t border-g-line-soft pt-g-gap [&>*]:flex-1">
+					<div className="flex flex-wrap gap-g-base border-t border-g-line-soft pt-g-base [&>*]:flex-1">
 						<DecisionButtons entry={main} />
 					</div>
 				</Card>
 			</section>
 
-			<section className="flex min-w-0 flex-1 flex-col gap-g-base">
+			<section className="flex min-w-0 flex-1 flex-col gap-g-base-lg">
 				<div className="flex items-center gap-g-base">
 					<h2 className="font-g-display text-g-h3 font-semibold text-g-ink">
 						Same team

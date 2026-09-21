@@ -29,7 +29,7 @@ export function DatabaseAltC({
 	const tags = tagOptions(entries);
 
 	return (
-		<div className="mx-auto flex max-w-wide flex-col gap-g-gap p-g-page">
+		<div className="mx-auto flex max-w-wide flex-col gap-g-base-lg p-g-page">
 			<div className="flex flex-col gap-g-base">
 				<div className="flex flex-wrap items-center gap-g-base">
 					<FilterSheet
@@ -84,7 +84,7 @@ export function DatabaseAltC({
 				)}
 			</div>
 
-			<div className="flex flex-col gap-g-base">
+			<div className="flex flex-col gap-g-base-lg">
 				{list.map((entry) => (
 					<TeamRow key={entry._id} entry={entry} />
 				))}

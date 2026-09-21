@@ -247,7 +247,7 @@ export function FilterRail(props: {
 	onClear: () => void;
 }) {
 	return (
-		<aside className="flex w-72 shrink-0 flex-col gap-g-gap-lg rounded-g-lg border border-g-line-soft bg-g-surface p-g-card">
+		<aside className="flex w-72 shrink-0 flex-col gap-g-base-lg rounded-g-lg border border-g-line-soft bg-g-surface p-g-card">
 			<div className="flex items-center justify-between">
 				<div className="flex items-center gap-g-base-sm text-g-ink">
 					<FaFilter size={13} className="text-g-accent" />

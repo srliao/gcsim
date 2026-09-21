@@ -34,8 +34,8 @@ export function DatabaseAltA({
 		.map(([k]) => k);
 
 	return (
-		<div className="mx-auto flex max-w-wide flex-col gap-g-gap-lg p-g-page">
-			<div className="sticky top-0 z-10 -mx-g-page flex flex-col gap-g-base border-b border-g-line-soft bg-g-canvas/90 px-g-page py-g-gap backdrop-blur">
+		<div className="mx-auto flex max-w-wide flex-col gap-g-base-lg p-g-page">
+			<div className="sticky top-0 z-10 -mx-g-page flex flex-col gap-g-base border-b border-g-line-soft bg-g-canvas/90 px-g-page py-g-base backdrop-blur">
 				<div className="flex flex-wrap items-center gap-g-base">
 					<FilterSheet
 						entries={entries}
@@ -96,7 +96,7 @@ export function DatabaseAltA({
 				)}
 			</div>
 
-			<div className="flex flex-col gap-g-gap">
+			<div className="flex flex-col gap-g-base-lg">
 				{list.map((entry) => (
 					<FullCard key={entry._id} entry={entry} viewport={viewport} />
 				))}
@@ -116,7 +116,7 @@ function FullCard({
 	const row = viewport === "desktop";
 	return (
 		<div
-			className={`flex flex-col gap-g-gap rounded-g-lg border border-g-line-soft bg-g-surface p-g-card ${
+			className={`flex flex-col gap-g-base rounded-g-lg border border-g-line-soft bg-g-surface p-g-card ${
 				row ? "md:flex-row md:items-stretch" : ""
 			}`}
 		>
@@ -130,7 +130,7 @@ function FullCard({
 				</div>
 			</div>
 			<div className="flex min-w-0 flex-1 flex-col gap-g-base">
-				<div className="flex items-start justify-between gap-g-gap">
+				<div className="flex items-start justify-between gap-g-base">
 					<TagBadges entry={entry} />
 					<DpsStat entry={entry} size="num-sm" />
 				</div>

@@ -98,8 +98,8 @@ export function App() {
 	return (
 		<div className="flex min-h-screen flex-col bg-g-canvas text-g-ink">
 			{/* Harness chrome — always Cryo, never themed by the preview. */}
-			<header className="sticky top-0 z-30 flex flex-col gap-g-base border-b border-g-line bg-g-surface px-g-gap-lg py-g-gap">
-				<div className="flex flex-wrap items-center gap-g-gap">
+			<header className="sticky top-0 z-30 flex flex-col gap-g-base border-b border-g-line bg-g-surface px-g-base-lg py-g-base">
+				<div className="flex flex-wrap items-center gap-g-base">
 					<div className="flex items-center gap-g-base-sm">
 						<span className="font-g-display text-g-h3 font-bold text-g-ink">
 							db + taghelper
@@ -163,7 +163,7 @@ export function App() {
 					</div>
 				</div>
 
-				<div className="flex flex-wrap items-center gap-g-gap">
+				<div className="flex flex-wrap items-center gap-g-base">
 					<Segmented
 						options={surface.alternatives.map((a) => ({
 							id: a.id,
@@ -181,7 +181,7 @@ export function App() {
 			</header>
 
 			{/* Preview surface — themed via data-theme. */}
-			<main className="flex flex-1 justify-center bg-g-canvas p-g-gap-lg">
+			<main className="flex flex-1 justify-center bg-g-canvas p-g-base-lg">
 				{viewport === "mobile" ? (
 					<div
 						data-theme={theme.id ?? undefined}

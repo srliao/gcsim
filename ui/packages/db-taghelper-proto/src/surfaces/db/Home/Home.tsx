@@ -51,7 +51,7 @@ export function DbHome({
 }) {
 	return (
 		<div className="mx-auto flex max-w-wide flex-col gap-g-section p-g-page">
-			<section className="flex flex-col gap-g-gap-lg rounded-g-xl border border-g-line-soft bg-g-surface p-8">
+			<section className="flex flex-col gap-g-base-lg rounded-g-xl border border-g-line-soft bg-g-surface p-8">
 				<span className="g-label text-g-xs text-g-accent">
 					gcsim · community database
 				</span>
@@ -62,7 +62,7 @@ export function DbHome({
 					A database of gcsim simulations submitted and maintained by the
 					community — browse team builds, benchmarked and reproducible.
 				</p>
-				<div className="flex flex-wrap gap-g-gap">
+				<div className="flex flex-wrap gap-g-base">
 					<Button size="lg" onClick={onBrowse}>
 						<FaDatabase size={14} /> Browse database
 					</Button>
@@ -72,7 +72,7 @@ export function DbHome({
 				</div>
 			</section>
 
-			<section className="flex flex-col gap-g-gap">
+			<section className="flex flex-col gap-g-base">
 				<div>
 					<h2 className="font-g-display text-g-h2 font-semibold text-g-ink">
 						Collections
@@ -82,7 +82,7 @@ export function DbHome({
 						own rules.
 					</p>
 				</div>
-				<div className="grid grid-cols-1 gap-g-gap sm:grid-cols-2 xl:grid-cols-3">
+				<div className="grid grid-cols-1 gap-g-base sm:grid-cols-2 xl:grid-cols-3">
 					{COLLECTIONS.map((c) => (
 						<Card
 							key={c.name}
@@ -103,11 +103,11 @@ export function DbHome({
 				</div>
 			</section>
 
-			<section className="flex flex-col gap-g-gap">
+			<section className="flex flex-col gap-g-base">
 				<h2 className="font-g-display text-g-h2 font-semibold text-g-ink">
 					What's new
 				</h2>
-				<Card className="flex flex-col gap-g-gap p-g-card">
+				<Card className="flex flex-col gap-g-base p-g-card">
 					<div className="flex items-center gap-g-base">
 						<span className="rounded-g-pill bg-g-accent-weak px-2.5 py-1 font-g-mono text-g-xs text-g-accent">
 							{RELEASE.version}

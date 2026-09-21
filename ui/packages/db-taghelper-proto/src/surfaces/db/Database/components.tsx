@@ -138,7 +138,7 @@ export function TeamCard({
 	viewport: "desktop" | "mobile";
 }) {
 	return (
-		<Card className="flex flex-col gap-g-gap p-g-card">
+		<Card className="flex flex-col gap-g-base p-g-card">
 			<Team entry={entry} viewport={viewport} />
 			<TagBadges entry={entry} />
 			<div className="flex items-end justify-between">
@@ -167,7 +167,7 @@ export function TeamCard({
 /** Horizontal row for the dense list (alt C). */
 export function TeamRow({ entry }: { entry: db.Entry }) {
 	return (
-		<Card className="flex flex-col gap-g-gap p-g-card hd:flex-row hd:items-stretch">
+		<Card className="flex flex-col gap-g-base p-g-card hd:flex-row hd:items-stretch">
 			<div className="w-full shrink-0 hd:w-[220px]">
 				<TeamStrip entry={entry} />
 			</div>
@@ -184,7 +184,7 @@ export function TeamRow({ entry }: { entry: db.Entry }) {
 					{entry.description}
 				</p>
 			</div>
-			<div className="flex shrink-0 flex-row items-center justify-between gap-g-gap hd:flex-col hd:items-end hd:justify-center hd:border-l hd:border-g-line-soft hd:pl-g-card">
+			<div className="flex shrink-0 flex-row items-center justify-between gap-g-base hd:flex-col hd:items-end hd:justify-center hd:border-l hd:border-g-line-soft hd:pl-g-card">
 				<div className="hd:text-right">
 					<span className="font-g-mono text-g-num-sm font-semibold text-g-ink">
 						{dpsFull(entry)}

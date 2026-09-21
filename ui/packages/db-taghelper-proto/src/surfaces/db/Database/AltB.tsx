@@ -24,7 +24,7 @@ export function DatabaseAltB({
 	const railVisible = viewport === "desktop";
 
 	return (
-		<div className="mx-auto flex max-w-wide gap-g-gap-lg p-g-page">
+		<div className="mx-auto flex max-w-wide gap-g-base-lg p-g-page">
 			{railVisible && (
 				<FilterRail
 					entries={entries}
@@ -33,7 +33,7 @@ export function DatabaseAltB({
 					onClear={() => setFilter(emptyFilter())}
 				/>
 			)}
-			<div className="flex min-w-0 flex-1 flex-col gap-g-gap">
+			<div className="flex min-w-0 flex-1 flex-col gap-g-base">
 				<div className="flex flex-wrap items-center gap-g-base">
 					{!railVisible && (
 						<FilterSheet
@@ -63,8 +63,8 @@ export function DatabaseAltB({
 				<div
 					className={
 						railVisible
-							? "grid grid-cols-1 gap-g-gap xl:grid-cols-2"
-							: "grid grid-cols-1 gap-g-gap xs:grid-cols-2"
+							? "grid grid-cols-1 gap-g-base-lg xl:grid-cols-2"
+							: "grid grid-cols-1 gap-g-base-lg xs:grid-cols-2"
 					}
 				>
 					{list.map((entry) => (

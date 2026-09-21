@@ -31,7 +31,7 @@ export function TagHelperAltC({
 
 	return (
 		<div className="mx-auto flex max-w-wide flex-col gap-g-section p-g-page pb-24">
-			<section className="flex flex-col gap-g-gap">
+			<section className="flex flex-col gap-g-base">
 				<div className="flex items-center justify-between">
 					<h2 className="font-g-display text-g-h3 font-semibold text-g-ink">
 						Under review
@@ -40,17 +40,17 @@ export function TagHelperAltC({
 						id {main._id}
 					</span>
 				</div>
-				<Card className="flex flex-col gap-g-gap border-g-accent/40 p-g-card ring-1 ring-g-accent/20">
+				<Card className="flex flex-col gap-g-base border-g-accent/40 p-g-card ring-1 ring-g-accent/20">
 					<ReviewHeadline entry={main} viewport={viewport} />
 				</Card>
 			</section>
 
-			<section className="flex flex-col gap-g-gap">
+			<section className="flex flex-col gap-g-base">
 				<h2 className="font-g-display text-g-h3 font-semibold text-g-ink">
 					Compare against same-team sims
 				</h2>
 				{viewport === "mobile" ? (
-					<div className="flex flex-col gap-g-base">
+					<div className="flex flex-col gap-g-base-lg">
 						{duplicates.map((d) => (
 							<DuplicateRow key={d._id} entry={d} main={main} />
 						))}
@@ -80,7 +80,7 @@ export function TagHelperAltC({
 			</section>
 
 			<div className="fixed inset-x-0 bottom-0 z-20 border-t border-g-line bg-g-canvas/95 backdrop-blur">
-				<div className="mx-auto flex max-w-wide items-center gap-g-gap p-g-gap">
+				<div className="mx-auto flex max-w-wide items-center gap-g-base p-g-base">
 					<div className="hidden min-w-0 flex-1 sm:block">
 						<MetaChips entry={main} />
 					</div>

@@ -24,7 +24,7 @@ export function TagHelperAltA({
 	const { main, duplicates } = useMemo(() => deriveReview(entries), [entries]);
 	return (
 		<div className="mx-auto flex max-w-4xl flex-col gap-g-section p-g-page">
-			<section className="flex flex-col gap-g-gap">
+			<section className="flex flex-col gap-g-base">
 				<div className="flex items-center justify-between">
 					<h2 className="font-g-display text-g-h3 font-semibold text-g-ink">
 						Under review
@@ -33,15 +33,15 @@ export function TagHelperAltA({
 						id {main._id}
 					</span>
 				</div>
-				<Card className="flex flex-col gap-g-gap border-g-accent/40 p-g-card ring-1 ring-g-accent/20">
+				<Card className="flex flex-col gap-g-base border-g-accent/40 p-g-card ring-1 ring-g-accent/20">
 					<ReviewHeadline entry={main} viewport={viewport} />
-					<div className="flex flex-wrap justify-end gap-g-base border-t border-g-line-soft pt-g-gap">
+					<div className="flex flex-wrap justify-end gap-g-base border-t border-g-line-soft pt-g-base">
 						<DecisionButtons entry={main} />
 					</div>
 				</Card>
 			</section>
 
-			<section className="flex flex-col gap-g-gap">
+			<section className="flex flex-col gap-g-base">
 				<div className="flex items-center gap-g-base">
 					<h2 className="font-g-display text-g-h3 font-semibold text-g-ink">
 						Existing sims with the same team
@@ -55,7 +55,7 @@ export function TagHelperAltA({
 						No existing sims share this team.
 					</div>
 				) : (
-					<div className="flex flex-col gap-g-base">
+					<div className="flex flex-col gap-g-base-lg">
 						{duplicates.map((d) => (
 							<DuplicateRow key={d._id} entry={d} main={main} />
 						))}
