@@ -53,8 +53,10 @@ themed via `data-theme`. The toolbar switches:
 
 ### DB · Home (1 proposed layout)
 
-Compact hero with the primary **Browse database** CTA, the collections (tag)
-legend as cards, and a latest-release highlight.
+Compact hero with the primary **Browse database** CTA and a **Run simulations**
+link (to the main simulator), followed by the live **What's new** feed — the
+shared `WhatsNew` component that fetches the latest GitHub release notes, exactly
+like the main web dash.
 
 ## Functionality recreated
 
