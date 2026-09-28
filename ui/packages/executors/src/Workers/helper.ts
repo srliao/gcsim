@@ -2,22 +2,16 @@
 // @ts-ignore
 self.importScripts("/wasm_exec.js");
 
-if (!WebAssembly.instantiateStreaming) {
-	// polyfill
-	WebAssembly.instantiateStreaming = async (resp, importObject) => {
-		const source = await (await resp).arrayBuffer();
-		return await WebAssembly.instantiate(source, importObject);
-	};
-}
-
 let readyState = false;
 
+// The module is compiled once on the main thread and shared by every worker.
 // @ts-ignore
-function ready(req: { wasm: string }) {
+function ready(req: { module: WebAssembly.Module; gogc: string }) {
 	const go = new Go();
-	WebAssembly.instantiateStreaming(fetch(req.wasm), go.importObject)
-		.then((result) => {
-			go.run(result.instance);
+	go.env = { ...go.env, GOGC: req.gogc };
+	WebAssembly.instantiate(req.module, go.importObject)
+		.then((instance) => {
+			go.run(instance);
 			console.log("helper loaded okay");
 			readyState = true;
 		})

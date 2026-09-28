@@ -1,9 +1,10 @@
-import type { model, ParsedResult, Sample } from "@gcsim/types";
-import { throttle } from "lodash-es";
+import { model, type ParsedResult, type Sample } from "@gcsim/types";
 import type { Executor } from "./Executor";
-import { Aggregator, Helper, SimWorker } from "./Workers/common";
+import { Aggregator, compileWasm, Helper, SimWorker } from "./Workers/common";
 
 const VIEWER_THROTTLE = 100;
+// Run requests kept queued per sim worker, so a worker never idles waiting on the aggregator.
+const PREFETCH = 2;
 
 export class WasmExecutor implements Executor {
 	private wasmPath: string;
@@ -47,7 +48,11 @@ export class WasmExecutor implements Executor {
 			this.aggregator = new Worker(
 				new URL("./Workers/aggregator.ts", import.meta.url),
 			);
-			this.aggregator.postMessage(Aggregator.ReadyRequest(this.wasmPath));
+			const aggregator = this.aggregator;
+			compileWasm(this.wasmPath).then(
+				(module) => aggregator.postMessage(Aggregator.ReadyRequest(module)),
+				reject,
+			);
 			this.aggregator.onmessage = (ev) => {
 				switch (ev.data.type as Aggregator.Response) {
 					case Aggregator.Response.Ready:
@@ -80,7 +85,10 @@ export class WasmExecutor implements Executor {
 					const worker = new Worker(
 						new URL("./Workers/worker.ts", import.meta.url),
 					);
-					worker.postMessage(SimWorker.ReadyRequest(this.wasmPath));
+					compileWasm(this.wasmPath).then(
+						(module) => worker.postMessage(SimWorker.ReadyRequest(module)),
+						reject,
+					);
 
 					const idx = this.workers.push(worker) - 1;
 					worker.onmessage = (ev) => {
@@ -170,16 +178,6 @@ export class WasmExecutor implements Executor {
 			return Promise.all(promises);
 		});
 
-		const throttledFlush = throttle(
-			() => {
-				if (this.isRunning) {
-					this.aggregator?.postMessage(Aggregator.FlushRequest());
-				}
-			},
-			VIEWER_THROTTLE,
-			{ leading: true, trailing: true },
-		);
-
 		// 3. start execution
 		return initialized.then(() => {
 			return new Promise((resolve, reject) => {
@@ -187,65 +185,54 @@ export class WasmExecutor implements Executor {
 					reject("Aggregator is null!");
 					return;
 				}
-				let completed = 0;
 				this.aggregator.onmessage = (ev) => {
 					switch (ev.data.type as Aggregator.Response) {
 						case Aggregator.Response.Result: {
-							const { hash, stats } = (ev.data as Aggregator.ResultResponse)
-								.result;
+							const { hash, stats } = model.SignedSimulationStatistics.decode(
+								(ev.data as Aggregator.ResultResponse).result,
+							);
 
 							const out = Object.assign({}, result);
 							out.statistics = stats;
-							updateResult(out, hash);
-
-							if (completed >= maxIterations) {
-								this.isRunning = false;
-								resolve(true);
-								if (this.runStarted > 0) {
-									const end = performance.now();
-									console.log(`run time: ${end - this.runStarted} ms`);
-									this.runStarted = 0;
-								}
-							}
+							updateResult(out, hash ?? "");
 							return;
 						}
-						case Aggregator.Response.Done:
-							completed += 1;
-							throttledFlush();
+						case Aggregator.Response.Finished:
+							this.isRunning = false;
+							resolve(true);
+							if (this.runStarted > 0) {
+								const end = performance.now();
+								console.log(`run time: ${end - this.runStarted} ms`);
+								this.runStarted = 0;
+							}
 							return;
 						case Aggregator.Response.Failed:
-							// TODO: bug with throttled flush where a flush may happen after a cancel request.
-							//    When this happens, the existing aggregator has no data and fails to flush.
-							//    this doesnt cause any problems (yet) and just produces an error in console.
 							if (this.isRunning) {
+								this.isRunning = false;
 								reject((ev.data as Aggregator.FailedResponse).reason);
 							}
 					}
 				};
 
-				let requested = 0;
+				// Wire each sim worker directly to the aggregator. The aggregator hands out
+				// iterations over these ports, so the main thread is only involved in setup,
+				// periodic results and completion.
+				const aggPorts: MessagePort[] = [];
 				this.workers.forEach((worker) => {
+					const { port1, port2 } = new MessageChannel();
 					worker.onmessage = (ev) => {
-						switch (ev.data.type as SimWorker.Response) {
-							case SimWorker.Response.Done: {
-								const resp: SimWorker.RunResponse = ev.data;
-								this.aggregator?.postMessage(
-									Aggregator.AddRequest(resp.result),
-								);
-								if (requested < maxIterations) {
-									worker.postMessage(SimWorker.RunRequest(requested++));
-								}
-								return;
-							}
-							case SimWorker.Response.Failed:
-								reject((ev.data as Aggregator.FailedResponse).reason);
+						if (ev.data.type === SimWorker.Response.Failed) {
+							this.isRunning = false;
+							reject((ev.data as SimWorker.FailedResponse).reason);
 						}
 					};
-
-					if (requested < maxIterations) {
-						worker.postMessage(SimWorker.RunRequest(requested++));
-					}
+					worker.postMessage(SimWorker.ConnectRequest(), [port1]);
+					aggPorts.push(port2);
 				});
+				this.aggregator.postMessage(
+					Aggregator.StartRequest(maxIterations, PREFETCH, VIEWER_THROTTLE),
+					aggPorts,
+				);
 			});
 		});
 	}
@@ -259,11 +246,12 @@ export class WasmExecutor implements Executor {
 		console.log("execution canceled");
 		this.workers.forEach((worker) => {
 			worker.onmessage = null;
+			worker.postMessage(SimWorker.CancelRequest());
 		});
 
-		// It is possible that there are N AddRequests in the aggregator queue that we have no control
+		// It is possible that there are N results in the aggregator queue that we have no control
 		// over. Even if we set the onmessage here to null, the aggregator will still process through
-		// all N requests. Since there is no way to clear the worker queue, recreating the worker is the
+		// all N results. Since there is no way to clear the worker queue, recreating the worker is the
 		// next best thing.
 		//
 		// Downside of this approach is any memory allocation/optimizations from previous runs will not
@@ -307,7 +295,11 @@ class HelperExecutor {
 		}
 
 		this.helper = new Worker(new URL("./Workers/helper.ts", import.meta.url));
-		this.helper.postMessage(Helper.ReadyRequest(this.wasmPath));
+		const helper = this.helper;
+		compileWasm(this.wasmPath).then(
+			(module) => helper.postMessage(Helper.ReadyRequest(module)),
+			(e) => console.error("failed to compile wasm", e),
+		);
 		this.helper.onmessage = (ev) => {
 			this.responses.set(ev.data.id, ev);
 		};

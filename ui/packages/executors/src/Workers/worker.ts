@@ -2,20 +2,14 @@
 // @ts-ignore
 self.importScripts("/wasm_exec.js");
 
-if (!WebAssembly.instantiateStreaming) {
-	// polyfill
-	WebAssembly.instantiateStreaming = async (resp, importObject) => {
-		const source = await (await resp).arrayBuffer();
-		return await WebAssembly.instantiate(source, importObject);
-	};
-}
-
+// The module is compiled once on the main thread and shared by every worker.
 // @ts-ignore
-function ready(req: { wasm: string }) {
+function ready(req: { module: WebAssembly.Module; gogc: string }) {
 	const go = new Go();
-	WebAssembly.instantiateStreaming(fetch(req.wasm), go.importObject)
-		.then((result) => {
-			go.run(result.instance);
+	go.env = { ...go.env, GOGC: req.gogc };
+	WebAssembly.instantiate(req.module, go.importObject)
+		.then((instance) => {
+			go.run(instance);
 			postMessage({ type: WorkerResponse.Ready });
 		})
 		.catch((e) => {
@@ -36,6 +30,32 @@ function initialize(req: { cfg: string }) {
 	return { type: WorkerResponse.Initialized };
 }
 
+// Port to the aggregator. Run requests arrive on it and results go back on it,
+// so per-iteration traffic never touches the main thread.
+let aggPort: MessagePort | null = null;
+
+function connect(port: MessagePort) {
+	aggPort?.close();
+	aggPort = port;
+	aggPort.onmessage = (ev) => {
+		if (ev.data.type !== WorkerRequest.Run) {
+			return;
+		}
+		const resp = run(ev.data);
+		if (resp.type === WorkerResponse.Done) {
+			const result = resp.result as Uint8Array;
+			aggPort?.postMessage(resp, [result.buffer]);
+			return;
+		}
+		postMessage(resp);
+	};
+}
+
+function cancel() {
+	aggPort?.close();
+	aggPort = null;
+}
+
 function run(req: { itr: number }) {
 	try {
 		const resp = simulate();
@@ -53,20 +73,23 @@ function run(req: { itr: number }) {
 }
 
 // @ts-ignore
-function handleRequest(req: any) {
+function handleRequest(ev: MessageEvent) {
+	const req = ev.data;
 	switch (req.type as WorkerRequest) {
 		case WorkerRequest.Ready:
 			return ready(req);
 		case WorkerRequest.Initialize:
 			return postMessage(initialize(req));
-		case WorkerRequest.Run:
-			return postMessage(run(req));
+		case WorkerRequest.Connect:
+			return connect(ev.ports[0]);
+		case WorkerRequest.Cancel:
+			return cancel();
 		default:
 			console.error("aggregator - unknown request: ", req);
 			throw new Error("aggregator unknown request");
 	}
 }
-self.onmessage = (ev) => handleRequest(ev.data);
+self.onmessage = (ev) => handleRequest(ev);
 
 // TODO: I hate this
 // Web Workers do not currently support modules (in all browsers), so instead the relevant code in common
@@ -77,6 +100,8 @@ enum WorkerRequest {
 	Ready = "ready",
 	Initialize = "initialize",
 	Run = "run",
+	Connect = "connect",
+	Cancel = "cancel",
 }
 
 enum WorkerResponse {

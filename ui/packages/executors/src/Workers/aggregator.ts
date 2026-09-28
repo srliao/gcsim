@@ -2,20 +2,14 @@
 // @ts-ignore
 self.importScripts("/wasm_exec.js");
 
-if (!WebAssembly.instantiateStreaming) {
-	// polyfill
-	WebAssembly.instantiateStreaming = async (resp, importObject) => {
-		const source = await (await resp).arrayBuffer();
-		return await WebAssembly.instantiate(source, importObject);
-	};
-}
-
+// The module is compiled once on the main thread and shared by every worker.
 // @ts-ignore
-function ready(req: { wasm: string }) {
+function ready(req: { module: WebAssembly.Module; gogc: string }) {
 	const go = new Go();
-	WebAssembly.instantiateStreaming(fetch(req.wasm), go.importObject)
-		.then((result) => {
-			go.run(result.instance);
+	go.env = { ...go.env, GOGC: req.gogc };
+	WebAssembly.instantiate(req.module, go.importObject)
+		.then((instance) => {
+			go.run(instance);
 			console.log("aggregator loaded okay");
 			postMessage({ type: AggResponse.Ready });
 		})
@@ -45,32 +39,93 @@ function add(req: { result: Uint8Array }) {
 	return { type: AggResponse.Done };
 }
 
-function doFlush() {
-	// TODO: have a specific result response type to enforce (protos?)
-	const resp = JSON.parse(flush());
-	if (resp.error) {
-		return { type: AggResponse.Failed, reason: resp.error };
+// Posts the current stats as a binary model.SignedSimulationStatistics, decoded on the
+// main thread. Returns false if the flush failed.
+function pushResult(): boolean {
+	dirty = false;
+	const resp = flushProto();
+	if (typeof resp === "string") {
+		postMessage({ type: AggResponse.Failed, reason: JSON.parse(resp).error });
+		return false;
 	}
-	return { type: AggResponse.Result, result: resp };
+	postMessage(
+		{ type: AggResponse.Result, result: resp, completed: completed },
+		// @ts-ignore
+		[resp.buffer],
+	);
+	return true;
+}
+
+// Dispatch state for a run. The aggregator hands out iterations directly to the sim
+// workers over their ports and pushes results to the main thread on its own timer.
+let requested = 0;
+let completed = 0;
+let target = 0;
+let dirty = false;
+let flushTimer: ReturnType<typeof setInterval> | undefined;
+
+function dispatch(port: MessagePort) {
+	if (requested < target) {
+		port.postMessage({ type: "run", itr: requested++ });
+	}
+}
+
+function start(
+	req: { iterations: number; prefetch: number; interval: number },
+	ports: readonly MessagePort[],
+) {
+	requested = 0;
+	completed = 0;
+	target = req.iterations;
+	dirty = false;
+	clearInterval(flushTimer);
+	flushTimer = setInterval(() => {
+		if (dirty) {
+			pushResult();
+		}
+	}, req.interval);
+
+	for (const port of ports) {
+		port.onmessage = (ev) => {
+			const resp = add(ev.data);
+			if (resp.type === AggResponse.Failed) {
+				clearInterval(flushTimer);
+				postMessage(resp);
+				return;
+			}
+			completed++;
+			dirty = true;
+			dispatch(port);
+			if (completed === target) {
+				clearInterval(flushTimer);
+				if (pushResult()) {
+					postMessage({ type: AggResponse.Finished });
+				}
+			}
+		};
+		// keep more than one run queued per worker so a worker never idles waiting on us
+		for (let i = 0; i < req.prefetch; i++) {
+			dispatch(port);
+		}
+	}
 }
 
 // @ts-ignore
-function handleRequest(req: any): any {
+function handleRequest(ev: MessageEvent): any {
+	const req = ev.data;
 	switch (req.type as AggRequest) {
 		case AggRequest.Ready:
 			return ready(req);
 		case AggRequest.Initialize:
 			return postMessage(initialize(req));
-		case AggRequest.Add:
-			return postMessage(add(req));
-		case AggRequest.Flush:
-			return postMessage(doFlush());
+		case AggRequest.Start:
+			return start(req, ev.ports);
 		default:
 			console.error("aggregator - unknown request: ", req);
 			throw new Error("aggregator unknown request");
 	}
 }
-self.onmessage = (ev) => handleRequest(ev.data);
+self.onmessage = (ev) => handleRequest(ev);
 
 // TODO: I hate this
 // Web Workers do not currently support modules (in all browsers), so instead all the relevant code in common
@@ -80,8 +135,7 @@ self.onmessage = (ev) => handleRequest(ev.data);
 enum AggRequest {
 	Ready = "ready",
 	Initialize = "initialize",
-	Add = "add",
-	Flush = "flush",
+	Start = "start",
 }
 
 enum AggResponse {
@@ -90,4 +144,5 @@ enum AggResponse {
 	Initialized = "initialized",
 	Done = "done",
 	Result = "result",
+	Finished = "finished",
 }

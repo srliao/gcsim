@@ -18,6 +18,7 @@ import (
 	"github.com/genshinsim/gcsim/pkg/simulation"
 	"github.com/genshinsim/gcsim/pkg/simulator"
 	"github.com/genshinsim/gcsim/pkg/stats"
+	"google.golang.org/protobuf/proto"
 )
 
 const DefaultBufferLength = 1024 * 10
@@ -53,6 +54,7 @@ func main() {
 	js.Global().Set("initializeAggregator", js.FuncOf(initializeAggregator))
 	js.Global().Set("aggregate", js.FuncOf(aggregate))
 	js.Global().Set("flush", js.FuncOf(flush))
+	js.Global().Set("flushProto", js.FuncOf(flushProto))
 
 	<-ch
 }
@@ -260,6 +262,31 @@ func flush(this js.Value, args []js.Value) (out interface{}) {
 		}
 	}()
 
+	marshalled, err := signedStats().MarshalJSON()
+	if err != nil {
+		return marshal(err)
+	}
+	return string(marshalled)
+}
+
+// flushProto() -> js Uint8Array (binary model.SignedSimulationStatistics) or error string
+func flushProto(this js.Value, args []js.Value) (out interface{}) {
+	defer func() {
+		if r := recover(); r != nil {
+			out = errorRecover(r)
+		}
+	}()
+
+	marshalled, err := proto.Marshal(signedStats())
+	if err != nil {
+		return marshal(err)
+	}
+	dst := js.Global().Get("Uint8Array").New(len(marshalled))
+	js.CopyBytesToJS(dst, marshalled)
+	return dst
+}
+
+func signedStats() *model.SignedSimulationStatistics {
 	stats := &model.SimulationStatistics{}
 	for _, a := range aggregators {
 		a.Flush(stats)
@@ -269,16 +296,10 @@ func flush(this js.Value, args []js.Value) (out interface{}) {
 	cachedResult.Statistics = stats
 	hash, _ := cachedResult.Sign(shareKey)
 
-	signedResults := &model.SignedSimulationStatistics{
+	return &model.SignedSimulationStatistics{
 		Stats: stats,
 		Hash:  hash,
 	}
-
-	marshalled, err := signedResults.MarshalJSON()
-	if err != nil {
-		return marshal(err)
-	}
-	return string(marshalled)
 }
 
 // internal helper functions

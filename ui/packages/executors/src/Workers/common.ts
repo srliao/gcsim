@@ -1,11 +1,34 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-namespace */
+
+// Go GC target for every wasm instance. The default (100) collects often enough to show up
+// in sim time; trading some memory for fewer collections is worth it here.
+const GOGC = "400";
+
+const modules = new Map<string, Promise<WebAssembly.Module>>();
+
+// Compiles the wasm binary once per page. The returned module is cloned (not recompiled)
+// when posted to each worker.
+export function compileWasm(wasm: string): Promise<WebAssembly.Module> {
+	let module = modules.get(wasm);
+	if (module == null) {
+		module = WebAssembly.compileStreaming(fetch(wasm)).catch(() =>
+			// compileStreaming requires the application/wasm mime type
+			fetch(wasm)
+				.then((resp) => resp.arrayBuffer())
+				.then((buf) => WebAssembly.compile(buf)),
+		);
+		module.catch(() => modules.delete(wasm));
+		modules.set(wasm, module);
+	}
+	return module;
+}
+
 export namespace Aggregator {
 	export enum Request {
 		Ready = "ready",
 		Initialize = "initialize",
-		Add = "add",
-		Flush = "flush",
+		Start = "start",
 	}
 
 	export enum Response {
@@ -14,6 +37,7 @@ export namespace Aggregator {
 		Initialized = "initialized",
 		Done = "done",
 		Result = "result",
+		Finished = "finished",
 	}
 
 	export interface FailedResponse {
@@ -27,11 +51,12 @@ export namespace Aggregator {
 
 	export interface ReadyRequest {
 		type: Request.Ready;
-		wasm: string;
+		module: WebAssembly.Module;
+		gogc: string;
 	}
 
-	export function ReadyRequest(wasm: string): ReadyRequest {
-		return { type: Request.Ready, wasm: wasm };
+	export function ReadyRequest(module: WebAssembly.Module): ReadyRequest {
+		return { type: Request.Ready, module: module, gogc: GOGC };
 	}
 
 	export interface ReadyResponse {
@@ -60,41 +85,36 @@ export namespace Aggregator {
 		return { type: Response.Initialized, result: result };
 	}
 
-	export interface AddRequest {
-		type: Request.Add;
-		result: Uint8Array;
+	export interface StartRequest {
+		type: Request.Start;
+		iterations: number;
+		prefetch: number;
+		interval: number;
 	}
 
-	export function AddRequest(result: Uint8Array): AddRequest {
-		return { type: Request.Add, result: result };
+	// ports (one per sim worker) must be passed as transferables alongside this request
+	export function StartRequest(
+		iterations: number,
+		prefetch: number,
+		interval: number,
+	): StartRequest {
+		return {
+			type: Request.Start,
+			iterations: iterations,
+			prefetch: prefetch,
+			interval: interval,
+		};
 	}
 
-	export interface AddResponse {
-		type: Response.Done;
-	}
-
-	export function AddResponse(): AddResponse {
-		return { type: Response.Done };
-	}
-
-	export interface FlushRequest {
-		type: Request.Flush;
-	}
-
-	export function FlushRequest(): FlushRequest {
-		return { type: Request.Flush };
+	export interface FinishedResponse {
+		type: Response.Finished;
 	}
 
 	export interface ResultResponse {
 		type: Response.Result;
-		result: {
-			hash: string;
-			stats: any;
-		};
-	}
-
-	export function ResultResponse(result: any): ResultResponse {
-		return { type: Response.Result, result: result };
+		completed: number;
+		// binary model.SignedSimulationStatistics
+		result: Uint8Array;
 	}
 }
 
@@ -123,11 +143,12 @@ export namespace Helper {
 
 	export interface ReadyRequest {
 		type: Request.Ready;
-		wasm: string;
+		module: WebAssembly.Module;
+		gogc: string;
 	}
 
-	export function ReadyRequest(wasm: string): ReadyRequest {
-		return { type: Request.Ready, wasm: wasm };
+	export function ReadyRequest(module: WebAssembly.Module): ReadyRequest {
+		return { type: Request.Ready, module: module, gogc: GOGC };
 	}
 
 	export interface ValidateRequest {
@@ -177,6 +198,8 @@ export namespace SimWorker {
 		Ready = "ready",
 		Initialize = "initialize",
 		Run = "run",
+		Connect = "connect",
+		Cancel = "cancel",
 	}
 
 	export enum Response {
@@ -197,11 +220,12 @@ export namespace SimWorker {
 
 	export interface ReadyRequest {
 		type: Request.Ready;
-		wasm: string;
+		module: WebAssembly.Module;
+		gogc: string;
 	}
 
-	export function ReadyRequest(wasm: string): ReadyRequest {
-		return { type: Request.Ready, wasm: wasm };
+	export function ReadyRequest(module: WebAssembly.Module): ReadyRequest {
+		return { type: Request.Ready, module: module, gogc: GOGC };
 	}
 
 	export interface ReadyResponse {
@@ -236,6 +260,23 @@ export namespace SimWorker {
 
 	export function RunRequest(itr: number): RunRequest {
 		return { type: Request.Run, itr: itr };
+	}
+
+	export interface ConnectRequest {
+		type: Request.Connect;
+	}
+
+	// the aggregator's port must be passed as a transferable alongside this request
+	export function ConnectRequest(): ConnectRequest {
+		return { type: Request.Connect };
+	}
+
+	export interface CancelRequest {
+		type: Request.Cancel;
+	}
+
+	export function CancelRequest(): CancelRequest {
+		return { type: Request.Cancel };
 	}
 
 	export interface RunResponse {
